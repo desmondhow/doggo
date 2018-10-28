@@ -1,17 +1,22 @@
 import React from 'react';
 import Colors from '../constants/Colors';
+import { center } from '../constants/Styles';
+import Button from './Button';
+
 import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
 } from 'react-native';
 
 export default Tile = ({text, onPress}) => {
   return (
-    <TouchableOpacity style={styles.tile} onPress={onPress}>
-      <Text style={styles.text}>{text}</Text>
-    </TouchableOpacity>
+    <Button
+      text={text}
+      buttonStyle={styles.tile}
+      textStyle={styles.text}
+      onPress={onPress}
+    />
   );
 }
 
@@ -22,14 +27,12 @@ const styles = StyleSheet.create({
     width: 110,
     height: 100,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
   },
   text: {
-    color: Colors.tileTextColor
+    fontSize: 20
   }
 })

@@ -26,7 +26,7 @@ export default class HomeScreen extends React.Component {
       const ds = new ListView.DataSource({
         rowHasChanged: (r1, r2) => r1 !== r2
       });
-      this.setState({ dataSource: ds.cloneWithRows(["UDC", "Live Human Search"]) });
+      this.setState({ dataSource: ds.cloneWithRows(["UDC", "Agility"]) });
     // })
     // .catch((err) => {
           // console.log(err);
