@@ -28,6 +28,7 @@ const port = process.env.PORT || 3000;
 //For Server to communicate between instances
 const app = express();
 const http = require('http').Server(app);
+const API_URL = 'https://doggo.herokuapp.com'
 
 //To let routers use io
 app.io = io;
@@ -105,18 +106,6 @@ app.get('*', function (req, res) {
 });
 
 
-
-
-const API_URL = 'https://doggo.herokuapp.com'
-
-
-app.get('/api/getAllSessions', (req, res) => {
-    res.sendFile({'current': 'data'});
-});
-
-app.get('/api/getCurrentUDCSessions', (req, res) => {
-    res.sendFile({'current': 'data'});
-});
 
 
 http.listen(port, function () {
