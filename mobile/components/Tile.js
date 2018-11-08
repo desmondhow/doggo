@@ -22,6 +22,7 @@ export default Tile = ({text, onPress}) => {
 
 const styles = StyleSheet.create({
   tile: {
+    ...center,
     backgroundColor: Colors.tileColor,
     margin: 30,
     width: 110,

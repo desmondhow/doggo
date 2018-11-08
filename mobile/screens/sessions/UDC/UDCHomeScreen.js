@@ -6,9 +6,9 @@ import {
 } from 'react-native';
 import { Text } from 'react-native-elements';
 import { Table, TableWrapper, Row, Cell, Rows, Col } from 'react-native-table-component';
+import { center, buttonStyle } from '../../../constants/Styles';
 
-import Api from '../../constants/Api';
-import Button from '../../components/Button';
+import Button from '../../../components/Button';
 
 const currentSessionsTableHeaderText = [
   'Setup By',
@@ -16,11 +16,8 @@ const currentSessionsTableHeaderText = [
   'Dogs Trained'
 ]
 
-export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    title: 'UDC',
-  };
-
+export default class UDCHomeScreen extends React.Component {
+  
   constructor(props) {
     super(props);
     this.state = { currentSessionsData: []};
@@ -47,6 +44,7 @@ export default class HomeScreen extends React.Component {
 
   render() {
     const state = this.state;
+    const { navigate } = this.props.navigation;
 
     const continueTrainingButton = (session) => (
       <Button
@@ -67,7 +65,9 @@ export default class HomeScreen extends React.Component {
             styles.tableRowOdd, 
             i % 2 && styles.tableRowEven, 
             i == state.currentSessionsData.length-1 && styles.roundedBottomBorder
-          ]}>
+          ]}
+          key={i}
+        >
           {session.map((cellData, j) => (
             <Cell
               key={i+j}
@@ -84,7 +84,11 @@ export default class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.currentSessionsContainer}>
-          <Text h2> Current Sessions </Text>
+          <View style={styles.currentSessionsHeader}>
+            <Text h2> Current Sessions </Text>
+            <Button text="Start New Session" onPress={() => navigate('UDCNewSession')} buttonStyle={styles.newSessionButton} />
+
+          </View>
           <Table style={styles.table} borderStyle={{ borderColor: 'transparent' }}>
             <TableWrapper style={{ flex: 1 }}>  
                 <Row
@@ -118,6 +122,11 @@ const header = {
   height: row.height+10
 }
 
+const button = {
+  ...center,
+  ...buttonStyle
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -135,6 +144,9 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 50,
     marginLeft: 30
+  },
+  currentSessionsHeader: {
+    flexDirection: 'row'
   },
   tableHeader: { 
     ...header,
@@ -164,14 +176,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f4faff',
   },
   continueTrainingButton: {
+    ...button,
     height: row.height-10, 
     width: 100,
     margin: 10,
-    backgroundColor: '#e6eaf2',
-    borderColor: "transparent",
-    borderRadius: 5,
   },
   continueTrainingButtonText: {
     fontSize: 15
+  },
+  newSessionButton: {
+    ...button,
+    width: 135,
+    marginLeft: 10,
+    marginTop: 10
   }
 });

@@ -1,5 +1,4 @@
 import React from 'react';
-import { center } from '../constants/Styles';
 import {
   Text,
   TouchableOpacity,
@@ -7,7 +6,7 @@ import {
 
 export default Button = ({text, onPress, buttonStyle, textStyle}) => {
   return (
-    <TouchableOpacity style={[center, buttonStyle]} onPress={onPress}>
+    <TouchableOpacity style={[buttonStyle]} onPress={onPress}>
       <Text style={textStyle}>{text}</Text>
     </TouchableOpacity>
   );

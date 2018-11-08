@@ -1,34 +1,13 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import { createStackNavigator, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 
-// Sessions
-import TrainingSessionsHomeScreen from '../screens/sessions/HomeScreen';
-import UDCScreen from '../screens/sessions/UDCScreen';
+import TrainingSessionsNavigator from './sessions/TrainingSessionsNavigator';
 
 import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen';
-
-const TrainingSessionsStack = createStackNavigator({
-  Home: TrainingSessionsHomeScreen,
-  UDC: UDCScreen
-});
-
-TrainingSessionsStack.navigationOptions = {
-  tabBarLabel: 'Training Sessions',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
-      }
-    />
-  ),
-};
+import SettingsScreen from '../screens/SettingsScreen'; 
 
 const LinksStack = createStackNavigator({
   Links: LinksScreen,
@@ -58,8 +37,8 @@ SettingsStack.navigationOptions = {
   ),
 };
 
-export default createBottomTabNavigator({
-  TrainingSessionsStack,
-  LinksStack,
-  SettingsStack,
+export default createDrawerNavigator({
+  'Training Sessions': TrainingSessionsNavigator,
+  'Dogs': LinksStack,
+  'Settings': SettingsStack,
 });

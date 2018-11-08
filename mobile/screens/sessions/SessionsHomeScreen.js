@@ -8,10 +8,6 @@ import Tile from '../../components/Tile'
 import Api from '../../constants/Api';
 
 export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    title: 'Sessions',
-  };
-
   constructor() {
     super();
     this.state = {};

@@ -1,5 +1,5 @@
 {
-  "name": "my-new-project",
+  "name": "Doggo",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
   "scripts": {
@@ -14,13 +14,21 @@
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
+    "axios": "^0.18.0",
     "expo": "^30.0.1",
+    "native-base": "^2.8.1",
     "react": "16.3.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
     "react-native-elements": "^0.19.1",
+    "react-native-modal-dropdown": "^0.6.2",
+    "react-native-picker-dropdown": "^0.1.2",
     "react-native-table-component": "^1.1.8",
     "react-native-tiles": "^1.0.1",
-    "react-navigation": "^2.16.0"
+    "react-navigation": "^2.16.0",
+    "react-redux": "^5.1.0",
+    "redux": "^4.0.1",
+    "redux-axios-middleware": "^4.0.0",
+    "redux-form": "^7.4.2"
   },
   "devDependencies": {
     "jest-expo": "30.0.0"

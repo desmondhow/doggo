@@ -10,9 +10,9 @@ session = {
 
 export default mongoose.model('UDC', new Schema({
   ...session,
-
+  location: String,
 }));
 
 export default mongoose.model('Agility', new Schema({
   ...session,
-}));
+})); 

@@ -1,7 +1,13 @@
 import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
+import { createStore } from 'redux';
+import { Provider, connect } from 'react-redux';
+
 import AppNavigator from './navigation/AppNavigator';
+import reducer from './reducers/'
+
+const store = createStore(reducer);
 
 export default class App extends React.Component {
   state = {
@@ -19,10 +25,12 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
+        <Provider store={store}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
+            <AppNavigator />
+          </View>
+        </Provider>
       );
     }
   }
