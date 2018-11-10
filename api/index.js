@@ -3,7 +3,7 @@ import emoji from 'node-emoji';
 import { MongoClient } from 'mongodb';
 
 const API_URL = 'https://doggo.herokuapp.com'
-const dbUri = "mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/doggo?retryWrites=true";
+const dbUri = "mongodb://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/doggo?retryWrites=true";
 
 const app = express();      // server
 app.use(bodyParser.json());       // to support JSON-encoded bodies
