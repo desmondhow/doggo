@@ -3,22 +3,18 @@ const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
-const bcrypt = require('bcrypt');
 const flash = require('connect-flash');
-const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const port = process.env.PORT || 3000;
+const MongoStore = require('connect-mongo')(expressSession);
 
 const app = express();
-const http = require('http').Server(app);
 
 const API_URL = 'https://doggo.herokuapp.com';
 
-const MongoClient = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
 // Todo: Change, not working for me (probably security settings need to be changed to whitelist IPs)
 // const DB_URI = "mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/doggo?retryWrites=true";
-const DB_URI = "mongodb+srv://rafael:doggo@cluster0-i0uku.azure.mongodb.net/test?retryWrites=true";
-
+const DB_URI = "mongodb+srv://rafael:doggo@cluster0-i0uku.azure.mongodb.net/doggo?retryWrites=true";
 
 const users = require('./APIs/users');
 const data_collection = require('./APIs/data_collection');
@@ -28,14 +24,15 @@ const data_analysis = require('./APIs/data_analysis');
 /**
  * Check db connection
  */
-MongoClient.connect(DB_URI, function(err, db) {
+mongoose.connect(DB_URI, function(err, db) {
     if (err) {
         console.error(err);
         throw err;
     }
     console.log("Database is working!");
-    db.close();
 });
+const db = mongoose.connection;
+
 
 // To support URL-encoded bodies
 app.use(bodyParser.urlencoded({extended: true}));
@@ -44,29 +41,19 @@ app.use(bodyParser.json());
 
 //To read cookies with our secret
 app.use(cookieParser('JlNyXZDRfW8bKhZT9oR5XYZ'));
-//To configure our session that can be stored in the db
+
+//Use sessions for tracking logins
 app.use(expressSession({
-    secret: 'JlNyXZDRfW8bKhZT9oR5XYZ',
+    secret: 'work JlNyXZDRfW8bKhZT9oR5XYZ',
     resave: true,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    store: new MongoStore({
+        mongooseConnection: db
+    })
 }));
 
 //To check syntax
-app.use(expressValidator({
-    errorFormatter: function(param, msg, value) {
-        let namespace = param.split('.')
-            , root = namespace.shift()
-            , formParam = root;
-        while(namespace.length) {
-            formParam += '[' + namespace.shift() + ']';
-        }
-        return {
-            param: formParam,
-            msg: msg,
-            value: value
-        };
-    }
-}));
+app.use(expressValidator());
 
 // Connect to Flash
 app.use(flash());
@@ -79,60 +66,22 @@ app.use(function (req, res, next) {
     next();
 });
 
-// To start passport
-app.use(passport.initialize());
-app.use(passport.session());
-
 // Set up the routes urls
-// app.use('api/users', users);
-// app.use('api/trainers', training);
-// app.use('api/data_analysis', data_analysis);
-
-/**
- * Logs in the user using the local strategy of passport. This function is called from api_users/login
- */
-passport.use(new LocalStrategy(
-    function (username, password, done) {
-        //We find the associated username in our db. Note that we are using the email as the username
-        connection.query('SELECT id, password, first_name, last_name FROM users WHERE email = ?', [username], function (err, results, fields) {
-            if (err) {
-                done(err)
-            }
-            //If there is no user with this email
-            if (results.length === 0) {
-                done('There is no user with such email');
-            } else {
-                //Get the hashed password in the db
-                const hash = results[0].password.toString();
-                //Verify if password matches
-                bcrypt.compare(password, hash, function (err, response) {
-
-                    //If they match, return the user id
-                    if (response === true) {
-                        //Pass the id, the first and last name of the user
-                        return done(null, {
-                            user_id: results[0].id,
-                            first_name: results[0].first_name,
-                            last_name: results[0].last_name
-                        });
-
-                    } else {
-                        return done(null, false);
-                    }
-                });
-
-            }
-        });
-    }));
+app.use('/api/users', users);
+app.use('/api/data_collection', data_collection);
+app.use('/api/data_analysis', data_analysis);
 
 
-http.listen(port, function () {
+
+app.listen(port, function () {
     console.log("Server running on localhost: " + port);
 });
 
 /**
- * Check if server is running by going to localhost:3000
+ * You can check if server is running by going to localhost:3000
  */
 app.get('/api', function (req, res) {
     res.send('Server is working')
 });
+
+

@@ -1,9 +1,15 @@
-import mongoose, { Schema } from 'mongoose';
+const mongoose = require('../../server/node_modules/mongoose');
 
-export default mongoose.model('trainers', new Schema({
+/**
+ * Trainer Schema
+ */
+const TrainerSchema = new mongoose.Schema({
+    name: {
+        type: String,
+    }
+});
 
-  name: {
-    type: String,
-    unique: true,
-  }
-}));
+// Define trainer model
+const Trainer = mongoose.model('Trainer', TrainerSchema);
+
+module.export = Trainer;

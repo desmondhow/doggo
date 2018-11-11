@@ -1,18 +1,43 @@
-import mongoose, { Schema } from 'mongoose';
-import Trainer from './trainer';
+const mongoose = require('../../server/node_modules/mongoose');
+const Trainer = require('./trainer');
 
 session = {
-  createdBy: Trainer,
+  createdBy: {
+      type: Trainer,
+      required: true,
+  },
   dogs: {
-    type: Array
+      type: Array,
+      required: true,
   }
-}
+};
 
-export default mongoose.model('UDC', new Schema({
-  ...session,
-  location: String,
-}));
+/**
+ * UDC Schema
+ */
+const UDCSchema = new mongoose.Schema({
+    ...session,
+    location: {
+        type: String,
+        required: true
+    },
+});
 
-export default mongoose.model('Agility', new Schema({
-  ...session,
-})); 
+/**
+ * Agility Schema
+ */
+const AgilitySchema = new mongoose.Schema({
+    ...session,
+});
+
+// Models that can be queried by the routes
+const UDC = mongoose.model('UDC', UDCSchema);
+const Agility = mongoose.model('Agility', AgilitySchema);
+
+//Export the models only
+module.exports = {
+    UDC,
+    Agility
+};
+
+

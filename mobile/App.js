@@ -6,6 +6,7 @@ import { Provider, connect } from 'react-redux';
 
 import AppNavigator from './navigation/AppNavigator';
 import reducer from './reducers/'
+import Splash from 'screens/Splash';
 
 const store = createStore(reducer);
 

@@ -1,59 +1,86 @@
-
 const express = require('express');
 const router = express.Router();
 
+//Import Session Models to query
+const Sessions = require('../../db/schemas/session');
+const UDC = Sessions.UDC;
+const Agility = Sessions.Agility;
 
 router.get('/', function (req, res) {
-    res.send('Maintenance API  works!');
+    console.log('here');
+    res.send('Data Collection API  works!');
 });
-
-//
-// //Check connection to scrawler db
-// connection.connect(function (error) {
-//     if (!error) {
-//         console.log('Connected to DB Trainer!')
-//     } else {
-//         console.log('There was an error connecting to the database');
-//         console.log(error);
-//     }
-// });
-//
-
 
 
 /**
- * Gets the last time the db was maintained
+ * Create new UDC session.
  */
-router.get('/all_trainers', function (req, res) {
+router.post('/createNewUDC', function(req, res) {
+    const createdBy = req.body.createdBy;
+    const dogs = req.body.dogs;
+    const location = req.body.location;
 
-    console.log('SELECT last_maintenance FROM versions ');
-    connection.query('SELECT last_maintenance FROM versions', function (err, rows) {
-        if (err) console.log('There was an error ' + err);
-        else {
-            //If result is empty
-            if (rows.length === 0) {
-                res.json();
-            }
-            else {
-                //Return the number of times it failed to load
-                res.json({'last_maintenance': rows[0].last_maintenance});
-            }
-        }
+    // Validate input
+    req.checkBody('createdBy').notEmpty();
+    req.checkBody('dogs').notEmpty();
+    req.checkBody('location').notEmpty();
+
+    const errors = req.validationErrors();
+    if (errors) {
+        return res.status(400).send(JSON.stringify({message: 'Please fill all fields'}));
+    }
+    let udc = new UDC({
+        createdBy: createdBy,
+        dogs: dogs,
+        location: location
     });
+    //Store it in the db
+    udc.save()
+        .then(doc => {
+            console.log(doc);
+            return res.status(200).send(doc);
+
+        })
+        .catch(err => {
+            console.log(err);
+            return res.status(400).send(JSON.stringify({message: 'Could not save in db'}));
+        })
 });
 
+// router.get('/getAllSessions', function (req, res){
+//     Session.
+// });
 
 
-router.get('/getAllSessions', (req, res) => {
-    MongoClient.connect(dbUri, function(err, client) {
-        const collection = client.db("test").collection("sessions");
-        client.close();
-    });
-
-    res.sendFile({'current': 'data'});
-});
-
+/**
+ * Get all the current UDC Sessions
+ */
 router.get('/getCurrentUDCSessions', (req, res) => {
-    res.sendFile({'current': 'data'});
+    UDC.find({}, 'createdBy dogs location', function(err, session){
+        if (err || session === undefined || session.length === 0) {
+            return res.status(200).send(JSON.stringify({message: 'There are no current UDC Sessions'}));
+        }
+        return res.status(200).send(session);
+    });
 });
+
+/**
+ * Get a specific UDC session by its uniquide ID
+ */
+router.get('/getUDCSession/:SessionID', (req, res) => {
+    const id = req.params.SessionID;
+    if (id === undefined || id.length === 0 ) {
+        return res.status(400).send(JSON.stringify({message: 'Please add an ID'}));
+    }
+    UDC.findById(id, 'createdBy dogs location', function(err, session) {
+        if (err || session === undefined || session.length === 0) {
+            return res.status(400).send(JSON.stringify({message: 'Could not find any UDC sessions with that ID'}));
+        }
+        return res.status(200).send(session);
+    });
+});
+
+
+module.exports = router;
+
 
