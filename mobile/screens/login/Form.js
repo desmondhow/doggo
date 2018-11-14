@@ -11,6 +11,10 @@ import {
  * Displays the login form
  */
 export default class Form extends Component {
+    constructor(props) {
+        super(props)
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -18,14 +22,20 @@ export default class Form extends Component {
                            underlineColorAndroid='rgba(0,0,0,0)'
                            placeholder= 'Email'
                            placeHolderTextColor= 'white'
+                           onChangeText = { (email) => this.props.onSelectEmail(email)}
                 />
                 <TextInput style={styles.inputBox}
                            underlineColorAndroid='rgba(0,0,0,0)'
                            placeholder= 'Password'
+                           secureTextEntry ={true}
                            placeHolderTextColor= 'white'
+                           onChangeText = { (password) => this.props.onSelectPassword(password)}
                 />
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Login</Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress = {() => this.props.onSelectLogin()}>
+                    <Text style={styles.buttonText}>{this.props.type}</Text>
+
                 </TouchableOpacity>
             </View>
         );
@@ -34,6 +44,7 @@ export default class Form extends Component {
 
 const styles = StyleSheet.create({
     container: {
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -44,15 +55,15 @@ const styles = StyleSheet.create({
         height: 50,
         fontSize: 20,
         paddingHorizontal: 16,
-        marginVertical: 10
+        marginVertical: 15
 
     },
     button: {
         backgroundColor: '#212121',
         borderRadius: 25,
         width: 300,
-        marginVertical: 10,
-        paddingVertical: 12
+        marginVertical: 15,
+        paddingVertical: 13
 
     },
     buttonText: {
