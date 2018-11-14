@@ -7,7 +7,7 @@ import UDCGeneralScreen from '../../screens/sessions/UDC/UDCGeneralScreen';
 
 const newSessionNavigator = createBottomTabNavigator({
   'General': UDCGeneralScreen
-})
+});
 
 const navigator = createStackNavigator({
   UDCNewSession: newSessionNavigator

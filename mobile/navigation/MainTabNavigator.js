@@ -1,44 +1,61 @@
 import React from 'react';
-import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
+import {Platform} from 'react-native';
+import {createStackNavigator, createBottomTabNavigator, createDrawerNavigator} from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 
 import TrainingSessionsNavigator from './sessions/TrainingSessionsNavigator';
-
 import LinksScreen from '../screens/LinksScreen';
-import SettingsScreen from '../screens/SettingsScreen'; 
-
+import SettingsScreen from '../screens/SettingsScreen';
+import LoginScreen from '../screens/login/LoginScreen';
 const LinksStack = createStackNavigator({
-  Links: LinksScreen,
+    Links: LinksScreen,
 });
 
 LinksStack.navigationOptions = {
-  tabBarLabel: 'Links',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
-    />
-  ),
+    tabBarLabel: 'Links',
+    tabBarIcon: ({focused}) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
+        />
+    ),
 };
 
 const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen,
+    Settings: SettingsScreen,
 });
 
 SettingsStack.navigationOptions = {
-  tabBarLabel: 'Settings',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
-    />
-  ),
+    tabBarLabel: 'Settings',
+    tabBarIcon: ({focused}) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
+        />
+    ),
 };
 
+const LoginStack = createStackNavigator({
+    Login: LoginScreen,
+});
+
+LoginStack.navigationOptions = {
+    tabBarLabel: 'Login',
+    tabBarIcon: ({focused}) => (
+        <TabBarIcon
+            focused={focused}
+            name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
+        />
+    ),
+};
+
+
+
+
 export default createDrawerNavigator({
-  'Training Sessions': TrainingSessionsNavigator,
-  'Dogs': LinksStack,
-  'Settings': SettingsStack,
+    'Training Sessions': TrainingSessionsNavigator,
+    'Dogs': LinksStack,
+    'Settings': SettingsStack,
+    'Register / Login': LoginStack,
 });
