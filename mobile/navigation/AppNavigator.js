@@ -1,10 +1,41 @@
 import React from 'react';
-import { createSwitchNavigator } from 'react-navigation';
+import {createStackNavigator, createSwitchNavigator} from 'react-navigation';
 
 import MainTabNavigator from './MainTabNavigator';
+import SignupScreen from "../screens/login/SignupScreen";
+import LoginScreen from "../screens/login/LoginScreen";
 
-export default createSwitchNavigator({
-  // You could add another route here for authentication.
-  // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-  Main: MainTabNavigator,
+/**
+ * Handles routing in the application, checking if user is signed in or not, and displaying the correct screen
+ */
+
+
+
+//If the user is not signed in, we show them this
+export const SignedOut = createStackNavigator({
+    SignIn: {
+        screen: LoginScreen,
+    },
+    SignUp: {
+        screen: SignupScreen,
+    }
 });
+
+//Else, they can access everything
+export const SignedIn = MainTabNavigator;
+
+export const createRootNavigator = (signedIn = false) => {
+    return createSwitchNavigator(
+        {
+            SignedIn: {
+                screen: SignedIn
+            },
+            SignedOut: {
+                screen: SignedOut
+            }
+        },
+        {
+            initialRouteName: signedIn ? "SignedIn" : "SignedOut"
+        }
+    );
+};

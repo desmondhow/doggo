@@ -1,29 +1,24 @@
 import React from 'react';
 import {
-    ListView,
     StyleSheet,
     View,
     Text,
-    StatusBar,
-    AsyncStorage,
-    KeyboardAvoidingView
+    AsyncStorage, TouchableOpacity
 } from 'react-native';
 import {Icon} from 'native-base';
 import Logo from "./Logo";
-import Form from "./Form";
+import LoginForm from "./LoginForm";
+import Constants from "../../constants/Api";
+import {onSignIn} from "../../auth";
 
 export default class LoginScreen extends React.Component {
-    static SERVER_URL = 'http://localhost:3000';
-    static LOGIN_API_URL = LoginScreen.SERVER_URL + '/api/users/login';
     //Modifies the top header
-    static navigationOptions = ({navigation}) => ({
+    static navigationOptions = ({
         title: 'Login',
         headerStyle: {
             backgroundColor: '#007dba'
         },
         headerTintColor: 'white',
-        headerLeft: <Icon name="menu" size={35} color='white' style={{marginLeft: 30, color: 'white'}}
-                          onPress={() => navigation.toggleDrawer()}/>,
     });
 
 
@@ -59,7 +54,7 @@ export default class LoginScreen extends React.Component {
      * Send login credentials to the server (POST req)
      */
     handleLogin = () => {
-        fetch(LoginScreen.LOGIN_API_URL, {
+        fetch(Constants.getLoginApiURL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -73,43 +68,46 @@ export default class LoginScreen extends React.Component {
             .then((res) => res.json())
             .then((res) => {
                 if (res.success) {
-                    AsyncStorage.setItem('email', res.email);
-                    this.props.navigation.navigate('Profile');
+                    onSignIn().then(() => navigation.navigate('SignedIn'));
                 }
                 else {
                     alert(res.message);
                 }
             })
-                .done();
+            .done();
     };
 
 
-    /**
-     * Checks if user has already logged in
-     */
-    componentDidMount() {
-        this._loadInitialState().done();
-    };
 
-    _loadInitialState = async () => {
-        let value = await AsyncStorage.getItem('email');
-        if (value !== null) {
-            this.props.navigation.navigate('Profile');
-        }
-    };
+
+/**
+    //  * Checks if user has already logged in
+    //  */
+    // componentDidMount() {
+    //     this._loadInitialState().done();
+    // };
+    //
+    // _loadInitialState = async () => {
+    //     let value = await AsyncStorage.getItem('email');
+    //     if (value !== null) {
+    //         this.props.navigation.navigate('ProfileScreen.js');
+    //     }
+    // };
 
     render() {
         return (
             <View style={(styles.container)}>
                 <Logo/>
-                <Form type="Login"
-                      onSelectEmail={this.handleEmail}
-                      onSelectPassword={this.handlePassword}
-                      onSelectLogin={this.handleLogin}
+                <LoginForm onSelectEmail={this.handleEmail}
+                           onSelectPassword={this.handlePassword}
+                           onSelectLogin={this.handleLogin}
                 />
                 <View style={(styles.signUpTextContainer)}>
                     <Text style={styles.signUpText}>Don't have an account yet? </Text>
-                    <Text style={styles.signupButton}>Signup</Text>
+                    <TouchableOpacity
+                        onPress={() =>  this.props.navigation.navigate("SignUp")}>
+                        <Text style={styles.signupButton}>Sign Up</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );

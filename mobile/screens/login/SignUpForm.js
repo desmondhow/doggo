@@ -6,11 +6,13 @@ import {
     TextInput,
     TouchableOpacity
 } from 'react-native';
+import {onSignIn} from "../../auth";
+
 
 /**
- * Displays the login form
+ * Displays the Sign up form
  */
-export default class Form extends Component {
+export default class SignUpForm extends Component {
     constructor(props) {
         super(props)
     }
@@ -22,20 +24,23 @@ export default class Form extends Component {
                            underlineColorAndroid='rgba(0,0,0,0)'
                            placeholder= 'Email'
                            placeHolderTextColor= 'white'
-                           onChangeText = { (email) => this.props.onSelectEmail(email)}
+                           // onChangeText = { (email) => this.props.onSelectEmail(email)}
                 />
                 <TextInput style={styles.inputBox}
                            underlineColorAndroid='rgba(0,0,0,0)'
                            placeholder= 'Password'
                            secureTextEntry ={true}
                            placeHolderTextColor= 'white'
-                           onChangeText = { (password) => this.props.onSelectPassword(password)}
+                           // onChangeText = { (password) => this.props.onSelectPassword(password)}
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    onPress = {() => this.props.onSelectLogin()}>
-                    <Text style={styles.buttonText}>{this.props.type}</Text>
-
+                    // onPress = {() => this.props.onSelectLogin()}
+                    onPress = {() => onSignIn().then(() => {
+                        this.props.navigation.navigate('SignedIn')
+                    })}
+                >
+                    <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
             </View>
         );

@@ -7,7 +7,8 @@ import TabBarIcon from '../components/TabBarIcon';
 import TrainingSessionsNavigator from './sessions/TrainingSessionsNavigator';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import LoginScreen from '../screens/login/LoginScreen';
+import ProfileScreen from '../screens/login/ProfileScreen';
+
 const LinksStack = createStackNavigator({
     Links: LinksScreen,
 });
@@ -31,31 +32,31 @@ SettingsStack.navigationOptions = {
     tabBarIcon: ({focused}) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
+            name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
         />
     ),
 };
 
-const LoginStack = createStackNavigator({
-    Login: LoginScreen,
+
+const ProfileStack = createStackNavigator({
+    Profile: ProfileScreen
 });
 
-LoginStack.navigationOptions = {
-    tabBarLabel: 'Login',
+ProfileStack.navigationOptions = {
+    tabBarLabel: 'Profile',
     tabBarIcon: ({focused}) => (
         <TabBarIcon
             focused={focused}
-            name={Platform.OS === 'ios' ? `ios-options${focused ? '' : '-outline'}` : 'md-options'}
+            name={Platform.OS === 'ios' ? `ios-link${focused ? '' : '-outline'}` : 'md-link'}
         />
     ),
 };
 
-
-
-
+//Add here the link for the other components
 export default createDrawerNavigator({
     'Training Sessions': TrainingSessionsNavigator,
     'Dogs': LinksStack,
     'Settings': SettingsStack,
-    'Register / Login': LoginStack,
+    'My Profile': ProfileStack
 });
+

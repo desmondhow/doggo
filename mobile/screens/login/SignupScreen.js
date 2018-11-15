@@ -1,40 +1,36 @@
 import React from 'react';
 import {
-    ListView,
     StyleSheet,
     View,
     Text,
-    StatusBar
+    TouchableOpacity
 } from 'react-native';
-import {Icon} from 'native-base';
 import Logo from "./Logo";
-import Form from "./Form";
+import SignUpForm from "./SignUpForm";
+import {onSignIn} from "../../auth";
 
 export default class SignupScreen extends React.Component {
     //Modifies the top header
-    static navigationOptions = ({navigation}) => ({
-        title: 'Signup',
+    static navigationOptions = ({
+        title: 'Sign Up',
         headerStyle: {
             backgroundColor: '#007dba'
         },
         headerTintColor: 'white',
-        headerLeft: <Icon name="menu" size={35} color='white' style={{marginLeft: 30, color: 'white'}}
-                          onPress={() => navigation.toggleDrawer()}/>,
     });
-
-    constructor() {
-        super();
-        this.state = {};
-    }
 
     render() {
         return (
             <View style={(styles.container)}>
                 <Logo/>
-                <Form type="Signup"/>
+                <SignUpForm navigation={this.props.navigation}/>
                 <View style={(styles.signUpTextContainer)}>
                     <Text style={styles.signUpText}>Already have an account? </Text>
-                    <Text style ={styles.signupButton}>Login</Text>
+                    <TouchableOpacity
+                    onPress={() =>  this.props.navigation.navigate("SignedIn")}>
+                        <Text style ={styles.signupButton}>Login</Text>
+                    </TouchableOpacity>
+
                 </View>
             </View>
         );
