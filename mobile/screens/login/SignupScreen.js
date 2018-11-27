@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import Logo from "./Logo";
 import SignUpForm from "./SignUpForm";
+import Constants from "../../constants/Api";
 import {onSignIn} from "../../auth";
 
 export default class SignupScreen extends React.Component {
@@ -16,19 +17,123 @@ export default class SignupScreen extends React.Component {
         headerStyle: {
             backgroundColor: '#007dba'
         },
+        fontFamily: 'montserrat',
+        fontWeight: 100,
         headerTintColor: 'white',
     });
+
+
+    constructor() {
+        super();
+        this.state = {
+            first_name: '',
+            last_name: '',
+            email: '',
+            password: '',
+            password_conf: ''
+        };
+    }
+
+    /**
+     * Sets the value for the name
+     * @param name
+     */
+    handleName = (name) => {
+        this.setState({
+            first_name: name,
+        })
+    };
+
+    /**
+     * Sets the value for the last name
+     * @param name
+     */
+    handleLastName = (name) => {
+        this.setState({
+            last_name: name,
+        })
+    };
+
+
+    /**
+     * Sets the value for the email
+     * @param email
+     */
+    handleEmail = (email) => {
+        this.setState({
+            email: email,
+        })
+    };
+
+    /**
+     * Sets the value for the password
+     * @param password
+     */
+    handlePassword = (password) => {
+        this.setState({
+            password: password,
+        })
+    };
+
+    /**
+     * Sets the value for the password conf
+     * @param password
+     */
+    handlePasswordConfirmation = (password) => {
+        this.setState({
+            password_conf: password,
+        })
+    };
+
+
+    /**
+     * Send Register credentials to the server (POST req)
+     */
+    handleRegister = () => {
+        fetch(Constants.getRegisterApiURL, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                'first_name': this.state.first_name,
+                'last_name': this.state.last_name,
+                'email': this.state.email,
+                'password': this.state.password,
+                'password_conf': this.state.password_conf,
+
+            })
+        })
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.status === 200) {
+                    onSignIn(res.message).then(() => this.props.navigation.navigate('SignedIn'));
+                }
+                else {
+                    alert(res.message);
+                }
+            })
+            .done();
+    };
 
     render() {
         return (
             <View style={(styles.container)}>
                 <Logo/>
-                <SignUpForm navigation={this.props.navigation}/>
+                <SignUpForm navigation={this.props.navigation}
+                            onSelectName={this.handleName}
+                            onSelectLastName={this.handleLastName}
+                            onSelectEmail={this.handleEmail}
+                            onSelectPassword={this.handlePassword}
+                            onSelectPasswordConfirmation={this.handlePasswordConfirmation}
+                            onSelectRegister={this.handleRegister}
+                />
                 <View style={(styles.signUpTextContainer)}>
                     <Text style={styles.signUpText}>Already have an account? </Text>
                     <TouchableOpacity
-                    onPress={() =>  this.props.navigation.navigate("SignedIn")}>
-                        <Text style ={styles.signupButton}>Login</Text>
+                        onPress={() => this.props.navigation.navigate("SignIn")}>
+                        <Text style={styles.signupButton}>Login</Text>
                     </TouchableOpacity>
 
                 </View>
@@ -46,20 +151,22 @@ const styles = StyleSheet.create({
     },
     signUpTextContainer: {
         flexGrow: 1,
-        alignItems:  'flex-end',
+        alignItems: 'flex-end',
         justifyContent: 'center',
         paddingVertical: 15,
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     signUpText: {
-        color: 'rgba(255, 255, 255, 0.6)',
-        fontSize: 18,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontSize: 20,
+        fontFamily: 'montserrat'
 
     },
     signupButton: {
         color: 'white',
-        fontSize: 18,
-        fontWeight: '500'
+        fontSize: 22,
+        fontWeight: '500',
+        fontFamily: 'montserrat'
     }
 
 

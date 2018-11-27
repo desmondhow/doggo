@@ -32,7 +32,8 @@ const styles = StyleSheet.create({
     logoText : {
         marginVertical: 15,
         fontSize: 24,
-        color: 'white'
+        color: 'white',
+        fontFamily: 'montserrat'
     }
 
 });

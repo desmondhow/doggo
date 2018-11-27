@@ -4,7 +4,7 @@ const expressValidator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const flash = require('connect-flash');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const MongoStore = require('connect-mongo')(expressSession);
 
 const app = express();
@@ -42,14 +42,19 @@ app.use(bodyParser.json());
 //To read cookies with our secret
 app.use(cookieParser('JlNyXZDRfW8bKhZT9oR5XYZ'));
 
+const sessionStore =  new MongoStore({
+    mongooseConnection: db,
+    clear_interval: 3600
+});
+
 //Use sessions for tracking logins
 app.use(expressSession({
-    secret: 'work JlNyXZDRfW8bKhZT9oR5XYZ',
+    secret: 'JlNyXZDRfW8bKhZT9oR5XYZ',
+    //Max time session can be active
+    cookie: { maxAge: 24 * 60 * 60 * 1000 },
     resave: true,
     saveUninitialized: false,
-    store: new MongoStore({
-        mongooseConnection: db
-    })
+    store: sessionStore
 }));
 
 //To check syntax

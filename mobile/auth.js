@@ -1,12 +1,33 @@
-import { AsyncStorage } from "react-native";
+import {AsyncStorage} from "react-native";
 
 export const USER_KEY = "auth";
 
-export const onSignIn = () => AsyncStorage.setItem(USER_KEY, "true");
+export async function onSignIn(user_id) {
+    try {
+        return await AsyncStorage.setItem(USER_KEY, JSON.stringify(user_id));
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
-export const onSignOut = () => AsyncStorage.removeItem(USER_KEY);
+export async function onSignOut() {
+    try {
+        return await AsyncStorage.removeItem(USER_KEY);
+    } catch (error) {
+        console.log(error.message);
 
-export const isSignedIn = () => {
+    }
+}
+
+export async function getUserID() {
+    try {
+        return await AsyncStorage.getItem(USER_KEY);
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+export async function isSignedIn() {
     return new Promise((resolve, reject) => {
         AsyncStorage.getItem(USER_KEY)
             .then(res => {
@@ -21,4 +42,4 @@ export const isSignedIn = () => {
                 reject(err)
             });
     });
-};
+}

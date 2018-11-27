@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
         height: 50,
         fontSize: 20,
         paddingHorizontal: 16,
-        marginVertical: 15
+        marginVertical: 15,
+        fontFamily: 'montserrat'
 
     },
     button: {
@@ -69,7 +70,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '500',
         color: 'white',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'montserrat'
 
     }
 

@@ -16,8 +16,11 @@ export default class LoginScreen extends React.Component {
     static navigationOptions = ({
         title: 'Login',
         headerStyle: {
-            backgroundColor: '#007dba'
+            backgroundColor: '#007dba',
+
         },
+        fontFamily: 'montserrat',
+        fontWeight: 100,
         headerTintColor: 'white',
     });
 
@@ -29,6 +32,7 @@ export default class LoginScreen extends React.Component {
             password: ''
         };
     }
+
 
     /**
      * Sets the value for the email
@@ -54,6 +58,8 @@ export default class LoginScreen extends React.Component {
      * Send login credentials to the server (POST req)
      */
     handleLogin = () => {
+        if (this.state.password.length === 0) return alert('Please type your password');
+        if (this.state.email.length === 0) return alert('Please type your email');
         fetch(Constants.getLoginApiURL, {
             method: 'POST',
             headers: {
@@ -67,8 +73,9 @@ export default class LoginScreen extends React.Component {
         })
             .then((res) => res.json())
             .then((res) => {
-                if (res.success) {
-                    onSignIn().then(() => navigation.navigate('SignedIn'));
+                if (res.status === 200) {
+                    const message = res.message;
+                    onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
                 }
                 else {
                     alert(res.message);
@@ -78,34 +85,19 @@ export default class LoginScreen extends React.Component {
     };
 
 
-
-
-/**
-    //  * Checks if user has already logged in
-    //  */
-    // componentDidMount() {
-    //     this._loadInitialState().done();
-    // };
-    //
-    // _loadInitialState = async () => {
-    //     let value = await AsyncStorage.getItem('email');
-    //     if (value !== null) {
-    //         this.props.navigation.navigate('ProfileScreen.js');
-    //     }
-    // };
-
     render() {
         return (
             <View style={(styles.container)}>
                 <Logo/>
-                <LoginForm onSelectEmail={this.handleEmail}
+                <LoginForm navigation={this.props.navigation}
+                           onSelectEmail={this.handleEmail}
                            onSelectPassword={this.handlePassword}
                            onSelectLogin={this.handleLogin}
                 />
                 <View style={(styles.signUpTextContainer)}>
                     <Text style={styles.signUpText}>Don't have an account yet? </Text>
                     <TouchableOpacity
-                        onPress={() =>  this.props.navigation.navigate("SignUp")}>
+                        onPress={() => this.props.navigation.navigate("SignUp")}>
                         <Text style={styles.signupButton}>Sign Up</Text>
                     </TouchableOpacity>
                 </View>
@@ -113,6 +105,8 @@ export default class LoginScreen extends React.Component {
         );
     }
 }
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -126,17 +120,19 @@ const styles = StyleSheet.create({
         alignItems: 'flex-end',
         justifyContent: 'center',
         paddingVertical: 15,
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     signUpText: {
-        color: 'rgba(255, 255, 255, 0.6)',
-        fontSize: 18,
+        color: 'rgba(255, 255, 255, 0.8)',
+        fontSize: 20,
+        fontFamily: 'montserrat'
 
     },
     signupButton: {
         color: 'white',
-        fontSize: 18,
-        fontWeight: '500'
+        fontSize: 22,
+        fontWeight: '500',
+        fontFamily: 'montserrat'
     }
 
 

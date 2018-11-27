@@ -6,7 +6,6 @@ import {
     TextInput,
     TouchableOpacity
 } from 'react-native';
-import {onSignIn} from "../../auth";
 
 
 /**
@@ -20,25 +19,41 @@ export default class SignUpForm extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.inputBox}
+                <TextInput style={styles.inputBox }
                            underlineColorAndroid='rgba(0,0,0,0)'
-                           placeholder= 'Email'
-                           placeHolderTextColor= 'white'
-                           // onChangeText = { (email) => this.props.onSelectEmail(email)}
+                           placeholder='Name'
+                           placeHolderTextColor='white'
+                           onChangeText={(name) => this.props.onSelectName(name)}
                 />
                 <TextInput style={styles.inputBox}
                            underlineColorAndroid='rgba(0,0,0,0)'
-                           placeholder= 'Password'
-                           secureTextEntry ={true}
-                           placeHolderTextColor= 'white'
-                           // onChangeText = { (password) => this.props.onSelectPassword(password)}
+                           placeholder='Last Name'
+                           placeHolderTextColor='white'
+                           onChangeText={(name) => this.props.onSelectLastName(name)}
+                />
+                <TextInput style={styles.inputBox}
+                           underlineColorAndroid='rgba(0,0,0,0)'
+                           placeholder='Email'
+                           placeHolderTextColor='white'
+                           onChangeText={(email) => this.props.onSelectEmail(email)}
+                />
+                <TextInput style={styles.inputBox}
+                           underlineColorAndroid='rgba(0,0,0,0)'
+                           placeholder='Password'
+                           secureTextEntry={true}
+                           placeHolderTextColor='white'
+                           onChangeText={(password) => this.props.onSelectPassword(password)}
+                />
+                <TextInput style={styles.inputBox}
+                           underlineColorAndroid='rgba(0,0,0,0)'
+                           placeholder='Password Confirmation'
+                           secureTextEntry={true}
+                           placeHolderTextColor='white'
+                           onChangeText={(password) => this.props.onSelectPasswordConfirmation(password)}
                 />
                 <TouchableOpacity
                     style={styles.button}
-                    // onPress = {() => this.props.onSelectLogin()}
-                    onPress = {() => onSignIn().then(() => {
-                        this.props.navigation.navigate('SignedIn')
-                    })}
+                    onPress={() => this.props.onSelectRegister()}
                 >
                     <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
@@ -60,7 +75,8 @@ const styles = StyleSheet.create({
         height: 50,
         fontSize: 20,
         paddingHorizontal: 16,
-        marginVertical: 15
+        marginVertical: 15,
+        fontFamily: 'montserrat'
 
     },
     button: {
@@ -69,13 +85,13 @@ const styles = StyleSheet.create({
         width: 300,
         marginVertical: 15,
         paddingVertical: 13
-
     },
     buttonText: {
         fontSize: 20,
         fontWeight: '500',
         color: 'white',
-        textAlign: 'center'
+        textAlign: 'center',
+        fontFamily: 'montserrat'
 
     }
 

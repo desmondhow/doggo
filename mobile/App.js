@@ -1,5 +1,5 @@
 import React from 'react';
-import {Platform, StatusBar, StyleSheet, View, Image} from 'react-native';
+import {Platform, StatusBar, StyleSheet, View, Image, Text} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
 import {createStore} from 'redux';
 import {Provider, connect} from 'react-redux';
@@ -12,8 +12,7 @@ const store = createStore(reducer);
 
 export default class App extends React.Component {
     state = {
-        isSplashReady: false,
-        isAppReady: false,
+        isReady: false,
         signedIn: false,
         checkedSignIn: false
     };
@@ -22,13 +21,25 @@ export default class App extends React.Component {
     /**
      * Checks if user is signed in before accesing profile
      */
-    componentDidMount() {
-        isSignedIn()
-            .then(res => this.setState({signedIn: res, checkedSignIn: true}))
+    async componentDidMount() {
+        await isSignedIn()
+            .then(res => {
+                this.setState({signedIn: res, checkedSignIn: true})
+            })
             .catch((err) => alert("An error occurred:\n" + err));
     }
 
     render() {
+        if (!this.state.isReady) {
+            return (
+                <AppLoading
+                    startAsync={this._cacheResourcesAsync}
+                    onFinish={() => this.setState({ isReady: true })}
+                    onError={console.warn}
+                />
+            );
+        }
+
         // Check if user is signed in
         const {checkedSignIn} = this.state;
         if (!checkedSignIn) {
@@ -36,27 +47,7 @@ export default class App extends React.Component {
         }
         const {signedIn} = this.state;
         let RootNav = createRootNavigator(signedIn);
-        // if (!this.state.isSplashReady) {
-        //     return (
-        //         <AppLoading
-        //             //Load Splash Screen x
-        //             startAsync={this._cacheSplashResourcesAsync}
-        //             onFinish={() => this.setState({isSplashReady: true})}
-        //             onError={console.warn}
-        //             autoHideSplash={false}
-        //         />
-        //     );
-        // }
-        // if (!this.state.isAppReady) {
-        //     return (
-        //         <View style={{flex: 1}}>
-        //             <Image
-        //                 source={require('./assets/images/splash.png')}
-        //                 onLoad={this._cacheResourcesAsync}
-        //             />
-        //         </View>
-        //     );
-        // }
+
         return (
             <Provider store={store}>
                 <View style={styles.container}>
@@ -68,38 +59,29 @@ export default class App extends React.Component {
     }
 
 
-}
 
-// Load the graphics for the splash screen
-_cacheSplashResourcesAsync = async () => {
-    const png = require('./assets/images/splash.png');
-    return Asset.fromModule(png).downloadAsync()
-};
-
-
-// Load the resources that we need for our app
-_cacheResourcesAsync = async () => {
-    Expo.SplashScreen.hide();
-    await Promise.all([
-        Asset.loadAsync([
-            require('./assets/images/robot-dev.png'),
-            require('./assets/images/robot-prod.png'),
+    async _cacheResourcesAsync() {
+        const images = [
+            require('./assets/images/splash.png'),
             require('./assets/images/icon.png'),
+            require('./assets/images/doggo.png'),
+        ];
 
-        ]),
-        Font.loadAsync({
+        const cacheImages = images.map((image) => {
+            return Asset.fromModule(image).downloadAsync();
+        });
+
+        await Font.loadAsync({
             // This is the font that we are using for our tab bar
             ...Icon.Ionicons.font,
             // Fonts we are using in our app
-            // Todo: Remove Space mongo from all screens and the delete it here.
-            'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
             'montserrat': require('./assets/fonts/Montserrat-Regular.ttf'),
+        });
 
-        }),
-    ]);
-    this.setState({isAppReady: true});
-};
+        return Promise.all(cacheImages)
+    }
 
+}
 
 
 
