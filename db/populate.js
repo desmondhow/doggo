@@ -1,37 +1,84 @@
-var dogs = [
-  { name: 'Nola'},
-  { name: 'Roxy'},
-  { name: 'Pup'},
-];
+const mongoose = require('./node_modules/mongoose');
+const User = require('./schemas/user');
 
-var trainers = [
-  { name: 'Jenny'},
-  { name: 'Bridget'},
-  { name: 'Chris'},
-];
+var users = [
+  {
+    email: 'wdc.training@gmail.com',
+    password: 'password', 
+    password_conf: 'password', 
+    protocols: [
+      {
+        name: 'UDC',
+        sections: [
+          {
+            name: 'General',
+            fields: [
+              {
+                name: 'location',
+                fieldType: 'dropdown',
+                values: ['Training Room', 'Building Interior']
+              },
+              {
+                name: 'temperature',
+                fieldType: 'number'
+              },
+              {
+                name: 'humidity',
+                fieldType: 'number'
+              },
+              {
+                name: 'wind',
+                fieldType: 'number',
+              },
+            ]
+          },
+          {
+            name: 'Hides',
+            fields: [
+              {
+                name: '4 mil - 1',
+                fieldType: 'number'
+              },
+              {
+                name: '4 mil - .09',
+                fieldType: 'number'
+              },
+              {
+                name: '4 mil - .04',
+                fieldType: 'number'
+              },
+              {
+                name: '4 mil - .02',
+                fieldType: 'number'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
 
-MongoClient.connect(createDBUri('dogs'), function(err, db) {
+createDBUri = name => (
+  `mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/${name}?retryWrites=true`
+)
+
+mongoose.connect(createDBUri('users'))
+mongoose.Promise = global.Promise;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+
+User.find({ email:users[0].email }).remove().exec();
+wdc = new User(users[0])
+wdc.save(err => {
   if (err) throw err;
-
-  db.db(dbName).collection("dogs").insertMany(dogs, function(err, res) {
-    if (err) throw err;
-    console.log("Number of dogs inserted: " + res.insertedCount);
-    db.close();
-  });
-
 });
 
-MongoClient.connect(createDBUri('trainers'), function(err, db) {
-  if (err) throw err;
+// User.insertMany(users, function(err) {
+//   if (err) throw(err);
+// });
 
-  db.db(dbName).collection("trainers").insertMany(dogs, function(err, res) {
-    if (err) throw err;
-    console.log("Number of trainers inserted: " + res.insertedCount);
-    db.close();
-  });
 
-});
 
-createDBUri((name) => {
-  return `mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/${name}?retryWrites=true`; 
-});
+
+

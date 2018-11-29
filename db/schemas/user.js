@@ -1,8 +1,8 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('../../server/node_modules/mongoose');
-const bcrypt = require('../../server/node_modules/bcrypt');
+const mongoose = require('../node_modules/mongoose');
+const bcrypt = require('../node_modules/bcrypt');
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -11,20 +11,25 @@ const UserSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    first_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
-    last_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
-    }
+    },
+    password_conf: {
+        type: String,
+        required: true,
+  },
+  protocols: [{
+    name: String, 
+    sections: [{
+      name: String,
+      fields: [{
+        name: String,
+        fieldType: String,
+        values: { type: [String], required: false }
+      }]
+    }]
+  }]
 });
 
 /**

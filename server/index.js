@@ -4,27 +4,22 @@ const expressValidator = require('express-validator');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const flash = require('connect-flash');
-const port = process.env.PORT || 3001;
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(expressSession);
 
+import { getSecret } from './secrets';
+
 const app = express();
-
 const API_URL = 'https://doggo.herokuapp.com';
-
-const mongoose = require('mongoose');
-// Todo: Change, not working for me (probably security settings need to be changed to whitelist IPs)
-// const DB_URI = "mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/doggo?retryWrites=true";
-const DB_URI = "mongodb+srv://rafael:doggo@cluster0-i0uku.azure.mongodb.net/doggo?retryWrites=true";
+const PORT = process.env.PORT || 3000;
 
 const users = require('./APIs/users');
-const data_collection = require('./APIs/data_collection');
-const data_analysis = require('./APIs/data_analysis');
+const dataCollection = require('./APIs/data_collection');
+const dataAnalysis = require('./APIs/data_analysis');
 
-
-/**
- * Check db connection
- */
-mongoose.connect(DB_URI, function(err, db) {
+// Connect to DB
+// Note: You have to whitelist your IP & change username in dbUri string (I use admin) to connect
+mongoose.connect(getSecret('dbUri'), function(err, db) {
     if (err) {
         console.error(err);
         throw err;
@@ -33,31 +28,25 @@ mongoose.connect(DB_URI, function(err, db) {
 });
 const db = mongoose.connection;
 
-
-// To support URL-encoded bodies
+// Support URL-encoded bodies
 app.use(bodyParser.urlencoded({extended: true}));
-// To support JSON-encoded bodies
+// Support JSON-encoded bodies
 app.use(bodyParser.json());
 
-//To read cookies with our secret
+// Rread cookies with our secret
 app.use(cookieParser('JlNyXZDRfW8bKhZT9oR5XYZ'));
 
-const sessionStore =  new MongoStore({
-    mongooseConnection: db,
-    clear_interval: 3600
-});
-
-//Use sessions for tracking logins
+// Use sessions for tracking logins
 app.use(expressSession({
-    secret: 'JlNyXZDRfW8bKhZT9oR5XYZ',
-    //Max time session can be active
-    cookie: { maxAge: 24 * 60 * 60 * 1000 },
+    secret: 'work JlNyXZDRfW8bKhZT9oR5XYZ',
     resave: true,
     saveUninitialized: false,
-    store: sessionStore
+    store: new MongoStore({
+        mongooseConnection: db
+    })
 }));
 
-//To check syntax
+// Syntax checker
 app.use(expressValidator());
 
 // Connect to Flash
@@ -71,22 +60,29 @@ app.use(function (req, res, next) {
     next();
 });
 
-// Set up the routes urls
+// Enable CORS
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// API routes
 app.use('/api/users', users);
-app.use('/api/data_collection', data_collection);
-app.use('/api/data_analysis', data_analysis);
+app.use('/api/data_collection', dataCollection);
+app.use('/api/data_analysis', dataAnalysis);
 
-
-
-app.listen(port, function () {
-    console.log("Server running on localhost: " + port);
-});
-
-/**
- * You can check if server is running by going to localhost:3000
- */
 app.get('/api', function (req, res) {
-    res.send('Server is working')
+    res.send('Server is working!')
 });
+
+app.get('/', function (req, res) {
+  res.send('Well hello.')
+});
+
+app.listen(PORT, function () {
+  console.log("Server running on http://localhost:" + PORT);
+});
+
 
 

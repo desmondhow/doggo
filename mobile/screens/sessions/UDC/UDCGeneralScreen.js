@@ -1,141 +1,80 @@
 import React from 'react';
 import {
-  StyleSheet,
   View,
   ScrollView,
-  TextInput,
-  Picker
 } from 'react-native';
+import { Icon, Button, Form } from 'native-base';
 import { Text } from 'react-native-elements';
-import { Field, reduxForm } from 'redux-form'
-import ModalDropdown from 'react-native-modal-dropdown';
-import { Icon } from 'native-base';
 
-import { center, buttonStyle } from '../../../constants/Styles';
-import Colors from '../../../constants/Colors';
-import { Locations, GeneralInfo } from '../../../constants/sessions/UDC';
-
-class InputComponent extends React.Component {
-  render() {
-    const { value, onChange } = this.props
-    return (
-      <Text>Dsdfsf</Text>
-    )
-  }
-}
+import { container, formContainer, fieldsContainer, center } from '../../../constants/Styles';
+import { renderField, renderSubmitBtn, connectReduxForm } from '../../../components/helpers';
+import { GeneralInfo } from '../../../constants/sessions/UDC';
+import * as actions from '../../../redux/actions/index.actions';
 
 class UDCGeneralScreen extends React.Component {
   constructor(props) {
     super(props);
+    this._renderForm = this._renderForm.bind(this);
+    this.props.getInitialState();
   }
 
-  _getLocationDropdown() {
-    locations = [...Object.values(Locations)]
+  _renderForm = () => 
+    <ScrollView style={fieldsContainer} keyboardShouldPersistTaps={'handled'}>
+    {
+      Object.keys(GeneralInfo).map(inputType => (
+        Object.keys(GeneralInfo[inputType]).map(property => (
+          renderField(
+            property, 
+            inputType, 
+            inputType == 'dropdown' ? 
+              Object.values(GeneralInfo[inputType][property]) :
+              []
+            )
+        ))
+      ))
+    }
+    </ScrollView>
 
-    return (
-      <ModalDropdown 
-        style={{
-          ...buttonStyle,
-          width: 220,
-          marginLeft: 15
-        }}
-        dropdownStyle={{
-          width: 220,
-          ...buttonStyle,
-          height: 130
-        }}
-        dropdownTextStyle={{
-          ...center,
-          fontSize: 15,
-          width: 220,
-          textAlign: 'center',
+  _onSubmit = () => 
+    this.props.navigation.navigate('Hides');
 
-        }}
-        options={locations}
-      >
-        <View style={{ ...center, flexDirection: 'row' }}>
-          <Text style={{fontSize: 19, marginTop: 3}}>Choose a location...</Text>
-          <Icon
-            name='sort-down'
-            type="FontAwesome"
-            size={10}
-            color='white'
-            style={{ marginLeft: 10, marginBottom: 10 }}
-          />
-        </View>
-      </ModalDropdown>
-    );
-  }
 
-  _getFields() {
-    return (
-      <ScrollView style={styles.fieldsContainer} keyboardShouldPersistTaps={'handled'}>
-        <Field name={GeneralInfo.Location} component={(props) => (
-          <View style={{
-            flexDirection: 'row',
-            marginLeft: 30,
-            marginTop: 30
-          }}>
-            <Text h4 style={{ marginTop: 5 }}>{GeneralInfo.Location}:</Text>
-            {this._getLocationDropdown()}
-          </View>
-        )}/>
-        <Field name={GeneralInfo.Temperature} component={(props) => (
-          <View style={{
-            flexDirection: 'row',
-            marginLeft: 30,
-            marginTop: 30
-          }}>
-            <Text h4 style={{ marginTop: 5 }}>{GeneralInfo.Temperature}:</Text>
-            <TextInput 
-              style={{width: 100, height: 100}}
-              keyboardType = 'numeric'
-              // onChangeText = {(text)=> this.onChanged(text)}
-              value = '34'
-            /> 
-          </View>
-        )}/>
-      </ScrollView>
-    );
-  }
-
-  render() {
-    const { handleSubmit } = this.props
-    const fields = this._getFields();
-
-    return (
-      <View style={styles.container}>
-        <View style={styles.formContainer}>
-          <Text h2>General</Text>
-          {fields}
-        </View>
+  _renderSubmitBtn = () => 
+    <Button light onPress={this.props.handleSubmit(this._onSubmit)} style={{
+      ...center,
+      marginLeft: 60, 
+      marginTop: 20, 
+      width: '80%',     
+    }}>
+      <Text style={{fontSize: 20, fontWeight: 'bold'}}>Next</Text>
+      <Icon
+        name='arrow-circle-right'
+        type="FontAwesome"
+        size={10}
+      />
+    </Button>
+  
+  render = () => 
+    <View style={container}>
+      <View style={formContainer}>
+        <Text h2>General</Text>
+        <Form>
+          {this._renderForm()}
+        </Form>
+        {this._renderSubmitBtn(this.props.handleSubmit, () => {
+          this.props.navigation.navigate('Hides');
+        })}
       </View>
-    );
-  }
+    </View>
 }
 
-export default reduxForm({
-  // a unique name for the form
-  form: 'udc.general'
-})(UDCGeneralScreen)
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  formContainer: {
-    marginLeft: 30,
-    marginTop: 50
-  },
-  fieldsContainer: {
-    marginLeft: 60,
-    marginTop: 50,
-    borderColor: Colors.darkGrey,
-    borderRadius: 10,
-    borderWidth: 15,
-    height: '80%',
-    width: '80%'
-  }
-});
+export default connectReduxForm(
+  'udc.general',
+  UDCGeneralScreen,
+  state => ({
+    initialValues: state.udc.data
+  }), 
+  dispatch => ({
+    getInitialState: () => dispatch({ type: actions.GET_UDC_GENERAL_INITIAL_STATE })
+  })
+)

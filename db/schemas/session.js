@@ -1,7 +1,7 @@
 const mongoose = require('../../server/node_modules/mongoose');
 const Trainer = require('./trainer');
 
-session = {
+const session = {
   createdBy: {
       type: Trainer,
       required: true,
@@ -18,8 +18,8 @@ session = {
 const UDCSchema = new mongoose.Schema({
     ...session,
     location: {
-        type: String,
-        required: true
+      type: String,
+      required: true
     },
 });
 

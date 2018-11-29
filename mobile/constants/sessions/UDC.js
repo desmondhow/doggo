@@ -1,15 +1,24 @@
+const arrayOfLengthN = (n => ( Array.apply(null, { length: 100 }).map(Function.call, Number)).sort((a, b) => a < b))
+
 export const GeneralInfo = {
-  Location: 'Location', 
-  Temperature: 'Temperature',
-  Humidity: 'Humidity',
-  Wind: 'Wind'
+  'dropdown': {
+    Location: [
+      'Training Room',
+      'Woods/Field',
+      'Vehicle Interior',
+      'Vehicle Exterior',
+      'Building Interior',
+      'Building Exterior',
+    ],
+    Temperature: arrayOfLengthN(100),
+    Humidity: arrayOfLengthN(100),
+    Wind: arrayOfLengthN(100)
+  }
 }
 
-export const Locations = {
-  TrainingRoom: 'Training Room',
-  WoodsField: 'Woods/Field',
-  VehicleInterior: 'Vehicle Interior',
-  VehicleExterior: 'Vehicle Exterior',
-  BuildingInterior: 'Building Interior',
-  BuildingExterior: 'Building Exterior',
+export const InitialValues = {
+  Location: GeneralInfo['dropdown'].Location[0],
+  Temperature: 70,
+  Humidity: 70,
+  Wind: 70,
 }

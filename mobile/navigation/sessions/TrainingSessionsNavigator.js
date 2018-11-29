@@ -1,16 +1,16 @@
 import React from 'react';
-import { createStackNavigator, createBottomTabNavigator, createDrawerNavigator } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation';
 import { Icon } from 'native-base';
 
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCNavigator from './UDCNavigator';
 
-const TrainingSessionsStack = createStackNavigator({
+export default createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
-      headerLeft: <Icon name="menu" size={35} style={{marginLeft: 30}} onPress={ () => navigation.toggleDrawer() } />,
+      headerLeft: <Icon type='FontAwesome' name="paw" size={35} style={{marginLeft: 30}} onPress={ () => navigation.toggleDrawer() } />,
       title: 'Sessions'
     })
   },
@@ -27,6 +27,3 @@ const TrainingSessionsStack = createStackNavigator({
     }
   }
 });
-
-
-export default TrainingSessionsStack;

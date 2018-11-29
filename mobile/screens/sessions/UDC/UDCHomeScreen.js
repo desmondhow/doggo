@@ -4,18 +4,19 @@ import {
   View,
   Alert,
 } from 'react-native';
-import { Text } from 'react-native-elements';
-import { Table, TableWrapper, Row, Cell, Rows, Col } from 'react-native-table-component';
-import { center, buttonStyle } from '../../../constants/Styles';
-
+import { Table, TableWrapper, Row, Cell, Col } from 'react-native-table-component';
+import { center, inputStyle } from '../../../constants/Styles';
 import Button from '../../../components/Button';
+import { Text } from 'react-native-elements';
+import { withMappedNavigationProps } from 'react-navigation-props-mapper';
 
 const currentSessionsTableHeaderText = [
   'Setup By',
   'Location',
   'Dogs Trained'
-]
+];
 
+@withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
   
   constructor(props) {
@@ -81,12 +82,16 @@ export default class UDCHomeScreen extends React.Component {
       continueButtons.push(continueTrainingButton(session));
     });
 
+    _handleGeneralSubmit = () => {
+      Alert.alert('hey');
+    }
+
     return (
       <View style={styles.container}>
         <View style={styles.currentSessionsContainer}>
           <View style={styles.currentSessionsHeader}>
             <Text h2> Current Sessions </Text>
-            <Button text="Start New Session" onPress={() => navigate('UDCNewSession')} buttonStyle={styles.newSessionButton} />
+            <Button text="Start New Session" onPress={() => navigate('UDCNewSession', { onSubmit: this._handleGeneralSubmit })} buttonStyle={styles.newSessionButton} />
 
           </View>
           <Table style={styles.table} borderStyle={{ borderColor: 'transparent' }}>
@@ -124,7 +129,7 @@ const header = {
 
 const button = {
   ...center,
-  ...buttonStyle
+  ...inputStyle
 }
 
 const styles = StyleSheet.create({
