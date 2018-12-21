@@ -5,9 +5,9 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { Text } from 'react-native-elements';
+import { Text, Icon, Button } from 'react-native-elements';
 import { reduxForm } from 'redux-form'
-import { Icon, Form, Button } from 'native-base';
+// import { Icon, Form, Button } from 'native-base';
 
 import { connect } from 'react-redux';
 import Colors from '../../../constants/Colors';
@@ -39,7 +39,7 @@ class UDCHidesScreen extends React.Component {
       <Text style={{fontSize: 20, fontWeight: 'bold'}}>Next</Text>
       <Icon
         name='arrow-circle-right'
-        type="FontAwesome"
+        type="font-awesome"
         size={10}
       />
     </Button>
@@ -47,10 +47,10 @@ class UDCHidesScreen extends React.Component {
   render = () => 
     <View style={container}>
       <View style={formContainer}>
-        <Text h2>Hides</Text>
-        <Form>
+        <Text>Hides</Text>
+        {/* <Form>
           {this._renderForm()}
-        </Form>
+        </Form> */}
         {this._renderSubmitBtn()}
       </View>
     </View>

@@ -90,7 +90,7 @@ export default class UDCHomeScreen extends React.Component {
       <View style={styles.container}>
         <View style={styles.currentSessionsContainer}>
           <View style={styles.currentSessionsHeader}>
-            <Text h2> Current Sessions </Text>
+            <Text> Current Sessions </Text>
             <Button text="Start New Session" onPress={() => navigate('UDCNewSession', { onSubmit: this._handleGeneralSubmit })} buttonStyle={styles.newSessionButton} />
 
           </View>

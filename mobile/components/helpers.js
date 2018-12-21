@@ -3,11 +3,10 @@ import {
   View,
 } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
-import { Icon, Item } from 'native-base';
 import { Field } from 'redux-form'
 import { center, inputStyle } from '../constants/Styles';
 import Colors from '../constants/Colors';
-import { Text } from 'react-native-elements';
+import { Text, Icon } from 'react-native-elements';
 import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 
@@ -17,17 +16,10 @@ export const renderField = (name, inputType, dropdownOptions) => {
     input = (inputProps) => _renderDropdown(dropdownOptions, inputProps);
   }
   return (
-    <Item style={{
-      marginLeft: 30,
-      marginTop: 30
-    }}
-    key={name}
-    >
-      <View style={{marginBottom: 30, flexDirection: 'row'}}>
-        <Text h4 style={{ marginTop: 5 }}>{name}:</Text>
-        <Field name={name} key={name} type={inputType} component={input}/>
-      </View>
-    </Item>
+    <View style={{marginBottom: 30, flexDirection: 'row'}}>
+      <Text style={{ marginTop: 5 }}>{name}:</Text>
+      <Field name={name} key={name} type={inputType} component={input}/>
+    </View>
   );
 };
 
@@ -48,7 +40,7 @@ export const renderSubmitBtn = (handleSubmit, onSubmit) =>
     <Text style={{fontSize: 20, fontWeight: 'bold'}}>Next</Text>
     <Icon
       name='arrow-circle-right'
-      type="FontAwesome"
+      type="font-awesome"
       size={10}
     />
   </Button>
@@ -91,7 +83,7 @@ const _renderDropdown = (options, inputProps) => {
         <Text style={{fontSize: 19, margin: 10}}>{value}</Text>
         <Icon
           name='sort-down'
-          type="FontAwesome"
+          type="font-awesome"
           size={10}
           color='white'
           style={{ marginLeft: 5, marginBottom: 10, marginRight: 10 }}

@@ -3,8 +3,8 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import { Icon, Button, Form } from 'native-base';
-import { Text } from 'react-native-elements';
+// import { Icon, Button, Form } from 'native-base';
+import { Text, Icon, Button } from 'react-native-elements';
 
 import { container, formContainer, fieldsContainer, center } from '../../../constants/Styles';
 import { renderField, renderSubmitBtn, connectReduxForm } from '../../../components/helpers';
@@ -49,7 +49,7 @@ class UDCGeneralScreen extends React.Component {
       <Text style={{fontSize: 20, fontWeight: 'bold'}}>Next</Text>
       <Icon
         name='arrow-circle-right'
-        type="FontAwesome"
+        type="font-awesome"
         size={10}
       />
     </Button>
@@ -57,10 +57,10 @@ class UDCGeneralScreen extends React.Component {
   render = () => 
     <View style={container}>
       <View style={formContainer}>
-        <Text h2>General</Text>
-        <Form>
+        <Text>General</Text>
+        {/* <Form>
           {this._renderForm()}
-        </Form>
+        </Form> */}
         {this._renderSubmitBtn(this.props.handleSubmit, () => {
           this.props.navigation.navigate('Hides');
         })}
