@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 import { Text, Icon, Button } from 'react-native-elements';
 import { reduxForm } from 'redux-form'
-// import { Icon, Form, Button } from 'native-base';
 
 import { connect } from 'react-redux';
 import Colors from '../../../constants/Colors';

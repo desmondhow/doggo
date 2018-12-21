@@ -3,13 +3,12 @@ import {
     StyleSheet,
     View,
     Text,
-    AsyncStorage, TouchableOpacity
+    TouchableOpacity
 } from 'react-native';
-import {Icon} from 'native-base';
 import Logo from "./Logo";
 import LoginForm from "./LoginForm";
 import Constants from "../../constants/Api";
-import {onSignIn} from "../../auth";
+import { onSignIn } from "../../auth";
 
 export default class LoginScreen extends React.Component {
     //Modifies the top header

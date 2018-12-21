@@ -4,7 +4,7 @@ import {
     View,
     Text
 } from 'react-native';
-import {Icon} from 'native-base';
+import {Icon} from 'react-native-elements';
 
 export default class UserProfile extends React.Component {
     //Modifies the top header

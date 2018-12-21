@@ -3,7 +3,6 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-// import { Icon, Button, Form } from 'native-base';
 import { Text, Icon, Button } from 'react-native-elements';
 
 import { container, formContainer, fieldsContainer, center } from '../../../constants/Styles';

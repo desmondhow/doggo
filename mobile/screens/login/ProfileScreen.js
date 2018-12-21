@@ -6,10 +6,8 @@ import {
     TouchableOpacity, Button, ActivityIndicator, ListView,
 } from 'react-native';
 import {getUserID, onSignOut} from "../../auth";
-import {Card} from "react-native-elements";
+import {Card, Icon} from "react-native-elements";
 import Constants from "../../constants/Api";
-import {Icon} from 'native-base';
-
 
 /**
  * Displays the Sign up form

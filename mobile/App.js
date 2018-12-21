@@ -6,7 +6,7 @@ import {Provider, connect} from 'react-redux';
 
 import {createRootNavigator} from './navigation/AppNavigator';
 import {isSignedIn} from "./auth";
-import reducer from './reducers/'
+import reducer from './redux/reducers/index.reducers/'
 
 const store = createStore(reducer);
 
@@ -34,7 +34,7 @@ export default class App extends React.Component {
             return (
                 <AppLoading
                     startAsync={this._cacheResourcesAsync}
-                    onFinish={() => this.setState({ isReady: true })}
+                    onFinish={() => this.setState({ isReady: !this.state.isReady })}
                     onError={console.warn}
                 />
             );
@@ -46,13 +46,13 @@ export default class App extends React.Component {
             return null;
         }
         const {signedIn} = this.state;
-        let RootNav = createRootNavigator(signedIn);
+        let RootNav = createRootNavigator(true);
 
         return (
             <Provider store={store}>
                 <View style={styles.container}>
                     {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-                    <RootNav/>;
+                    <RootNav />
                 </View>
             </Provider>
         );
