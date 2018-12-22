@@ -1,13 +1,17 @@
 import React from 'react';
 import {
+  StyleSheet,
   View,
-  ScrollView,
+  ScrollView
 } from 'react-native';
 import { Text, Icon, Button } from 'react-native-elements';
+import { Field } from 'redux-form';
+import { Dropdown } from 'react-native-material-dropdown';
 
-import { container, formContainer, fieldsContainer, center } from '../../../constants/Styles';
-import { renderField, renderSubmitBtn, connectReduxForm } from '../../../components/helpers';
-import { GeneralInfo } from '../../../constants/sessions/UDC';
+import { container, fieldsContainer, formContainer, center } from '../../../constants/Styles';
+import { connectReduxForm } from '../../../components/helpers';
+import { GeneralInfo } from '../../../constants/sessions/UDCConstants';
+import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 
 class UDCGeneralScreen extends React.Component {
@@ -17,54 +21,93 @@ class UDCGeneralScreen extends React.Component {
     this.props.getInitialState();
   }
 
-  _renderForm = () => 
-    <ScrollView style={fieldsContainer} keyboardShouldPersistTaps={'handled'}>
-    {
-      Object.keys(GeneralInfo).map(inputType => (
-        Object.keys(GeneralInfo[inputType]).map(property => (
-          renderField(
-            property, 
-            inputType, 
-            inputType == 'dropdown' ? 
-              Object.values(GeneralInfo[inputType][property]) :
-              []
-            )
-        ))
-      ))
-    }
-    </ScrollView>
-
-  _onSubmit = () => 
+  _onSubmit = () => {
     this.props.navigation.navigate('Hides');
+  }
 
+  _renderSubmitBtn = () => (
+  <Button 
+      raised
+      rounded
+      title='Next'
+      onPress={this.props.handleSubmit(this._onSubmit)} 
+      fontSize={26}
+      buttonStyle={{
+        ...center,
+        marginLeft: 60, 
+        marginTop: 20, 
+        width: 300
+      }}
+      titleStyle={{
+        fontSize: 20, 
+        fontWeight: 'bold'
+      }}
+      rightIcon={{
+        name: 'arrow-right',
+        type: "font-awesome",
+        size: 20
+      }}
+    />
+  )
 
-  _renderSubmitBtn = () => 
-    <Button light onPress={this.props.handleSubmit(this._onSubmit)} style={{
-      ...center,
-      marginLeft: 60, 
-      marginTop: 20, 
-      width: '80%',     
-    }}>
-      <Text style={{fontSize: 20, fontWeight: 'bold'}}>Next</Text>
-      <Icon
-        name='arrow-circle-right'
-        type="font-awesome"
-        size={10}
-      />
-    </Button>
-  
-  render = () => 
+  _renderForm = () => (
+    <View style={center}>
+      <ScrollView style={styles.fieldsContainer} keyboardShouldPersistTaps={'handled'}>
+        {Object.keys(GeneralInfo).map(fieldName => 
+          renderField(fieldName, GeneralInfo[fieldName])
+        )}
+      </ScrollView>
+      {this._renderSubmitBtn()}
+    </View>
+
+  )
+
+  render = () => (
     <View style={container}>
       <View style={formContainer}>
-        <Text>General</Text>
-        {/* <Form>
-          {this._renderForm()}
-        </Form> */}
-        {this._renderSubmitBtn(this.props.handleSubmit, () => {
-          this.props.navigation.navigate('Hides');
-        })}
+        <Text h2>General</Text>
+        {this._renderForm()}
       </View>
     </View>
+  )
+}
+
+const styles = StyleSheet.create({
+  field: {
+    marginTop: 30,
+    height: 100, 
+    flexDirection: 'column',
+    paddingLeft: 65,
+    paddingRight: 65
+  },
+  fieldsContainer: {
+    marginLeft: 60,
+    marginTop: 50,
+    borderColor: Colors.darkGrey,
+    borderRadius: 10,
+    borderWidth: 8,
+    height: '70%',
+  }
+});
+
+const renderField = (name, dropdownOptions) => (
+  <View style={styles.field} key={name}>
+    <Text h4 containerStyle={{ marginTop: 5 }}>{name}:</Text>
+    <Field name={name} component={(inputProps) => _renderDropdown(dropdownOptions, inputProps)}/>
+  </View>
+);
+
+const _renderDropdown = (options, inputProps) => {
+  const { input: { value, onChange } } = inputProps;
+  return (
+    <Dropdown 
+      overlayStyle={{marginTop: 95}}
+      containerStyle={{width: 200, height: 100}}
+      value={value}
+      data={options.map(option => ({ value: option }))} 
+      onChangeText={onChange}
+    />
+  );
 }
 
 export default connectReduxForm(

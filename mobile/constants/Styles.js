@@ -27,7 +27,7 @@ export const fieldsContainer = {
   marginTop: 50,
   borderColor: Colors.darkGrey,
   borderRadius: 10,
-  borderWidth: 15,
+  borderWidth: 8,
   height: '80%',
-  width: '80%'
+  width: '85%'
 }

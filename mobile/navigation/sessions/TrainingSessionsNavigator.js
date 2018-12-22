@@ -10,7 +10,7 @@ export default createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
-      headerLeft: <Icon type='font-awesome' name="paw" size={35} style={{marginLeft: 30}} onPress={ () => navigation.toggleDrawer() } />,
+      headerLeft: <Icon type='font-awesome' name="paw" size={35} containerStyle={{marginLeft: 20}} onPress={ () => navigation.toggleDrawer() } />,
       title: 'Sessions'
     })
   },
