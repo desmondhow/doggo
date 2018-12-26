@@ -25,21 +25,25 @@ router.post('/register', function (req, res) {
     req.checkBody('password_conf').notEmpty();
     const errorsMissingInput = req.validationErrors();
     if (errorsMissingInput) {
+      console.log('Unable to register user because of missing field');
         return res.status(400).send(JSON.stringify({message: 'Please fill all fields'}));
     }
     req.checkBody('password').isLength({min: 6});
     const passwordLengthError = req.validationErrors();
     if (passwordLengthError) {
+      console.log('Unable to register user because password needs to be > 6 chars');
         return res.status(400).send(JSON.stringify({message: 'Your password needs to have at least 6 characters'}));
     }
 
     req.checkBody('email').isEmail();
     const invalidEmail = req.validationErrors();
     if (invalidEmail) {
+      console.log('Unable to register user because email is invalid');
         return res.status(400).send(JSON.stringify({message: 'Invalid email'}));
     }
 
     if (req.body.password !== req.body.password_conf) {
+      console.log('Unable to register user because password doesn\'t match confirmation');
         return res.status(400).send(JSON.stringify({message: 'Your password does not match!'}));
     }
 
@@ -51,19 +55,25 @@ router.post('/register', function (req, res) {
             email: req.body.email,
             password: req.body.password,
         };
-
         // Check if user already exist
+        // TODO: does the findOne call work? the second log statement isn't reached on my end @Rafa
+        console.log('reached')
         User.findOne({'email': userData.email}, 'name occupation', function (err, user) {
+          console.log('never reached??')
+
             if (user !== undefined && user != null) {
+              console.log('Unable to register user because user already exists');
                 return res.status(400).send(JSON.stringify({message: 'You already have an account'}));
             } else {
                 //use schema.create to insert data into the db
                 User.create(userData, function (err, user) {
                     if (err) {
+                      console.log('Unable to register user because there was an error inserting user into DB');
                         return res.status(400).send({message: JSON.stringify(err)});
                     } else {
                         req.session.userId = user._id;
                         //Send user id
+                        console.log('User successfully registered!');
                         return res.status(200).send({message: user._id, status: 200});
                     }
                 });
@@ -80,16 +90,20 @@ router.post('/register', function (req, res) {
  */
 router.post('/login', function (req, res, next) {
     if (req.body.email && req.body.password) {
+      console.log('Attempting to login user')
         User.authenticate(req.body.email, req.body.password, function (error, user) {
             if (error || !user) {
+              console.log('Login unsuccessful because email or password was incorrect')
                 res.status(400);
                 return res.send(JSON.stringify({message: 'Wrong email or password.'}));
             } else {
+              console.log('Login successful!')
                 req.session.userId = user._id;
                 return res.send({message: user.id, status: 200});
             }
         });
     } else {
+        console.log('Login attempt failed because required fields were not provided')
         res.status(400);
         return res.send(JSON.stringify({message: 'All fields required.'}));
     }

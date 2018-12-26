@@ -5,11 +5,9 @@ import {
   ScrollView
 } from 'react-native';
 import { Text, Icon, Button } from 'react-native-elements';
-import { Field } from 'redux-form';
-import { Dropdown } from 'react-native-material-dropdown';
 
-import { container, fieldsContainer, formContainer, center } from '../../../constants/Styles';
-import { connectReduxForm } from '../../../components/helpers';
+import { container, formContainer, center } from '../../../constants/Styles';
+import { connectReduxForm, renderDropdown } from '../../../components/helpers';
 import { GeneralInfo } from '../../../constants/sessions/UDCConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
@@ -50,11 +48,18 @@ class UDCGeneralScreen extends React.Component {
     />
   )
 
+  _renderField = (name, dropdownOptions) => (
+    <View style={styles.field} key={name}>
+      <Text h4 containerStyle={{ marginTop: 5 }}>{name}:</Text>
+      {renderDropdown(name, dropdownOptions, { width: 200, height: 100 })}
+    </View>
+  );
+
   _renderForm = () => (
     <View style={center}>
       <ScrollView style={styles.fieldsContainer} keyboardShouldPersistTaps={'handled'}>
         {Object.keys(GeneralInfo).map(fieldName => 
-          renderField(fieldName, GeneralInfo[fieldName])
+          this._renderField(fieldName, GeneralInfo[fieldName])
         )}
       </ScrollView>
       {this._renderSubmitBtn()}
@@ -90,31 +95,11 @@ const styles = StyleSheet.create({
   }
 });
 
-const renderField = (name, dropdownOptions) => (
-  <View style={styles.field} key={name}>
-    <Text h4 containerStyle={{ marginTop: 5 }}>{name}:</Text>
-    <Field name={name} component={(inputProps) => _renderDropdown(dropdownOptions, inputProps)}/>
-  </View>
-);
-
-const _renderDropdown = (options, inputProps) => {
-  const { input: { value, onChange } } = inputProps;
-  return (
-    <Dropdown 
-      overlayStyle={{marginTop: 95}}
-      containerStyle={{width: 200, height: 100}}
-      value={value}
-      data={options.map(option => ({ value: option }))} 
-      onChangeText={onChange}
-    />
-  );
-}
-
 export default connectReduxForm(
-  'udc.general',
+  'udc',
   UDCGeneralScreen,
   state => ({
-    initialValues: state.udc.data
+    initialValues: state.udc.general
   }), 
   dispatch => ({
     getInitialState: () => dispatch({ type: actions.GET_UDC_GENERAL_INITIAL_STATE })

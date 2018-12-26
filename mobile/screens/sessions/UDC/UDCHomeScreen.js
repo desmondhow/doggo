@@ -18,7 +18,6 @@ const currentSessionsTableHeaderText = [
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
-  
   constructor(props) {
     super(props);
     this.state = { currentSessionsData: []};

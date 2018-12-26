@@ -2,12 +2,12 @@ import React from 'react';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import UDCGeneralScreen from '../../screens/sessions/UDC/UDCGeneralScreen';
-import UDCHideScreen from '../../screens/sessions/UDC/UDCHideScreen';
+import UDCHidesScreen from '../../screens/sessions/UDC/UDCHidesScreen';
 import TabBarIcon from '../../components/TabBarIcon';
 
 const newSessionNavigator = createBottomTabNavigator({
   'General': UDCGeneralScreen,
-  'Hides': UDCHideScreen
+  'Hides': UDCHidesScreen
 });
 
 newSessionNavigator.navigationOptions = {

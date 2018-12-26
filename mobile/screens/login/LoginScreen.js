@@ -59,6 +59,7 @@ export default class LoginScreen extends React.Component {
     handleLogin = () => {
         if (this.state.password.length === 0) return alert('Please type your password');
         if (this.state.email.length === 0) return alert('Please type your email');
+        console.log('Attempting login')
         fetch(Constants.getLoginApiURL, {
             method: 'POST',
             headers: {
@@ -70,17 +71,21 @@ export default class LoginScreen extends React.Component {
                 'password': this.state.password
             })
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.status === 200) {
-                    const message = res.message;
-                    onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
-                }
-                else {
-                    alert(res.message);
-                }
-            })
-            .done();
+        .then((res) => res.json())
+        .then((res) => {
+            if (res.status === 200) {
+                const message = res.message;
+                onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
+            }
+            else {
+                alert(res.message);
+            }
+        })
+        .catch((err) => {
+          console.log(err);
+          return alert('Internet connection not available. Please reconnect to the Internet and try again.');
+        })
+        .done();
     };
 
 
