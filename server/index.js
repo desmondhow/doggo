@@ -11,7 +11,7 @@ import { getSecret } from './secrets';
 
 const app = express();
 const API_URL = 'https://doggo.herokuapp.com';
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 const users = require('./APIs/users');
 const dataCollection = require('./APIs/data_collection');

@@ -1,5 +1,5 @@
 // API_URL = 'https://doggo.herokuapp.com/api/';
-SERVER_URL = 'http://localhost:3000/api/';
+SERVER_URL = 'http://localhost:3001/api/';
 USERS_ROUTE = 'users';
 
 const formatAPILink = ((url) => {

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 //Import Session Models to query
-const Sessions = require('../../db/schemas/session');
+const Sessions = require('../../db/schemas/session_schemas');
 const UDC = Sessions.UDC;
 const Agility = Sessions.Agility;
 
