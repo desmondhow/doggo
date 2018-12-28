@@ -1,16 +1,35 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
-import { Icon } from 'react-native-elements';
+import { Icon, Button } from 'react-native-elements';
+import {AsyncStorage} from "react-native";
 
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCNavigator from './UDCNavigator';
+import { onSignOut } from '../../auth';
 
 export default createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
-      headerLeft: <Icon type='font-awesome' name="paw" size={35} containerStyle={{marginLeft: 20}} onPress={ () => navigation.toggleDrawer() } />,
+      headerLeft: 
+        <Icon 
+          type='font-awesome' 
+          name="paw" 
+          size={35} 
+          containerStyle={{marginLeft: 20}} 
+          onPress={() => navigation.toggleDrawer()} 
+        />,
+      headerRight: 
+        <Button
+          transparent
+          title='Logout'
+          color='black'
+          onPress={() => {
+            onSignOut();
+            navigation.navigate('SignedOut')
+          }} 
+        />,
       title: 'Sessions'
     })
   },

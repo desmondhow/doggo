@@ -1,21 +1,19 @@
 import React from 'react';
 import Colors from '../constants/Colors';
 import { center } from '../constants/Styles';
-import Button from './Button';
-
+import { Button } from 'react-native-elements';
 import {
   StyleSheet,
-  Text,
-  TouchableOpacity,
 } from 'react-native';
 
 export default Tile = ({text, onPress}) => {
   return (
     <Button
-      text={text}
+      title={text}
       buttonStyle={styles.tile}
-      textStyle={styles.text}
+      titleStyle={styles.text}
       onPress={onPress}
+      color='black'
     />
   );
 }

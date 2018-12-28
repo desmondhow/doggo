@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 import { Table, TableWrapper, Row, Cell, Col } from 'react-native-table-component';
 import { center, inputStyle } from '../../../constants/Styles';
-import Button from '../../../components/Button';
-import { Text } from 'react-native-elements';
+import { Text, Button } from 'react-native-elements';
 import { withMappedNavigationProps } from 'react-navigation-props-mapper';
 
 const currentSessionsTableHeaderText = [
@@ -48,10 +47,11 @@ export default class UDCHomeScreen extends React.Component {
 
     const continueTrainingButton = (session) => (
       <Button
-        text='Continue'
+        title='Continue'
         buttonStyle={styles.continueTrainingButton}
-        textStyle={styles.continueTrainingButtonText}
+        titleStyle={styles.continueTrainingButtonText}
         onPress={() => this._continueTrainingSession()}
+        color='black'
       />
     );
 
@@ -90,7 +90,12 @@ export default class UDCHomeScreen extends React.Component {
         <View style={styles.currentSessionsContainer}>
           <View style={styles.currentSessionsHeader}>
             <Text h4 style={{marginTop: 20}}> Current Sessions </Text>
-            <Button text="Start New Session" onPress={() => navigate('UDCNewSession', { onSubmit: this._handleGeneralSubmit })} buttonStyle={styles.newSessionButton} />
+            <Button 
+              title="Start New Session" 
+              onPress={() => navigate('UDCNewSession', { onSubmit: this._handleGeneralSubmit })} 
+              buttonStyle={styles.newSessionButton} 
+              color='black'
+            />
           </View>
           <Table style={styles.table} borderStyle={{ borderColor: 'transparent' }}>
             <TableWrapper style={{ flex: 1 }}>  
@@ -189,7 +194,7 @@ const styles = StyleSheet.create({
   },
   newSessionButton: {
     ...button,
-    width: 135,
+    width: 175,
     marginLeft: 10,
     marginTop: 10
   }

@@ -5,10 +5,13 @@ import {
     Text,
     TouchableOpacity
 } from 'react-native';
+import { Button } from 'react-native-elements';
+
 import Logo from "./Logo";
 import LoginForm from "./LoginForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../auth";
+  
 
 export default class LoginScreen extends React.Component {
     //Modifies the top header

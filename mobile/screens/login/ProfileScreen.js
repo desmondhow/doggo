@@ -3,7 +3,7 @@ import {
     StyleSheet,
     View,
     Text,
-    TouchableOpacity, Button, ActivityIndicator, ListView,
+    TouchableOpacity, ActivityIndicator, ListView,
 } from 'react-native';
 import {getUserID, onSignOut} from "../../auth";
 import {Card, Icon} from "react-native-elements";
