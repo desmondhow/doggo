@@ -14,8 +14,8 @@ const API_URL = 'https://doggo.herokuapp.com';
 const PORT = process.env.PORT || 3001;
 
 const users = require('./APIs/users');
-const dataCollection = require('./APIs/data_collection');
-const dataAnalysis = require('./APIs/data_analysis');
+const dataCollection = require('./APIs/dataCollection');
+const dataAnalysis = require('./APIs/dataAnalysis');
 
 // Connect to DB
 // Note: You have to whitelist your IP & change username in dbUri string (I use admin) to connect

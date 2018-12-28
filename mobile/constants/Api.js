@@ -3,7 +3,7 @@ SERVER_URL = 'http://localhost:3001/api/';
 USERS_ROUTE = 'users';
 
 const formatAPILink = ((url) => {
-    return SERVER_URL + url;
+    return API_URL + url;
 });
 
 export default {

@@ -1,5 +1,5 @@
 const mongoose = require('./node_modules/mongoose');
-const User = require('./schemas/user');
+const User = require('./schemas/userSchema');
 
 var users = [
   {

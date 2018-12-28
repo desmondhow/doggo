@@ -5,7 +5,7 @@ const express = require('express');
 const router = express.Router();
 
 //Import user schema
-const User = require('../../db/schemas/user');
+const User = require('../../db/schemas/userSchema');
 
 router.get('/', function (req, res) {
     res.send('Users API  works!');
