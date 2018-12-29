@@ -5,6 +5,7 @@ import {AsyncStorage} from "react-native";
 
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
+import UDCBuildingSearch from '../../screens/sessions/UDC/UDCBuildingSearchScreen';
 import UDCNavigator from './UDCNavigator';
 import { onSignOut } from '../../auth';
 
@@ -43,6 +44,12 @@ export default createStackNavigator({
     screen: UDCNavigator,
     navigationOptions: { 
       title: 'New UDC Session'
+    }
+  },
+  UDCBuildingSearch: {
+    screen: UDCBuildingSearch,
+    navigationOptions: { 
+      title: 'UDC Building Search'
     }
   }
 });
