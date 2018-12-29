@@ -1,8 +1,8 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require('../../server/node_modules/mongoose');
+const bcrypt = require('../../server/node_modules/bcrypt');
 
 const UserSchema = new mongoose.Schema({
     email: {

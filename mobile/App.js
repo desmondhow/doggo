@@ -13,8 +13,8 @@ const store = createStore(reducer);
 export default class App extends React.Component {
     state = {
         isReady: false,
-        signedIn: false,
-        checkedSignIn: false
+        signedIn: true,
+        checkedSignIn: true
     };
 
 

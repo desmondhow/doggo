@@ -1,7 +1,7 @@
 /**
  * Schema used for the different sessions
  */
-const mongoose = require('mongoose');
+const mongoose = require('../../server/node_modules/mongoose');
 
 const UDCSchema = new mongoose.Schema({
     sessions: {
