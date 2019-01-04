@@ -6,20 +6,17 @@ const expressSession = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(expressSession);
-
-import { getSecret } from './secrets';
+const emoji = require('node-emoji')
 
 const app = express();
-const API_URL = 'https://doggo.herokuapp.com';
-const PORT = process.env.PORT || 3001;
 
 const users = require('./APIs/users');
-const dataCollection = require('./APIs/dataCollection');
-const dataAnalysis = require('./APIs/dataAnalysis');
+const dataCollection = require('./APIs/data_collection');
+const dataAnalysis = require('./APIs/data_analysis');
 
 // Connect to DB
-// Note: You have to whitelist your IP & change username in dbUri string (I use admin) to connect
-mongoose.connect(getSecret('dbUri'), function(err, db) {
+const dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets')['dbUri']
+mongoose.connect(dbUri, function(err, db) {
     if (err) {
         console.error(err);
         throw err;
@@ -77,9 +74,10 @@ app.get('/api', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-  res.send('Well hello.')
+  res.send(`Well, hello. Made with ${emoji.get('heart')} and lots of ${emoji.get('coffee')}.`)
 });
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
   console.log("Server running on http://localhost:" + PORT);
 });
