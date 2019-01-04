@@ -11,8 +11,8 @@ const emoji = require('node-emoji')
 const app = express();
 
 const users = require('./APIs/users');
-const dataCollection = require('./APIs/data_collection');
-const dataAnalysis = require('./APIs/data_analysis');
+const dataCollection = require('./APIs/dataCollection');
+const dataAnalysis = require('./APIs/dataAnalysis');
 
 // Connect to DB
 const dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets')['dbUri']
@@ -66,8 +66,8 @@ app.use(function(req, res, next) {
 
 // API routes
 app.use('/api/users', users);
-app.use('/api/data_collection', dataCollection);
-app.use('/api/data_analysis', dataAnalysis);
+app.use('/api/dataCollection', dataCollection);
+app.use('/api/dataAnalysis', dataAnalysis);
 
 app.get('/api', function (req, res) {
     res.send('Server is working!')
