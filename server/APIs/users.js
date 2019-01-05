@@ -8,7 +8,7 @@ const router = express.Router();
 const User = require('../../db/schemas/userSchema');
 
 router.get('/', function (req, res) {
-    res.send('Users API  works!');
+    res.send('Users API works!');
 });
 
 /**

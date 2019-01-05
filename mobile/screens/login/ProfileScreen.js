@@ -5,7 +5,7 @@ import {
     Text,
     TouchableOpacity, ActivityIndicator, ListView,
 } from 'react-native';
-import {getUserID, onSignOut} from "../../auth";
+import {getUserID, onSignOut} from "../../components/auth";
 import {Card, Icon} from "react-native-elements";
 import Constants from "../../constants/Api";
 

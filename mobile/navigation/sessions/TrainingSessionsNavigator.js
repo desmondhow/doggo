@@ -6,7 +6,7 @@ import {AsyncStorage} from "react-native";
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCNavigator from './UDCNavigator';
-import { onSignOut } from '../../auth';
+import { onSignOut } from '../../components/auth';
 
 export default createStackNavigator({
   Home: {
