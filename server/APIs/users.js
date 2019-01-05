@@ -120,29 +120,21 @@ router.get('/profile/:id', function (req, res, next) {
         });
 });
 
+/**
+ * Creates a new UDC session
+ */
+router.post('/:id/createUDCSession', function (req, res, next) {
+  let temp = req.body['Temperature']
+  let humidity = req.body['Humidity']
+  let wind = req.body['Wind']
+  let windDirection = req.body['Wind Direction']
 
-//
-// /**
-//  * Get the user profile
-//  */
-// router.get('/profile', function (req, res, next) {
-//     console.log(req.session.userId);
-//     User.findById(req.session.userId)
-//         .exec(function (error, user) {
-//             if (error) {
-//                 res.status(400);
-//                 return res.send(JSON.stringify({message: error}));
-//             } else {
-//                 if (user === null) {
-//                     res.status(400);
-//                     return res.send(JSON.stringify({message: 'Not authorized!'}));
-//                 } else {
-//                     return res.send(user);
-//                 }
-//             }
-//         });
-// });
+  console.log(JSON.stringify(req.params))
+  console.log(JSON.stringify(req.body))
 
+  // TODO: find User by id, create new UDC session based on schema
+  res.send('sick')
+});
 
 /**
  * Logout the user
@@ -164,6 +156,5 @@ router.get('/logout', function (req, res, next) {
         });
     }
 });
-
 
 module.exports = router;

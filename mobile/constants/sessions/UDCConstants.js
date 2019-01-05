@@ -20,7 +20,7 @@ export const HidesInfo = {
   Hides: [
     {
       Concentrations: [4],
-      Sizes: [1, '#09', '#04', '#02']
+      Sizes: ['1#', '#09', '#04', '#02']
     },
     {
       Concentrations: [6, 8, 16],
