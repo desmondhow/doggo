@@ -1,8 +1,9 @@
-API_URL = 'https://doggoplatform.herokuapp.com/api/';
+HEROKU_API_URL = 'https://doggoplatform.herokuapp.com/api/';
+LOCAL_API_URL = 'http://localhost:3000/api/';
 USERS_ROUTE = 'users';
 
 const formatAPILink = ((url) => {
-    return API_URL + url;
+    return HEROKU_API_URL + url;
 });
 
 export default {
