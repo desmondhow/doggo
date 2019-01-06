@@ -12,6 +12,23 @@ router.get('/', function (req, res) {
 });
 
 
+
+/**
+ * Creates a new UDC session
+ */
+router.post('/:id/createUDCSession', function (req, res, next) {
+    let temp = req.body['Temperature'];
+    let humidity = req.body['Humidity'];
+    let wind = req.body['Wind'];
+    let windDirection = req.body['Wind Direction'];
+
+
+    // TODO: find User by id, create new UDC session based on schema
+    res.send('sick')
+});
+
+
+
 /**
  * Create new UDC session.
  */
@@ -46,10 +63,6 @@ router.post('/createNewUDC', function(req, res) {
             return res.status(400).send(JSON.stringify({message: 'Could not save in db'}));
         })
 });
-
-// router.get('/getAllSessions', function (req, res){
-//     Session.
-// });
 
 
 /**

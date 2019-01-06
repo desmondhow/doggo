@@ -77,7 +77,7 @@ app.get('/', function (req, res) {
   res.send(`Well, hello. Made with ${emoji.get('heart')} and lots of ${emoji.get('coffee')}.`)
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3010;
 app.listen(PORT, function () {
   console.log("Server running on http://localhost:" + PORT);
 });

@@ -24,7 +24,8 @@ const UDCSchema = new mongoose.Schema({
                 }
             ]
         },
-        session_owner: String
+        session_owner: String,
+        main_location: String
     }
 });
 
