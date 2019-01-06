@@ -8,7 +8,7 @@ const router = express.Router();
 const User = require('../../db/schemas/userSchema');
 
 router.get('/', function (req, res) {
-    res.send('Users API  works!');
+    res.send('Users API works!');
 });
 
 /**
@@ -100,49 +100,25 @@ router.post('/login', function (req, res, next) {
  * Get the user profile in the app
  */
 router.get('/profile/:id', function (req, res, next) {
-    User.findById(req.params.id)
-        .exec(function (error, user) {
-            if (error) {
-                res.status(400);
-                return res.send(JSON.stringify({message: error}));
-            } else {
-                if (user === null) {
-                    res.status(400);
-                    return res.send(JSON.stringify({message: 'Not authorized!'}));
-                } else {
-                    return res.status(200).send({
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        message: 'success'
-                    });
-                }
-            }
-        });
+  User.findById(req.params.id)
+    .exec(function (error, user) {
+      if (error) {
+          res.status(400);
+          return res.send(JSON.stringify({message: error}));
+      } else {
+          if (user === null) {
+              res.status(400);
+              return res.send(JSON.stringify({message: 'Not authorized!'}));
+          } else {
+              return res.status(200).send({
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  message: 'success'
+              });
+          }
+      }
+    });
 });
-
-
-//
-// /**
-//  * Get the user profile
-//  */
-// router.get('/profile', function (req, res, next) {
-//     console.log(req.session.userId);
-//     User.findById(req.session.userId)
-//         .exec(function (error, user) {
-//             if (error) {
-//                 res.status(400);
-//                 return res.send(JSON.stringify({message: error}));
-//             } else {
-//                 if (user === null) {
-//                     res.status(400);
-//                     return res.send(JSON.stringify({message: 'Not authorized!'}));
-//                 } else {
-//                     return res.send(user);
-//                 }
-//             }
-//         });
-// });
-
 
 /**
  * Logout the user
@@ -164,6 +140,5 @@ router.get('/logout', function (req, res, next) {
         });
     }
 });
-
 
 module.exports = router;

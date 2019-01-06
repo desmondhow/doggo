@@ -39,17 +39,3 @@ export const createRootNavigator = (signedIn = false) => {
         }
     );
 };
-
-// export default createSwitchNavigator(
-//   {
-//       SignedIn: {
-//           screen: SignedIn
-//       },
-//       SignedOut: {
-//           screen: SignedOut
-//       }
-//   },
-//   {
-//       initialRouteName: true ? "SignedIn" : "SignedOut"
-//   }
-// );

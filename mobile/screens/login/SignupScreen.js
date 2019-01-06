@@ -8,7 +8,7 @@ import {
 import Logo from "./Logo";
 import SignUpForm from "./SignUpForm";
 import Constants from "../../constants/Api";
-import {onSignIn} from "../../auth";
+import {onSignIn} from "../../components/auth";
 
 export default class SignupScreen extends React.Component {
     //Modifies the top header

@@ -20,11 +20,11 @@ export async function onSignOut() {
 }
 
 export async function getUserID() {
-    try {
-        return await AsyncStorage.getItem(USER_KEY);
-    } catch (error) {
-        console.log(error.message);
-    }
+  return new Promise((res, rej) => {
+    AsyncStorage.getItem(USER_KEY)
+    .then(id => res(id.split('"').join('')))
+    .catch(err => rej(err))
+  })
 }
 
 export async function isSignedIn() {

@@ -63,16 +63,16 @@ createDBUri = name => (
   `mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/${name}?retryWrites=true`
 )
 
-mongoose.connect(createDBUri('users'))
-mongoose.Promise = global.Promise;
-var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+// mongoose.connect(createDBUri('users'))
+// mongoose.Promise = global.Promise;
+// var db = mongoose.connection;
+// db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-User.find({ email:users[0].email }).remove().exec();
-wdc = new User(users[0])
-wdc.save(err => {
-  if (err) throw err;
-});
+// User.find({ email:users[0].email }).remove().exec();
+// wdc = new User(users[0])
+// wdc.save(err => {
+//   if (err) throw err;
+// });
 
 // User.insertMany(users, function(err) {
 //   if (err) throw(err);

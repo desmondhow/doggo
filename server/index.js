@@ -8,14 +8,14 @@ const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(expressSession);
 const emoji = require('node-emoji')
 
-const app = express();
-
 const users = require('./APIs/users');
 const dataCollection = require('./APIs/dataCollection');
 const dataAnalysis = require('./APIs/dataAnalysis');
 
+const app = express();
+
 // Connect to DB
-const dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets')['dbUri']
+var dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets').getSecret('dbUri')
 mongoose.connect(dbUri, function(err, db) {
     if (err) {
         console.error(err);
@@ -66,8 +66,8 @@ app.use(function(req, res, next) {
 
 // API routes
 app.use('/api/users', users);
-app.use('/api/dataCollection', dataCollection);
-app.use('/api/dataAnalysis', dataAnalysis);
+app.use('/api/users', dataCollection);
+app.use('/api/users', dataAnalysis);
 
 app.get('/api', function (req, res) {
     res.send('Server is working!')
