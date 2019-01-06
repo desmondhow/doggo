@@ -12,10 +12,9 @@ export default (state = {}, action) => {
     }
     case actions.SAVE_NEW_UDC_SESSION: {
       const sessionInfo = action.sessionInfo
-      console.log(JSON.stringify(sessionInfo))
       
       Constants.getSaveUDCSessionURL()
-      .then(url => {     
+      .then(url => (   
         fetch(url, {
           method: 'POST',
           headers: {
@@ -24,16 +23,17 @@ export default (state = {}, action) => {
           },
           body: JSON.stringify(sessionInfo)
         })
-        // .then((res) => res.json())
-        .then((res) => { 
-          console.log(res)
-        })
-        .catch((err) => {
-          alert(err)
-          throw err
-        })
+      ))
+      .then(res => res.json())
+      .then((res) => { 
+        console.log(`New UDC Session Id: ${res}`)
+        console.log('this isnt reached because User.findById on server doesnt work')
       })
-      return { hides: InitialValues.Hides };
+      .catch(err => {
+        console.log(err);
+        throw err;
+      })
+      // return { hides: InitialValues.Hides };
     }
     default:
       return state;

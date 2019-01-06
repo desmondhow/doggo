@@ -100,40 +100,24 @@ router.post('/login', function (req, res, next) {
  * Get the user profile in the app
  */
 router.get('/profile/:id', function (req, res, next) {
-    User.findById(req.params.id)
-        .exec(function (error, user) {
-            if (error) {
-                res.status(400);
-                return res.send(JSON.stringify({message: error}));
-            } else {
-                if (user === null) {
-                    res.status(400);
-                    return res.send(JSON.stringify({message: 'Not authorized!'}));
-                } else {
-                    return res.status(200).send({
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        message: 'success'
-                    });
-                }
-            }
-        });
-});
-
-/**
- * Creates a new UDC session
- */
-router.post('/:id/createUDCSession', function (req, res, next) {
-  let temp = req.body['Temperature']
-  let humidity = req.body['Humidity']
-  let wind = req.body['Wind']
-  let windDirection = req.body['Wind Direction']
-
-  console.log(JSON.stringify(req.params))
-  console.log(JSON.stringify(req.body))
-
-  // TODO: find User by id, create new UDC session based on schema
-  res.send('sick')
+  User.findById(req.params.id)
+    .exec(function (error, user) {
+      if (error) {
+          res.status(400);
+          return res.send(JSON.stringify({message: error}));
+      } else {
+          if (user === null) {
+              res.status(400);
+              return res.send(JSON.stringify({message: 'Not authorized!'}));
+          } else {
+              return res.status(200).send({
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  message: 'success'
+              });
+          }
+      }
+    });
 });
 
 /**
