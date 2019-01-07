@@ -100,24 +100,24 @@ router.post('/login', function (req, res, next) {
  * Get the user profile in the app
  */
 router.get('/profile/:id', function (req, res, next) {
-    User.findById(req.params.id)
-        .exec(function (error, user) {
-            if (error) {
-                res.status(400);
-                return res.send(JSON.stringify({message: error}));
-            } else {
-                if (user === null) {
-                    res.status(400);
-                    return res.send(JSON.stringify({message: 'Not authorized!'}));
-                } else {
-                    return res.status(200).send({
-                        first_name: user.first_name,
-                        last_name: user.last_name,
-                        message: 'success'
-                    });
-                }
-            }
-        });
+  User.findById(req.params.id)
+    .exec(function (error, user) {
+      if (error) {
+          res.status(400);
+          return res.send(JSON.stringify({message: error}));
+      } else {
+          if (user === null) {
+              res.status(400);
+              return res.send(JSON.stringify({message: 'Not authorized!'}));
+          } else {
+              return res.status(200).send({
+                  first_name: user.first_name,
+                  last_name: user.last_name,
+                  message: 'success'
+              });
+          }
+      }
+    });
 });
 
 

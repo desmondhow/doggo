@@ -66,8 +66,8 @@ app.use(function(req, res, next) {
 
 // API routes
 app.use('/api/users', users);
-app.use('/api/dataCollection', dataCollection);
-app.use('/api/dataAnalysis', dataAnalysis);
+app.use('/api/users', dataCollection);
+app.use('/api/users', dataAnalysis);
 
 app.get('/api', function (req, res) {
     res.send('Server is working!')
