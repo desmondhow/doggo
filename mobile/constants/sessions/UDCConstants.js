@@ -17,69 +17,263 @@ export const GeneralInfo = {
 }
 
 export const BuildingSearchInfo = {
-  Hides: [
-    'Training Room, Scent Box, Concealed',
-    'Vehicle Interior, Package, Concealed',
-    'Training Room, Container, Not Concealed',
-    'Building Exterior, Scent Box, Concealed',
+  TempHides: [
+    {
+      Location: 'Training Room',
+      Placement: 'Scent Box',
+      Concealed: 'Concealed'
+    },
+    {
+      Location: 'Vehicle Interior',
+      Placement: 'Package',
+      Concealed: 'Concealed'
+    },
+    {
+      Location: 'Training Room',
+      Placement: 'Container',
+      Concealed: 'Not Concealed'
+    },
+    {
+      Location: 'Building Exterior',
+      Placement: 'Scent Box',
+      Concealed: 'Concealed'
+    }
+  ],
+  TempDogs: [
+    'Moxy',
+    'Roxy',
+    'Joe',
+  ],
+  TempTrainers: [
+    'Jamie',
+    'Dani',
+    'Desmond'
+  ],
+  HandlerRadius: [
+    '0-5ft',
+    '6-15ft',
+    '>16ft',
+    'Out of Sight'
   ],
   Distractions: [
-    'Other K9',
-    'Humans, Workers',
-    'Toys',
-    'Food',
-    'Noise/Machines',
-    'Live Animals',
-    'Human Remains',
-    'Deceased Animals',
-    'Clothing',
-    'Other'
+    {
+      label: 'Other K9',
+      value: '1,'
+    },
+    {
+      label: 'Humans, Workers',
+      value: '2'
+    },
+    {
+      label: 'Toys',
+      value: '3'
+    },
+    {
+      label: 'Food',
+      value: '4'
+    },
+    {
+      label: 'Noise/Machines',
+      value: '5'
+    },
+    {
+      label: 'Live Animals',
+      value: '6'
+    },
+    {
+      label: 'Human Remains',
+      value: '7'
+    },
+    {
+      label: 'Deceased Animals',
+      value: '8'
+    },
+    {
+      label: 'Clothing',
+      value: '9'
+    },
+    {
+      label: 'Other',
+      value: '99'
+    },
   ],
   FailCodes: [
-    'Duration',
-    'K9 distracted',
-    'Did not respond to verbal command',
-    'Did not respond to hand command',
-    'Unfamiliar handler',
-    'Unmotivated',
-    'Not interested in reward',
-    'Unable to heel off lead through agility course',
-    'Issue with K9 distance from obstacle',
-    'Fear of obstacle/environment',
-    'Issue with object height',
-    'Issue with handler distance (directs)',
-    'Does not follow correct direct direction',
-    'Does not have automatic HUP',
-    'Cannot complete task with handler out of sight',
-    'Will not stay at scent source/victim',
-    'Does not locate victim',
-    'Alert not at scent source',
-    'False alert on distraction',
-    'Will not enter search area',
-    'Will not return handler',
-    'Will not out',
-    'Will not engage with toy/equipment',
-    'Reactivity to other K9',
-    'Demonstrates frustration barking',
-    'Foot misplacement',
-    'Rushed through obstacle',
-    'Cannot locate odor',
-    'Moves too fast during searching. Need to unwind and restart',
-    'Leaves 1st odor to go to 2nd odor before alerting on 1st odor',
-    'Handler removes distractions',
-    'Handler stabilizes obstacle',
-    'Handler moves closer to K9',
-    'Handler reduces duration',
-    'K9 eliminates (Urination/Defecation)',
-    'K9 leaves training area',
-    'Distracted by food source',
-    'Cannot complete task',
-    'Does not sit straight in heel position',
-    'Responds incorrectly to verbal command',
-    'Responds incorrectly to hand command',
-    'Touched scent source',
-    'Grabbed scent source',
-    'Disrupted scent source'
+    {
+      label: 'Duration',
+      value: '1'
+    },
+    {
+      label: 'K9 distracted',
+      value: '2'
+    },
+    {
+      label: 'Did not respond to verbal command',
+      value: '3'
+    },
+    {
+      label: 'Did not respond to hand command',
+      value: '4'
+    },
+    {
+      label: 'Unfamiliar handler',
+      value: '5'
+    },
+    {
+    label: 'Unmotivated',
+      value: '6'
+    },
+    {
+      label: 'Not interested in reward',
+      value: '7'
+    },
+    {
+      label: 'Unable to heel off lead through agility course',
+      value: '8'    
+    },
+    {
+      label: 'Issue with K9 distance from obstacle',
+      value: '9'    
+    },
+    {
+      label: 'Fear of obstacle/environment',
+      value: '10'
+    },
+    {
+      label: 'Issue with object height',
+      value: '11'
+    },
+    {
+      label: 'Issue with handler distance (directs)',
+      value: '12'
+    },
+    {
+      label: 'Does not follow correct direct direction',
+      value: '13'
+    },
+    {
+      label: 'Does not have automatic HUP',
+      value: '14'
+    },
+    {
+      label: 'Cannot complete task with handler out of sight',
+      value: '15'
+    },
+    {
+      label: 'Will not stay at scent source/victim',
+      value: '16'
+    },
+    {
+      label: 'Does not locate victim',
+      value: '17'
+    },
+    {
+      label: 'Alert not at scent source',
+      value: '18'
+    },
+    {
+      label: 'False alert on distraction',
+      value: '19'
+    },
+    {
+      label: 'Will not enter search area',
+      value: '20'
+    },
+    {
+      label: 'Will not return handler',
+      value: '21'
+    },
+    {
+      label: 'Will not out',
+      value: '22'
+    },
+    {
+      label: 'Will not engage with toy/equipment',
+      value: '23'
+    },
+    {
+      label: 'Reactivity to other K9',
+      value: '24'
+    },
+    {
+      label: 'Demonstrates frustration barking',
+      value: '25'
+    },
+    {
+      label: 'Foot misplacement',
+      value: '26'
+    },
+    {
+      label: 'Rushed through obstacle',
+      value: '27'
+    },
+    {
+      label: 'Cannot locate odor',
+      value: '28'
+    },
+    {
+      label: 'Moves too fast during searching. Need to unwind and restart',
+      value: '29'
+    },
+    {
+      label: 'Leaves 1st odor to go to 2nd odor before alerting on 1st odor',
+      value: '30'
+    },
+    {
+      label: 'Handler removes distractions',
+      value: '31'
+    },
+    {
+      label: 'Handler stabilizes obstacle',
+      value: '32'
+    },
+    {
+      label: 'Handler moves closer to K9',
+      value: '33'
+    },
+    {
+      label: 'Handler reduces duration',
+      value: '34'
+    },
+    {
+      label: 'K9 eliminates (Urination/Defecation)',
+      value: '35'
+    },
+    {
+      label: 'K9 leaves training area',
+      value: '36'
+    },
+    {
+      label: 'Distracted by food source',
+      value: '37'
+    },
+    {
+      label: 'Cannot complete task',
+      value: '38'
+    },
+    {
+      label: 'Does not sit straight in heel position',
+      value: '39'
+    },
+    {
+      label: 'Responds incorrectly to verbal command',
+      value: '40'
+    },
+    {
+      label: 'Responds incorrectly to hand command',
+      value: '41'
+    },
+    {
+      label: 'Touched scent source',
+      value: '42'
+    },
+    {
+      label: 'Grabbed scent source',
+      value: '43'
+    },
+    {
+      label:'Disrupted scent source',
+      value: '44'
+    },
   ]
 }
 
