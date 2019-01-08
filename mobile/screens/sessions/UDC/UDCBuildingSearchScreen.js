@@ -36,6 +36,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   };
 
   _onSubmit = (sessionInfo) => {
+    console.log(sessionInfo)
     Alert.alert('Finish Dog Training, save info for this session for this dog - requires submitting multiple forms with one click, thus maintaining a key for each search');
     this.props.navigation.navigate('UDC');
   }
@@ -50,7 +51,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   <Button
       raised
       rounded
-      title='Finish Traning'
+      title='Finish Training'
       onPress={this.props.handleSubmit(this._onSubmit)} 
       fontSize={26}
       buttonStyle={{
@@ -77,7 +78,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderContent = () => {
     return (
       <View style={styles.content}>
-        <View>
+        {/* <View>
             <Text>Handler Radius - Alert</Text>
             <CustomButtonGroup buttons={BuildingSearchInfo.HandlerRadius}></CustomButtonGroup>
         </View>
@@ -133,13 +134,15 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
             <Text>Successful</Text>
             <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
-        </View>
-        <View>
-            {/* <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/> */}
-        </View>
-        <View>
-            {/* <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/> */}
-        </View>
+        </View> */}
+        <ScrollView style={{height: '20%'}}>
+            <Text>Failure Codes</Text>
+            <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
+        </ScrollView>
+        <ScrollView style={{height: '20%'}}>
+            <Text>Distractions</Text>
+            <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
+        </ScrollView>
       </View>
     );
   };

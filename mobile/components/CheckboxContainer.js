@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-} from 'react-native';
-import { Checkbox } from 'react-native-elements';
+import { View, Text, ScrollView } from 'react-native';
+import { CheckBox } from 'react-native-elements';
 
-export class CheckboxContainer extends Component {
+export default class CheckboxContainer extends Component {
   constructor(props) {
     super(props);
 
@@ -16,10 +13,9 @@ export class CheckboxContainer extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  handleChange(e) {
-    const item = e.target.name;
-    const isChecked = e.target.checked;
-    this.setState(prevState => ({ checkedItems: prevState.checkedItems.set(item, isChecked) }));
+  handleChange(value) {
+    const isChecked = this.state.checkedItems.get(value) ? this.state.checkedItems.get(value) : false;
+    this.setState(prevState => ({ checkedItems: prevState.checkedItems.set(value, !isChecked) }));
   }
 
   render() {
@@ -28,8 +24,8 @@ export class CheckboxContainer extends Component {
         {
           this.props.checkboxes.map(item => (
             <View key={item.value}>
-              <Text>{item.label}</Text>
-              <Checkbox title={item.label} checked={this.state.checkedItems.get(item.value)} onPress={this.handleChange}/>
+              <CheckBox title={item.label} checked={this.state.checkedItems.get(item.value)} onPress={this.handleChange.bind(this, item.value)}/>
+              {/* <CheckBox title={item.label} checked={this.state.checked} onPress={() => this.setState({checked: !this.state.checked})}/> */}
             </View>
           ))
         }
@@ -37,5 +33,3 @@ export class CheckboxContainer extends Component {
     );
   }
 }
-
-export default CheckboxContainer;
