@@ -17,27 +17,36 @@ export const GeneralInfo = {
 }
 
 export const BuildingSearchInfo = {
-  TempHides: [
+  TempSessions: [ 
     {
-      Location: 'Training Room',
-      Placement: 'Scent Box',
-      Concealed: 'Concealed'
+      sessionId: 0,
+      Hides: [
+        {
+          hideId: 0,
+          Location: 'Training Room',
+          Placement: 'Scent Box',
+          Concealed: 'Concealed'
+        },
+        {
+          hideId: 1,
+          Location: 'Vehicle Interior',
+          Placement: 'Package',
+          Concealed: 'Concealed'
+        },
+        {
+          hideId: 2,
+          Location: 'Training Room',
+          Placement: 'Container',
+          Concealed: 'Not Concealed'
+        },
+        {
+          hideId: 3,
+          Location: 'Building Exterior',
+          Placement: 'Scent Box',
+          Concealed: 'Concealed'
+        }
+      ],
     },
-    {
-      Location: 'Vehicle Interior',
-      Placement: 'Package',
-      Concealed: 'Concealed'
-    },
-    {
-      Location: 'Training Room',
-      Placement: 'Container',
-      Concealed: 'Not Concealed'
-    },
-    {
-      Location: 'Building Exterior',
-      Placement: 'Scent Box',
-      Concealed: 'Concealed'
-    }
   ],
   TempDogs: [
     'Moxy',

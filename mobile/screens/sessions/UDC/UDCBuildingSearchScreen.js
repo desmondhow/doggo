@@ -29,10 +29,9 @@ export class UDCBuildingSearchScreen extends React.Component {
   state = {
     activeSections: [],
     barks: '0',
-  };
-
-  toggleExpanded = () => {
-    this.setState({ collapsed: !this.state.collapsed });
+    // sessionId and dogId could be passed in as props, but rn as state while i figure shit out
+    sessionId: 0,
+    dogId: 0,
   };
 
   _onSubmit = (sessionInfo) => {
@@ -41,7 +40,7 @@ export class UDCBuildingSearchScreen extends React.Component {
     this.props.navigation.navigate('UDC');
   }
 
-  _checkNumber = (text) => {
+  checkNumber = (text) => {
     this.setState({
         barks: text.replace(/[^0-9]/g, ''),
     });
@@ -75,73 +74,215 @@ export class UDCBuildingSearchScreen extends React.Component {
     );
   };
 
-  _renderContent = () => {
+  // section is each BuildingSearchInfo.TempSessions[0].Hides
+  _renderContent = section => {
     return (
       <View style={styles.content}>
+        <Text h4>Handler Radius - Alert</Text>
         <View>
-            <Text>Handler Radius - Alert</Text>
-            <CustomButtonGroup buttons={BuildingSearchInfo.HandlerRadius}></CustomButtonGroup>
-        </View>
-        <View>
-            <Text>Handler Radius - Reward</Text>
-            <CustomButtonGroup buttons={BuildingSearchInfo.HandlerRadius}></CustomButtonGroup>
-        </View>
-        <View>
-            <Text>Handler Radius - Search</Text>
-            <CustomButtonGroup buttons={BuildingSearchInfo.HandlerRadius}></CustomButtonGroup>
-        </View>
-        <View>
-            <Text>Rewarder</Text>
-            <CustomButtonGroup buttons={['Handler', 'Trainer']}></CustomButtonGroup>
-        </View>
-        <View>
-            <Text>Barks</Text>
-            <TextInput 
-                keyboardType='numeric'
-                onChangeText={(text)=> this.checkNumber(text)}
-                value={this.state.barks}
-                maxLength={3}  //setting limit of input
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRAlert]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={BuildingSearchInfo.HandlerRadius}
+                  containerStyle={{height: 50}}
+                />
+              )}}
             />
         </View>
+        <Text h4>Handler Radius - Reward</Text>
         <View>
-            <Text>Handler Knows</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRReward]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={BuildingSearchInfo.HandlerRadius}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
         </View>
+        <Text h4>Handler Radius - Search</Text>
         <View>
-            <Text>Fringe</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRSearch]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={BuildingSearchInfo.HandlerRadius}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
         </View>
+        <Text h4>Rewarder</Text>
         <View>
-            <Text>Reset</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Rewarder]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Handler', 'Trainer']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
         </View>
-        <View>   
-            <Text>False Alert</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
-        </View>
+
+        <Text h4>Barks</Text>
         <View>
-           <Text>On Lead</Text> 
-           <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Barks]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <TextInput 
+                    style={styles.input}
+                    keyboardType='numeric'
+                    onChangeText={(text)=> this.checkNumber(text)}
+                    value={this.state.barks}
+                    maxLength={3}  //setting limit of input
+                />
+              )}}
+            />
         </View>
+
+        <Text h4>Handler Knows</Text>
         <View>
-            <Text>False Indication</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
-        </View>    
-        <View>
-            <Text>Detail Search</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HandlerKnows]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
         </View>
+        <Text h4>Fringe</Text>
         <View>
-            <Text>Successful</Text>
-            <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Fringe]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
         </View>
+        <Text h4>Reset</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Reset]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        <Text h4>False Alert</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FalseAlert]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        <Text h4>On Lead</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][OnLead]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        <Text h4>False Indication</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FalseIndication]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        <Text h4>Detail Search</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Detail Search]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        <Text h4>Successful</Text>
+        <View>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Successful]`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['Yes', 'No']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+        </View>
+        
+        <Text h4>Failure Codes</Text>
         <ScrollView style={{height: '20%'}}>
-            <Text>Failure Codes</Text>
-            <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
+            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FailCodes]`} component={(inputProps) => {
+                const { input: { value, onChange } } = inputProps;
+                // what to do with the selectedIndex={value} thing for these checkboxes
+                return (
+                    <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
+                )}}
+                /> 
         </ScrollView>
+        <Text h4>Distractions</Text>
         <ScrollView style={{height: '20%'}}>
-            <Text>Distractions</Text>
-            <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
+        <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Distractions]`} component={(inputProps) => {
+                const { input: { value, onChange } } = inputProps;
+                // what to do with the selectedIndex={value} thing for these checkboxes
+                return (
+                    <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
+                )}}
+                /> 
         </ScrollView>
       </View>
     );
@@ -157,6 +298,8 @@ export class UDCBuildingSearchScreen extends React.Component {
     <View style={center}>
       <View>
         <Text>K9 Name</Text>
+        {/* UDC[BuildingSearchInfo.TempSessions[0].sessionId].dogs.dogId */}
+        {/* this might have to be its own page: need to find a way to save this K9 name to the state so that it can pass to the redux fields or whatever */}
         {renderDropdown("K9 Name", BuildingSearchInfo.TempDogs, { width: 200, height: 100 })}
       </View>
       <View>
@@ -170,7 +313,7 @@ export class UDCBuildingSearchScreen extends React.Component {
       <Text h2>Searches</Text>
       <Accordion
             activeSections={this.state.activeSections}
-            sections={BuildingSearchInfo.TempHides}
+            sections={BuildingSearchInfo.TempSessions[0].Hides}
             touchableComponent={TouchableOpacity}
             renderHeader={this._renderHeader}
             renderContent={this._renderContent}
@@ -214,7 +357,11 @@ const styles = StyleSheet.create({
     width: 150,
     height: 100,
     marginTop: -20
-  }
+  },
+  input: {
+    height: 40,
+    width: 100,
+  },
 });
 
 export default connectReduxForm(
