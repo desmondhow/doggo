@@ -18,10 +18,6 @@ class UDCHidesScreen extends React.Component {
       addedHides: {}, 
       addHideConcentration: '', 
       addHideSize: '',
-      addHideLocation: this.props.addHideLocationReduxValue, 
-      addHideIsConcealed: this.props.addHideIsConcealedReduxValue, 
-      addHidePlacementArea: this.props.addHidePlacementAreaReduxValue, 
-      addHidePlacementHeight: this.props.addHidePlacementHeightReduxValue, 
     }
   }
 
@@ -40,7 +36,6 @@ class UDCHidesScreen extends React.Component {
 
   _updateHideState = (concentration, size, property, value) => {
     this.setState(prevState => ({
-      ...prevState,
       addedHides: {
         ...prevState.addedHides,
         [concentration]: {
@@ -70,11 +65,8 @@ class UDCHidesScreen extends React.Component {
           `Hides.${concentration}.${size}.location`,
           HidesInfo.Locations,
           styles.dropdown,
-          location => userIsAddingHide ? 
-            this.setState({ addHideLocation: location}) : 
-            this._updateHideState(concentration, size, 'location', location),
-          userIsAddingHide ? this.state.addHideLocation : this.state.addedHides[concentration][size].location,
-          ' '
+          userIsAddingHide ? null : location => this._updateHideState(concentration, size, 'location', location),
+          userIsAddingHide ? this.props.addHideLocation : this.state.addedHides[concentration][size].location
         )}
       </View>
       <View style={{ flexDirection: 'column', ...center, marginBottom: 30 }}>
@@ -85,10 +77,8 @@ class UDCHidesScreen extends React.Component {
             name={`Hides.${concentration}.${size}.isConcealed`}
             component={inputProps => 
               <ButtonGroup
-                onPress={isConcealed => userIsAddingHide ? 
-                  this.setState({ addHideIsConcealed: isConcealed }) :
-                  this._updateHideState(concentration, size, 'isConcealed', isConcealed)}
-                selectedIndex={userIsAddingHide ? this.state.addHideIsConcealed : this.state.addedHides[concentration][size].isConcealed}
+                onPress={userIsAddingHide ? inputProps.input.onChange : isConcealed => this._updateHideState(concentration, size, 'isConcealed', isConcealed)}
+                selectedIndex={userIsAddingHide ? this.props.addHideIsConcealed : this.state.addedHides[concentration][size].isConcealed}
                 buttons={['No', 'Yes']}
                 containerStyle={{ height: 40, width: 100}}
               /> 
@@ -103,10 +93,8 @@ class UDCHidesScreen extends React.Component {
           `Hides.${concentration}.${size}.placementArea`,
           HidesInfo.PlacementAreas,
           styles.dropdown,
-          placementArea => userIsAddingHide ? 
-            this.setState({ addHidePlacementArea: placementArea}) : 
-            this._updateHideState(concentration, size, 'placementArea', placementArea),
-          userIsAddingHide ? this.state.addHidePlacementArea : this.state.addedHides[concentration][size].placementArea
+          userIsAddingHide ? null : placementArea => this._updateHideState(concentration, size, 'placementArea', placementArea),
+          userIsAddingHide ? this.props.addHidePlacementArea : this.state.addedHides[concentration][size].placementArea
         )}
       </View>
       {/* Placement Height */}
@@ -116,10 +104,8 @@ class UDCHidesScreen extends React.Component {
           `Hides.${concentration}.${size}.placementHeight`,
           HidesInfo.PlacementHeights,
           styles.dropdown,
-          placementHeight => userIsAddingHide ? 
-            this.setState({ addHidePlacementHeight: placementHeight}) : 
-            this._updateHideState(concentration, size, 'placementHeight', placementHeight),
-          userIsAddingHide ? this.state.addHidePlacementHeight : this.state.addedHides[concentration][size].placementHeight
+          userIsAddingHide ? null : placementHeight => this._updateHideState(concentration, size, 'placementHeight', placementHeight),
+          userIsAddingHide ? this.props.addHidePlacementHeight : this.state.addedHides[concentration][size].placementHeight
         )}
       </View>
     </View>
@@ -148,14 +134,14 @@ class UDCHidesScreen extends React.Component {
   _addHide = () => {
     const concentration = this.state.addHideConcentration;
     const size = this.state.addHideSize;
-    const location = this.state.addHideLocation;
-    const isConcealed = this.state.addHideIsConcealed;
-    const placementArea = this.state.addHidePlacementArea
-    const placementHeight = this.state.addHidePlacementHeight
-
+    const location = this.props.addHideLocation;
+    const isConcealed = this.props.addHideIsConcealed;
+    const placementArea = this.props.addHidePlacementArea
+    const placementHeight = this.props.addHidePlacementHeight
 
     // should all the fields be required?
     if (!concentration || !size) {
+      alert('You must specify a concentration and a size to add a hide.')
       return;
     }
     else if (!location) {
@@ -167,8 +153,12 @@ class UDCHidesScreen extends React.Component {
       return;
     }
 
+    // reset Add Hide section state
+    this.setState({ addHideConcentration: '', addHideSize: ''})
+    this.props.reset();
+
+    // store new hide
     this.setState(prevState => ({
-      ...prevState,
       addedHides: {
         ...prevState.addedHides,
         [concentration]: {
@@ -323,11 +313,10 @@ export default connectReduxForm(
   UDCHidesScreen,
   state => {
     return {
-      addHideLocationReduxValue: selector(state, 'Hides.null.null.location'),
-      addHideIsConcealedReduxValue: selector(state, 'Hides.null.null.isConcealed'),
-      addHidePlacementAreaReduxValue: selector(state, 'Hides.null.null.placementArea'),
-      addHidePlacementHeightReduxValue: selector(state, 'Hides.null.null.placementHeight'),
-      initialValues: state.udc.hides    
+      addHideLocation: selector(state, 'Hides.null.null.location'),
+      addHideIsConcealed: selector(state, 'Hides.null.null.isConcealed'),
+      addHidePlacementArea: selector(state, 'Hides.null.null.placementArea'),
+      addHidePlacementHeight: selector(state, 'Hides.null.null.placementHeight'),
     }
   },
   dispatch => ({
