@@ -78,7 +78,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderContent = () => {
     return (
       <View style={styles.content}>
-        {/* <View>
+        <View>
             <Text>Handler Radius - Alert</Text>
             <CustomButtonGroup buttons={BuildingSearchInfo.HandlerRadius}></CustomButtonGroup>
         </View>
@@ -134,7 +134,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
             <Text>Successful</Text>
             <CustomButtonGroup buttons={['Yes', 'No']}></CustomButtonGroup>
-        </View> */}
+        </View>
         <ScrollView style={{height: '20%'}}>
             <Text>Failure Codes</Text>
             <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
