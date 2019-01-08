@@ -7,8 +7,9 @@ import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScree
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCNavigator from './UDCNavigator';
 import { onSignOut } from '../../components/auth';
+import store from '../../redux/store';
 
-export default createStackNavigator({
+const TraningSessionsNavigator = createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
@@ -39,10 +40,36 @@ export default createStackNavigator({
       title: 'UDC'
     }
   },
-  UDCNewSession: { 
+  'UDC.NewSession': { 
     screen: UDCNavigator,
     navigationOptions: { 
       title: 'New UDC Session'
     }
   }
 });
+
+const getActiveRouteName = navigationState => {
+  if (!navigationState) {
+    return null;
+  }
+  const route = navigationState.routes[navigationState.index];
+  // dive into nested navigators
+  if (route.routes) {
+    return getActiveRouteName(route);
+  }
+  return route.routeName;
+}
+
+export default () => 
+  <TraningSessionsNavigator 
+    onNavigationStateChange={(prevState, currState) => {
+      const currScreen = getActiveRouteName(currState);
+      const prevScreen = getActiveRouteName(prevState);
+
+      if (currScreen === 'UDC' && prevScreen === 'UDC.General') {
+        console.log(JSON.stringify(store.getState()));
+      }
+
+      // console.log(`currScreen: ${currScreen}, prevScreen: ${prevScreen}`)
+    }}
+  />

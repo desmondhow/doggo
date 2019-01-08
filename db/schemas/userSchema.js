@@ -1,7 +1,7 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('mongoose');
+import mongoose from '../../server/node_modules/mongoose';
 const bcrypt = require('bcrypt');
 
 export const UserSchema = new mongoose.Schema({

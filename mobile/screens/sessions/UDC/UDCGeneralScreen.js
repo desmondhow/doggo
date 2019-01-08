@@ -7,7 +7,7 @@ import {
 import { Text, Icon, Button } from 'react-native-elements';
 
 import { container, formContainer, center } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown } from '../../../components/helpers';
+import { connectReduxForm, renderReduxDropdown } from '../../../components/helpers';
 import { GeneralInfo } from '../../../constants/sessions/UDCConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
@@ -20,7 +20,7 @@ class UDCGeneralScreen extends React.Component {
   }
 
   _onSubmit = () => {
-    this.props.navigation.navigate('Hides');
+    this.props.navigation.navigate('UDC.Hides');
   }
 
   _renderSubmitBtn = () => (
@@ -51,7 +51,7 @@ class UDCGeneralScreen extends React.Component {
   _renderField = (name, dropdownOptions) => (
     <View style={styles.field} key={name}>
       <Text h4 containerStyle={{ marginTop: 5 }}>{name}:</Text>
-      {renderDropdown(name, dropdownOptions, { width: 200, height: 100 })}
+      {renderReduxDropdown(name, dropdownOptions, { width: 200, height: 100 })}
     </View>
   );
 
@@ -99,7 +99,7 @@ export default connectReduxForm(
   'udc',
   UDCGeneralScreen,
   state => ({
-    initialValues: state.udc.general
+    initialValues: state.udc.initial
   }), 
   dispatch => ({
     getInitialState: () => dispatch({ type: actions.GET_UDC_GENERAL_INITIAL_STATE })

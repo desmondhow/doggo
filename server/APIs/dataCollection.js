@@ -9,26 +9,29 @@ const router = express.Router();
  */
 router.post('/:id/createUDCSession', function (req, res, next) {
 
-  let temperature = req.body['Temperature']
-  let humidity = req.body['Humidity']
-  let wind = req.body['Wind']
-  let windDirection = req.body['Wind Direction']
-  let hidesData = req.body['Hides']
+  let temperature = req.body.temperature
+  let humidity = req.body.humidity
+  let wind = req.body.wind
+  let windDirection = req.body.windDirection
 
-  let userId;
-  if (!!req.params.id) {
-    userId = req.params.id
-  }
-  else {
-    console.log(`UserId was not sent with request: ${JSON.stringify(req)}`)
-    return res.send(JSON.stringify({message: `UserId was not sent with request: ${JSON.stringify(req)}`}));
+  req.checkBody('hides').exists();
+  let hidesData = req.body.hides
+
+  let isMissingHides = req.validationErrors();
+  if (isMissingHides) {
+    return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
   }
 
-  console.log('before')
+  req.checkParams('id').exists();
+  const isMissingIdParam = req.validationErrors();
+  if (isMissingIdParam) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
+  }
+
+  let userId = req.params['id']
   User.findById(userId)
-  .exec((err, user) => {
-    console.log('after')
-
+  .exec(err, user => {
     if (err) {
       throw err;
     }
@@ -38,21 +41,23 @@ router.post('/:id/createUDCSession', function (req, res, next) {
     } 
     
     let hides = []
+    console.log(`hidesData: ${JSON.stringify(hidesData)}`)
     Object.keys(hidesData).forEach(concentration => {
-      let concentrationSizes = hides[concentration]
-      Object.keys(concentrationSizes).forEach(size => {
-        size = Number(size.replace('#', '.'))
-  
-        let location = concentrationSizes[size].Location;
-        let concealed = concentrationSizes[size].Concealed;
-        let placementArea = concentrationSizes[size].PlacementArea;
-        let placementHeight = concentrationSizes[size].PlacementHeight
+      let concentrationSizes = hidesData[concentration]
+      Object.keys(concentrationSizes).forEach(size => {  
+        console.log(JSON.stringify(concentrationSizes));
+        console.log(`concentration: ${concentration}, size: ${size}`);
+
+        let location = concentrationSizes[size].location;
+        let isConcealed = concentrationSizes[size].isConcealed;
+        let placementArea = concentrationSizes[size].placementArea;
+        let placementHeight = concentrationSizes[size].placementHeight
   
         hides.push({
           concentration: Number(concentration),
           size,
           location,
-          concealed,
+          isConcealed,
           placementArea,
           placementHeight
         });
@@ -60,7 +65,7 @@ router.post('/:id/createUDCSession', function (req, res, next) {
     });
 
     let sessionData = {
-      user,
+      user: user._id,
       temperature,
       humidity,
       wind,
@@ -77,7 +82,7 @@ router.post('/:id/createUDCSession', function (req, res, next) {
         console.log(`UDCSession ${newSession._id} created`)
         return res.status(200).send({message: newSession._id, status: 200});
       }
-  });
+    });
     
   });
 });

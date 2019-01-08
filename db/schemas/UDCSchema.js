@@ -1,7 +1,7 @@
 /**
  * Schema used for the different sessions
  */
-import mongoose from 'mongoose';
+import mongoose from '../../server/node_modules/mongoose';
 import { UserSchema } from './userSchema';
 
 const UDCSchema = new mongoose.Schema({
@@ -9,7 +9,7 @@ const UDCSchema = new mongoose.Schema({
     TODO: i guess we have them enter their name during creation? should we pull this from the list of trainers we already have?
     creator: String
   */
-  user: UserSchema,
+  user: String,
   temperature: Number,
   humidity: Number,
   wind: Number,
@@ -32,17 +32,17 @@ const UDCSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      concealed: {
+      isConcealed: {
         type: Boolean,
-        required: true
+        required: false
       },
       placementArea: {
         type: String,
-        required: true
+        required: false
       },
       placementHeight: {
         type: String,
-        required: true
+        required: false
       }
     }
   ],  
@@ -50,7 +50,4 @@ const UDCSchema = new mongoose.Schema({
 
 // Models that can be queried by the routes
 const UDC = mongoose.model('UDC', UDCSchema);
-// const Agility = mongoose.model('Agility', AgilitySchema);
-
-//Export the models only
-export default UDCSchema
+export default UDC

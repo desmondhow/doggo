@@ -17,16 +17,11 @@ export const GeneralInfo = {
 }
 
 export const HidesInfo = {
-  Hides: [
-    {
-      Concentrations: [4],
-      Sizes: ['1#', '#09', '#04', '#02']
-    },
-    {
-      Concentrations: [6, 8, 16],
-      Sizes: ['#31', '#08', '#04', '#02']
-    },
-  ],
+  Hides: 
+  {
+    Concentrations: [4, 6, 8, 16],
+    Sizes: ['1#', '#31', '#08', '#09', '#04', '#02']
+  },
   Locations: [
     'Training Room',
     'Woods/Field',
@@ -56,8 +51,5 @@ export const InitialValues = {
     Humidity: 70,
     Wind: 7,
     'Wind Direction': 'N'
-  },
-  Hides: {
-
   }
 }
