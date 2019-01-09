@@ -34,11 +34,11 @@ router.post('/:id/createUDCSession', function (req, res, next) {
     return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
   }
 
-  let userId = req.params['id']
-  User.findById(userId)
-  .exec(err, user => {
+  const userId = req.params.id;
+  console.log(userId);
+  User.findById(userId).exec(function (err, user) {
     if (err) {
-      throw err;
+        return res.status(400).send(JSON.stringify({message: `User ${userId} not found.`}));
     }
     else if (!user) {
       console.log(`User ${userId} not found.`)
@@ -70,14 +70,14 @@ router.post('/:id/createUDCSession', function (req, res, next) {
     });
 
     let sessionData = {
-      user: user._id,
+      user: user.first_name + ' ' + user.last_name,
       temperature,
       humidity,
       wind,
       windDirection,
       complete: false,
       hides
-    }
+    };
     UDCSession.create(sessionData, function (err, newSession) {
       if (err) {
         console.log(err);
@@ -106,7 +106,7 @@ router.get('/get_all_udc', function (req, res) {
             let result = [];
             for (let i =0; i < sessions.length; i++) {
                 let obj = {
-                    creator_name: sessions[i].creator_name,
+                    creator_name: sessions[i].user,
                     dogs:  sessions[i].dogs,
                     _id: sessions[i]._id
                 };
@@ -115,7 +115,6 @@ router.get('/get_all_udc', function (req, res) {
                 }
                 result.push(obj)
             }
-            console.log(result);
             return  res.status(200).send(JSON.stringify({status: true, list: result}));
         }
     });

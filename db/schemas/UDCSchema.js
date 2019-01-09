@@ -50,4 +50,4 @@ const UDCSchema = new mongoose.Schema({
 
 // Models that can be queried by the routes
 const UDC = mongoose.model('UDC', UDCSchema);
-export default UDC
+module.exports = UDC;

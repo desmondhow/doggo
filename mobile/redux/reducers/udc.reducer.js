@@ -64,7 +64,7 @@ export default (state = {}, action) => {
         console.log(`New UDC Session Id: ${JSON.stringify(res)}`)
       })
       .catch(err => {
-        console.log(err);
+        console.error(err);
         throw err;
       })
       return { hides: InitialValues.Hides };

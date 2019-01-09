@@ -47,7 +47,7 @@ export default class UDCHomeScreen extends React.Component {
             .then((res) => {
                 if (res.status) {
                     if (res.list.length === 0) {
-                        alert('There are no active UDC Sessions')
+                        // alert('There are no active UDC Sessions')
                     } else {
                         this.setState({
                             currentSessionsData: [],
