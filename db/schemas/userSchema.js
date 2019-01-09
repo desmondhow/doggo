@@ -1,8 +1,8 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require('../../server/node_modules/mongoose');
+const bcrypt = require('../../server/node_modules/bcrypt');
 
 export const UserSchema = new mongoose.Schema({
     email: {
@@ -69,4 +69,4 @@ UserSchema.pre('save', function (next) {
 
 
 const User = mongoose.model('User', UserSchema);
-export default User;
+module.exports = User;

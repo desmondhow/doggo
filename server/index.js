@@ -1,3 +1,4 @@
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
@@ -6,16 +7,15 @@ const expressSession = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(expressSession);
-const emoji = require('node-emoji')
+const emoji = require('node-emoji');
+const PORT = process.env.PORT || 3010;
 
-const users = require('./APIs/users');
-const dataCollection = require('./APIs/dataCollection');
-const dataAnalysis = require('./APIs/dataAnalysis');
 
 const app = express();
 
 // Connect to DB
 var dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets').getSecret('dbUri')
+console.log(dbUri);
 mongoose.connect(dbUri, function(err, db) {
     if (err) {
         console.error(err);
@@ -25,23 +25,39 @@ mongoose.connect(dbUri, function(err, db) {
 });
 const db = mongoose.connection;
 
-// Support URL-encoded bodies
-app.use(bodyParser.urlencoded({extended: true}));
-// Support JSON-encoded bodies
-app.use(bodyParser.json());
+
 
 // Rread cookies with our secret
 app.use(cookieParser('JlNyXZDRfW8bKhZT9oR5XYZ'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
-// Use sessions for tracking logins
+// Enable CORS
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+
 app.use(expressSession({
+    name: 'logs',
     secret: 'work JlNyXZDRfW8bKhZT9oR5XYZ',
-    resave: true,
+    resave: false,
     saveUninitialized: false,
+    cookies: {
+        maxAge: 60 * 60 * 24 * 7 * 1000,
+        httpOnly: false,
+        secure: false
+    },
     store: new MongoStore({
         mongooseConnection: db
     })
 }));
+const users = require('./APIs/users');
+const dataCollection = require('./APIs/dataCollection');
+const dataAnalysis = require('./APIs/dataAnalysis');
+
+
 
 // Syntax checker
 app.use(expressValidator());
@@ -57,29 +73,17 @@ app.use(function (req, res, next) {
     next();
 });
 
-// Enable CORS
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
-
 // API routes
 app.use('/api/users', users);
-app.use('/api/users', dataCollection);
-app.use('/api/users', dataAnalysis);
+app.use('/api/data_collection', dataCollection);
 
-app.get('/api', function (req, res) {
+//Default page is index
+app.get('/', function (req, res) {
     res.send('Server is working!')
 });
 
-app.get('/', function (req, res) {
-  res.send(`Well, hello. Made with ${emoji.get('heart')} and lots of ${emoji.get('coffee')}.`)
-});
-
-const PORT = process.env.PORT || 3010;
 app.listen(PORT, function () {
-  console.log("Server running on http://localhost:" + PORT);
+    console.log("Server running on http://localhost:" + PORT);
 });
 
 

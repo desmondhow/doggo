@@ -7,14 +7,14 @@ export default (state = {}, action) => {
     case actions.GET_UDC_GENERAL_INITIAL_STATE: {
       return { general: InitialValues.General };
     }
-    case actions.GET_UDC_HIDE_INITIAL_STATE: {
+    case actions.GET_UDC_HIDES_INITIAL_STATE: {
       return { hides: InitialValues.Hides };
     }
-    case actions.SAVE_NEW_UDC_SESSION: {
-      const sessionInfo = action.sessionInfo
-      
+      case actions.SAVE_NEW_UDC_SESSION: {
+      const sessionInfo = action.sessionInfo;
+
       Constants.getSaveUDCSessionURL()
-      .then(url => (   
+      .then(url => (
         fetch(url, {
           method: 'POST',
           headers: {
@@ -25,7 +25,7 @@ export default (state = {}, action) => {
         })
       ))
       .then(res => res.json())
-      .then((res) => { 
+      .then((res) => {
         console.log(`New UDC Session Id: ${res}`)
         console.log('this isnt reached because User.findById on server doesnt work')
       })
@@ -35,6 +35,7 @@ export default (state = {}, action) => {
       })
       // return { hides: InitialValues.Hides };
     }
+
     default:
       return state;
   }

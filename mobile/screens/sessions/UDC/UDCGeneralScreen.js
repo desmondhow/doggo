@@ -46,7 +46,7 @@ class UDCGeneralScreen extends React.Component {
         size: 20
       }}
     />
-  )
+  );
 
   _renderField = (name, dropdownOptions) => (
     <View style={styles.field} key={name}>
@@ -65,7 +65,7 @@ class UDCGeneralScreen extends React.Component {
       {this._renderSubmitBtn()}
     </View>
 
-  )
+  );
 
   render = () => (
     <View style={container}>
@@ -100,6 +100,7 @@ export default connectReduxForm(
   UDCGeneralScreen,
   state => ({
     initialValues: state.udc.general
+
   }), 
   dispatch => ({
     getInitialState: () => dispatch({ type: actions.GET_UDC_GENERAL_INITIAL_STATE })

@@ -17,6 +17,7 @@ class UDCHidesScreen extends React.Component {
     }
 
     _onSubmit = sessionInfo => {
+        alert(JSON.stringify(sessionInfo));
         this.props.saveNewSession(sessionInfo);
         this.props.navigation.navigate('UDC');
     };

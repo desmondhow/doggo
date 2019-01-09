@@ -46,7 +46,6 @@ export default class App extends React.Component {
             return null;
         }
         const {signedIn} = this.state;
-        console.log(signedIn)
         let RootNav = createRootNavigator(signedIn);
 
         return (
