@@ -1,2 +1,8 @@
-node_modules/**/*
-.expo/**/*
+*node_modules
+.DS_Store
+
+# server
+server/secrets.js
+
+# mobile
+mobile/.expo

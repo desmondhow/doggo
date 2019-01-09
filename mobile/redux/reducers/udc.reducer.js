@@ -1,5 +1,6 @@
 import * as actions from '../actions/index.actions';
 import { InitialValues } from '../../constants/sessions/UDCConstants';
+import Constants from "../../constants/Api";
 
 export default (state = {}, action) => {
   switch (action.type) {
@@ -11,11 +12,28 @@ export default (state = {}, action) => {
     }
     case actions.SAVE_NEW_UDC_SESSION: {
       const sessionInfo = action.sessionInfo
-      alert(`TODO: setup new session saving\n${JSON.stringify(sessionInfo)}`)
-      // TODO: arrange sessionInfo into Object that can be sent to backend and save this session
-      // for the user that's logged in (can get userId from auth.js & need to create route on backend for saving a UDC session)
-      // Once this is done, such a session can be fetched using another newly created route
-      return { hides: InitialValues.Hides };
+      
+      Constants.getSaveUDCSessionURL()
+      .then(url => (   
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(sessionInfo)
+        })
+      ))
+      .then(res => res.json())
+      .then((res) => { 
+        console.log(`New UDC Session Id: ${res}`)
+        console.log('this isnt reached because User.findById on server doesnt work')
+      })
+      .catch(err => {
+        console.log(err);
+        throw err;
+      })
+      // return { hides: InitialValues.Hides };
     }
     default:
       return state;

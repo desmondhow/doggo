@@ -4,7 +4,7 @@
 const mongoose = require('../../server/node_modules/mongoose');
 const bcrypt = require('../../server/node_modules/bcrypt');
 
-const UserSchema = new mongoose.Schema({
+export const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
@@ -69,4 +69,4 @@ UserSchema.pre('save', function (next) {
 
 
 const User = mongoose.model('User', UserSchema);
-module.exports = User;
+export default User;

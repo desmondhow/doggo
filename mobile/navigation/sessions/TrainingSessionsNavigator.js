@@ -7,7 +7,7 @@ import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScree
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCBuildingSearch from '../../screens/sessions/UDC/UDCBuildingSearchScreen';
 import UDCNavigator from './UDCNavigator';
-import { onSignOut } from '../../auth';
+import { onSignOut } from '../../components/auth';
 
 export default createStackNavigator({
   Home: {

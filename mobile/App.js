@@ -5,7 +5,7 @@ import {createStore} from 'redux';
 import {Provider, connect} from 'react-redux';
 
 import {createRootNavigator} from './navigation/AppNavigator';
-import {isSignedIn} from "./auth";
+import {isSignedIn} from "./components/auth";
 import reducer from './redux/reducers/index.reducers/'
 
 const store = createStore(reducer);
