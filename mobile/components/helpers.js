@@ -18,11 +18,13 @@ export const renderDropdown = (
   onChange, 
   dropdownOptions, 
   containerStyle={}, 
-  placeholder=null
+  fontSize=16,
+  placeholder=null,
 ) => (
   <Dropdown 
     overlayStyle={{marginTop: 95}}
     containerStyle={containerStyle}
+    fontSize={fontSize}
     value={value}
     data={dropdownOptions.map(option => ({ value: option }))} 
     onChangeText={onChange}
@@ -36,6 +38,7 @@ export const renderReduxDropdown = (
   containerStyle = {}, 
   customOwnChange = null, 
   customValue = null,
+  fontSize=16,
   placeholder = ''
 ) => (
   <Field name={name} component={(inputProps) => {
@@ -48,6 +51,7 @@ export const renderReduxDropdown = (
           onChange, 
         dropdownOptions, 
         containerStyle, 
+        fontSize,
         placeholder)
     )
   }}/>

@@ -12,8 +12,7 @@ router.get('/', function (req, res) {
 /**
  * Creates a new UDC session
  */
-router.post('/:id/createUDCSession', function (req, res, next) {
-
+router.post('/:id/create-UDC-session', function (req, res, next) {
   let temperature = req.body.temperature
   let humidity = req.body.humidity
   let wind = req.body.wind
@@ -76,6 +75,7 @@ router.post('/:id/createUDCSession', function (req, res, next) {
       wind,
       windDirection,
       complete: false,
+      createdAt: new Date(),
       hides
     };
     UDCSession.create(sessionData, function (err, newSession) {
@@ -87,7 +87,7 @@ router.post('/:id/createUDCSession', function (req, res, next) {
         console.log(`UDCSession ${newSession._id} created`)
         return res.status(200).send({message: newSession._id, status: 200});
       }
-    });
+    },);
     
   });
 });
@@ -95,29 +95,32 @@ router.post('/:id/createUDCSession', function (req, res, next) {
 /**
  * Returns all the non complete UDC sessions
  */
-router.get('/get_all_udc', function (req, res) {
-    UDCSession.find({'complete': false}).exec(function (err, sessions) {
-        if (err) {
-            console.log(err);
-            return res.status(400).send(JSON.stringify({status: false, message: err}));
-        } else if (sessions === null || sessions === undefined) {
-            return  res.status(400).send(JSON.stringify({status: false, message: 'There are no current UDC sessions'}));
-        } else {
-            let result = [];
-            for (let i =0; i < sessions.length; i++) {
-                let obj = {
-                    creator_name: sessions[i].user,
-                    dogs:  sessions[i].dogs,
-                    _id: sessions[i]._id
-                };
-                if (obj.dogs  == null) {
-                    obj.dogs = [];
-                }
-                result.push(obj)
-            }
-            return  res.status(200).send(JSON.stringify({status: true, list: result}));
-        }
-    });
+router.get('/get-current-UDC-sessions', function (req, res) {
+  UDCSession.find({'complete': false}).exec(function (err, sessions) {
+      if (err) {
+          console.log(err);
+          return res.status(400).send(JSON.stringify({status: false, message: err}));
+      } else if (sessions === null || sessions === undefined) {
+          return  res.status(400).send(JSON.stringify({status: false, message: 'There are no current UDC sessions'}));
+      } else {
+          let result = [];
+          console.log('hit')
+
+          for (let i =0; i < sessions.length; i++) {
+              let obj = {
+                  createdAt: sessions[i].createdAt,
+                  dogs:  sessions[i].dogs,
+                  hides: sessions[i].hides,
+                  _id: sessions[i]._id
+              };
+              if (obj.dogs  == null) {
+                  obj.dogs = [];
+              }
+              result.push(obj)
+          }
+          return  res.status(200).send(JSON.stringify({status: true, list: result}));
+      }
+  });
 });
 
 

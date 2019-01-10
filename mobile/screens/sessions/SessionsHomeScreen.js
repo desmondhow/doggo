@@ -4,34 +4,43 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import Tile from '../../components/Tile';
+import { Card, Button, Icon,  } from 'react-native-elements';
 import { connect } from 'react-redux';
+import { Sessions } from '../../constants/SessionsConstants';
+import { buttonStyle, buttonTextStyle } from '../../constants/Styles';
 
 const HomeScreen = class extends React.Component {
-
-  componentWillMount() {
-    this.fetchAllSessions(); 
-  }
-
-  fetchAllSessions() {
-    // fetch(Api.getAllSessions).then((res) => {
-      const ds = new ListView.DataSource({
-        rowHasChanged: (r1, r2) => r1 !== r2
-      });
-      this.setState({ dataSource: ds.cloneWithRows(["UDC", "Agility"]) });
-    // })
-    // .catch((err) => {
-          // console.log(err);
-    // });
-  }
-
   render() { 
     const { navigate } = this.props.navigation;
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+
     return (
       <View style={styles.container}>
         <ListView contentContainerStyle={styles.sessionsList}
-          dataSource={this.state.dataSource}
-          renderRow={(rowData) => <Tile text={rowData} onPress={() => navigate(rowData)}/>}
+          dataSource={ds.cloneWithRows(Sessions)}
+          renderRow={(rowData) => (
+            <Card title={rowData} titleStyle={{ fontSize: 24 }}>
+              <View style={{
+                flexDirection: 'column', 
+                height: 110,
+                justifyContent: 'space-between'
+                }}
+              >
+                <Button
+                  buttonStyle={buttonStyle}
+                  title='Create New Session'
+                  textStyle={{...buttonTextStyle, fontSize: 20 }}
+                  onPress={() => navigate(`${rowData}.NewSession`)} />
+                <Button
+                  buttonStyle={buttonStyle}
+                  title='View Current Sessions' 
+                  textStyle={{...buttonTextStyle, fontSize: 20 }}
+                  onPress={() => navigate(rowData)} />
+              </View>
+            </Card>
+          )}
         />
       </View>
     );

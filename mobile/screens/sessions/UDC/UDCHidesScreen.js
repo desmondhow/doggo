@@ -3,9 +3,15 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Text, Button, ButtonGroup, Divider } from 'react-native-elements';
 import { Field, formValueSelector } from 'redux-form';
 
-import { container, formContainer, center } from '../../../constants/Styles';
+import { 
+  container, 
+  formContainer, 
+  center, 
+  buttonStyle, buttonTextStyle,
+  outlineButtonStyle, outlineButtonTextStyle
+} from '../../../constants/Styles';
 import { connectReduxForm, renderReduxDropdown, renderDropdown } from '../../../components/helpers';
-import { HidesInfo } from '../../../constants/sessions/UDCConstants';
+import { HidesInfo } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 import store from '../../../redux/store';
@@ -60,7 +66,7 @@ class UDCHidesScreen extends React.Component {
     >
       <View style={{ flexDirection: 'column', ...center }}>
         {/* Location */}
-        <Text>Location:</Text>
+        <Text style={styles.labelStyle}>Location:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.location`,
           HidesInfo.Locations,
@@ -71,7 +77,7 @@ class UDCHidesScreen extends React.Component {
       </View>
       <View style={{ flexDirection: 'column', ...center, marginBottom: 30 }}>
         {/* Concealed */}
-        <Text>Concealed:</Text>
+        <Text style={styles.labelStyle}>Concealed:</Text>
         <View>
           <Field
             name={`Hides.${concentration}.${size}.isConcealed`}
@@ -80,6 +86,7 @@ class UDCHidesScreen extends React.Component {
                 onPress={userIsAddingHide ? inputProps.input.onChange : isConcealed => this._updateHideState(concentration, size, 'isConcealed', isConcealed)}
                 selectedIndex={userIsAddingHide ? this.props.addHideIsConcealed : this.state.addedHides[concentration][size].isConcealed}
                 buttons={['No', 'Yes']}
+                textStyle={outlineButtonTextStyle}
                 containerStyle={{ height: 40, width: 100}}
               /> 
             }
@@ -88,7 +95,7 @@ class UDCHidesScreen extends React.Component {
       </View>
       {/* Placement Area */}
       <View style={{ flexDirection: 'column', ...center }}>
-        <Text>Placement Area:</Text>
+        <Text style={styles.labelStyle}>Placement Area:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.placementArea`,
           HidesInfo.PlacementAreas,
@@ -99,7 +106,7 @@ class UDCHidesScreen extends React.Component {
       </View>
       {/* Placement Height */}
       <View style={{ flexDirection: 'column', ...center }}>
-        <Text>Placement Height:</Text>
+        <Text style={styles.labelStyle}>Placement Height:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.placementHeight`,
           HidesInfo.PlacementHeights,
@@ -120,13 +127,14 @@ class UDCHidesScreen extends React.Component {
       fontSize={26}
       buttonStyle={{
         ...center,
+        ...buttonStyle,
         marginLeft: 60,
         marginTop: 20,
         width: 300
       }}
       titleStyle={{
+        ...buttonTextStyle,
         fontSize: 20,
-        fontWeight: 'bold'
       }}
     />
   );
@@ -178,13 +186,13 @@ class UDCHidesScreen extends React.Component {
     <Button
       rounded
       title='Add a Hide'
-      textStyle={{ fontSize: 22 }}
-      color='white'
+      buttonStyle={buttonStyle}
+      textStyle={buttonTextStyle}
+      fontSize={22}
       rightIcon={{    
         name: 'plus',
         type: "font-awesome",
-        size: 30,
-        color: Colors.blue,
+        size: 26,
       }}
       containerViewStyle={{paddingBottom: 10, marginRight: 50}}
       onPress={() => this._addHide()}
@@ -192,14 +200,13 @@ class UDCHidesScreen extends React.Component {
   )
 
   _renderAddHideTypeDropdowns = () => {
-    const containerStyle = { flexDirection: 'column', width: '33%', ...center }
+    const containerStyle = { flexDirection: 'column', width: '40%', ...center }
     const dropdownContainerStyle = { marginTop: -20, width: '100%' }
-    const textStyle = { fontWeight: 'bold', fontSize: 16 }
 
     return (
       <View style={{flexDirection: 'row', width: '55%', justifyContent: 'space-between', marginTop: 25}}>
         <View style={containerStyle}>
-          <Text style={textStyle}>Concentration</Text>
+          <Text style={styles.labelStyle}>Concentration:</Text>
           {
             renderDropdown(
               this.state.addHideConcentration, 
@@ -210,7 +217,7 @@ class UDCHidesScreen extends React.Component {
           }
         </View>
         <View style={containerStyle}>
-          <Text style={textStyle}>Size</Text>
+          <Text style={styles.labelStyle}>Size:</Text>
           {
             renderDropdown(
               this.state.addHideSize, 
@@ -304,6 +311,10 @@ const styles = StyleSheet.create({
     width: 150,
     height: 100,
     marginTop: -20
+  },
+  labelStyle: {
+    fontWeight: 'bold',
+    fontSize: 18
   }
 });
 

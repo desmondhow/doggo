@@ -6,9 +6,9 @@ import {
 } from 'react-native';
 import { Text, Icon, Button } from 'react-native-elements';
 
-import { container, formContainer, center } from '../../../constants/Styles';
+import { container, formContainer, center, buttonStyle, buttonTextStyle} from '../../../constants/Styles';
 import { connectReduxForm, renderReduxDropdown } from '../../../components/helpers';
-import { GeneralInfo } from '../../../constants/sessions/UDCConstants';
+import { GeneralInfo } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 
@@ -23,7 +23,7 @@ class UDCGeneralScreen extends React.Component {
     this.props.navigation.navigate('UDC.Hides');
   }
 
-  _renderSubmitBtn = () => (
+  _renderNextBtn = () => (
   <Button 
       raised
       rounded
@@ -32,6 +32,7 @@ class UDCGeneralScreen extends React.Component {
       fontSize={26}
       buttonStyle={{
         ...center,
+        ...buttonStyle,
         marginLeft: 60, 
         marginTop: 20, 
         width: 300
@@ -51,7 +52,14 @@ class UDCGeneralScreen extends React.Component {
   _renderField = (name, dropdownOptions) => (
     <View style={styles.field} key={name}>
       <Text h4 containerStyle={{ marginTop: 5 }}>{name}:</Text>
-      {renderReduxDropdown(name, dropdownOptions, { width: 200, height: 100 })}
+      {renderReduxDropdown(
+        name, 
+        dropdownOptions, 
+        { width: 200, height: 100 }, 
+        null, 
+        null, 
+        20
+      )}
     </View>
   );
 
@@ -62,7 +70,7 @@ class UDCGeneralScreen extends React.Component {
           this._renderField(fieldName, GeneralInfo[fieldName])
         )}
       </ScrollView>
-      {this._renderSubmitBtn()}
+      {this._renderNextBtn()}
     </View>
 
   )

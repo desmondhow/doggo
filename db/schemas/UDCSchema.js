@@ -2,7 +2,6 @@
  * Schema used for the different sessions
  */
 import mongoose from '../../server/node_modules/mongoose';
-import { UserSchema } from './userSchema';
 
 const UDCSchema = new mongoose.Schema({
   /* 
@@ -18,6 +17,7 @@ const UDCSchema = new mongoose.Schema({
     type: Boolean,
     required: true
   },
+  createdAt: Date,
   hides: [
     {
       concentration: {

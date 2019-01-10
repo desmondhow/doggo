@@ -1,7 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { Icon, Button } from 'react-native-elements';
-import {AsyncStorage} from "react-native";
 
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
@@ -9,7 +8,7 @@ import UDCNavigator from './UDCNavigator';
 import { onSignOut } from '../../components/auth';
 import store from '../../redux/store';
 
-const TraningSessionsNavigator = createStackNavigator({
+export default createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
@@ -59,17 +58,3 @@ const getActiveRouteName = navigationState => {
   }
   return route.routeName;
 }
-
-export default () => 
-  <TraningSessionsNavigator 
-    onNavigationStateChange={(prevState, currState) => {
-      const currScreen = getActiveRouteName(currState);
-      const prevScreen = getActiveRouteName(prevState);
-
-      if (currScreen === 'UDC' && prevScreen === 'UDC.General') {
-        console.log(JSON.stringify(store.getState()));
-      }
-
-      // console.log(`currScreen: ${currScreen}, prevScreen: ${prevScreen}`)
-    }}
-  />

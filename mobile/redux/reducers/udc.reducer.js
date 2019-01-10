@@ -1,5 +1,5 @@
 import * as actions from '../actions/index.actions';
-import { InitialValues } from '../../constants/sessions/UDCConstants';
+import { InitialValues } from '../../constants/SessionsConstants';
 import Constants from "../../constants/Api";
 
 export default (state = {}, action) => {
