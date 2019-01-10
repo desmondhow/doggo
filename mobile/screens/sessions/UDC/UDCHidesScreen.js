@@ -252,7 +252,7 @@ class UDCHidesScreen extends React.Component {
         ))
       }
       <View style={center}>
-        <Divider style={{ backgroundColor: Colors.blue, height: 2, width: '90%' }} />
+        <Divider style={{ backgroundColor: 'black', height: 2, width: '90%' }} />
       </View>
     </View>
   )
