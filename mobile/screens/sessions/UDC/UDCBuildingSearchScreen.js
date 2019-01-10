@@ -29,13 +29,11 @@ export class UDCBuildingSearchScreen extends React.Component {
   state = {
     activeSections: [],
     barks: '0',
-    // sessionId and dogId could be passed in as props, but rn as state while i figure shit out
-    sessionId: 0,
-    dogId: 0,
   };
 
-  _onSubmit = (sessionInfo) => {
-    console.log(sessionInfo)
+  _onSubmit = (performanceInfo) => {
+    console.log(performanceInfo)
+    this.props.saveDogTraining(performanceInfo);
     Alert.alert('Finish Dog Training, save info for this session for this dog - requires submitting multiple forms with one click, thus maintaining a key for each search');
     this.props.navigation.navigate('UDC');
   }
@@ -69,7 +67,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderHeader = section => {
     return (
       <View style={styles.field}>
-        <Text h3>{section.Location}, {section.Placement}, {section.Concealed}</Text>
+        <Text h3>{section.location}, {section.placement}, {section.concealed}</Text>
       </View>
     );
   };
@@ -80,7 +78,7 @@ export class UDCBuildingSearchScreen extends React.Component {
       <View style={styles.content}>
         <Text h4>Handler Radius - Alert</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRAlert]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusAlert`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -94,7 +92,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Handler Radius - Reward</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRReward]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusReward`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -108,7 +106,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Handler Radius - Search</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HRSearch]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusSearch`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -120,9 +118,10 @@ export class UDCBuildingSearchScreen extends React.Component {
               )}}
             />
         </View>
+        {/* need to show actual string of the things instead of "selectedIndex" being returned */}
         <Text h4>Rewarder</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Rewarder]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.rewarder`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -137,7 +136,7 @@ export class UDCBuildingSearchScreen extends React.Component {
 
         <Text h4>Barks</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Barks]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.barks`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <TextInput 
@@ -153,13 +152,13 @@ export class UDCBuildingSearchScreen extends React.Component {
 
         <Text h4>Handler Knows</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][HandlerKnows]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.handlerKnows`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -167,13 +166,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Fringe</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Fringe]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.fringe`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -181,13 +180,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Reset</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Reset]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.reset`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -195,13 +194,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>False Alert</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FalseAlert]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.falseAlert`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -209,13 +208,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>On Lead</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][OnLead]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.lead`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -223,13 +222,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>False Indication</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FalseIndication]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.falseIndication`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -237,13 +236,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Detail Search</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Detail Search]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.detailSearch`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -251,13 +250,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Successful</Text>
         <View>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Successful]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.successful`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
                   onPress={onChange}
                   selectedIndex={value}
-                  buttons={['Yes', 'No']}
+                  buttons={['No', 'Yes']}
                   containerStyle={{height: 50}}
                 />
               )}}
@@ -266,9 +265,9 @@ export class UDCBuildingSearchScreen extends React.Component {
         
         <Text h4>Failure Codes</Text>
         <ScrollView style={{height: '20%'}}>
-            <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][FailCodes]`} component={(inputProps) => {
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.failCodes`} component={(inputProps) => {
                 const { input: { value, onChange } } = inputProps;
-                // what to do with the selectedIndex={value} thing for these checkboxes
+                // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
                 return (
                     <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
                 )}}
@@ -276,9 +275,9 @@ export class UDCBuildingSearchScreen extends React.Component {
         </ScrollView>
         <Text h4>Distractions</Text>
         <ScrollView style={{height: '20%'}}>
-        <Field name={`UDC[${this.state.sessionId}][${this.state.dogId}][${section.hideId}][Distractions]`} component={(inputProps) => {
+        <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.distractions`} component={(inputProps) => {
                 const { input: { value, onChange } } = inputProps;
-                // what to do with the selectedIndex={value} thing for these checkboxes
+                // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
                 return (
                     <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
                 )}}
@@ -296,19 +295,16 @@ export class UDCBuildingSearchScreen extends React.Component {
 
   _renderPage = () => (
     <View style={center}>
-      <View>
-        <Text>K9 Name</Text>
-        {/* UDC[BuildingSearchInfo.TempSessions[0].sessionId].dogs.dogId */}
-        {/* this might have to be its own page: need to find a way to save this K9 name to the state so that it can pass to the redux fields or whatever */}
-        {renderDropdown("K9 Name", BuildingSearchInfo.TempDogs, { width: 200, height: 100 })}
-      </View>
+        <View>
+            <Text>Training {this.props.dog.name}</Text>
+        </View>
       <View>
         <Text>Handler</Text>
-        {renderDropdown("Handler", BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        {renderDropdown(`dogs.${this.props.dog.id}.Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
       </View>
       <View>
         <Text>Recorder</Text>
-        {renderDropdown("Recorder", BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        {renderDropdown(`dogs.${this.props.dog.id}.Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
       </View>
       <Text h2>Searches</Text>
       <Accordion
@@ -367,4 +363,11 @@ const styles = StyleSheet.create({
 export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
+    state => ({
+        dog: state.udc.dog
+    }),
+    dispatch => ({
+        saveDogTraining: performanceInfo =>
+          dispatch({ type: actions.SAVE_UDC_DOG_TRAINING, performanceInfo })
+      })
   )

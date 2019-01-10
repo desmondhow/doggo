@@ -35,6 +35,16 @@ export default (state = {}, action) => {
       })
       // return { hides: InitialValues.Hides };
     }
+    case actions.SAVE_UDC_DOG: {
+      return { dog: action.dog };
+    }
+    case actions.SAVE_UDC_DOG_TRAINING: {
+      const performanceInfo = action.performanceInfo.dogs;
+      console.log(performanceInfo);
+      // api call or whatever to actually save the perfomanceInfo for the dog to the state
+      // note performanceInfo.dogs is what we want!
+      return state;
+    }
     default:
       return state;
   }

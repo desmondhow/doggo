@@ -22,36 +22,46 @@ export const BuildingSearchInfo = {
       sessionId: 0,
       Hides: [
         {
-          hideId: 0,
-          Location: 'Training Room',
-          Placement: 'Scent Box',
-          Concealed: 'Concealed'
+          concentration: 0,
+          size: 0,
+          location: 'Training Room',
+          placement: 'Scent Box',
+          concealed: 'Concealed'
         },
         {
-          hideId: 1,
-          Location: 'Vehicle Interior',
-          Placement: 'Package',
-          Concealed: 'Concealed'
+          concentration: 1,
+          size: 0,
+          location: 'Vehicle Interior',
+          placement: 'Package',
+          concealed: 'Concealed'
         },
         {
-          hideId: 2,
-          Location: 'Training Room',
-          Placement: 'Container',
-          Concealed: 'Not Concealed'
+          concentration: 2,
+          size: 0,
+          location: 'Training Room',
+          placement: 'Container',
+          concealed: 'Not Concealed'
         },
         {
-          hideId: 3,
-          Location: 'Building Exterior',
-          Placement: 'Scent Box',
-          Concealed: 'Concealed'
+          concentration: 3,
+          size: 0,
+          location: 'Building Exterior',
+          placement: 'Scent Box',
+          concealed: 'Concealed'
         }
       ],
     },
   ],
   TempDogs: [
-    'Moxy',
-    'Roxy',
-    'Joe',
+    {
+      value: 'Moxy-0'
+    },
+    {
+      value: 'Roxy-1'
+    },
+    {
+      value: 'Joe-2'
+    }
   ],
   TempTrainers: [
     'Jamie',
@@ -66,11 +76,11 @@ export const BuildingSearchInfo = {
   ],
   Distractions: [
     {
-      label: 'Other K9',
+      label: 'Humans, Workers',
       value: '1,'
     },
     {
-      label: 'Humans, Workers',
+      label: 'Other K9',
       value: '2'
     },
     {

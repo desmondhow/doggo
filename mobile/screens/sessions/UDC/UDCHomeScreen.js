@@ -50,7 +50,7 @@ export default class UDCHomeScreen extends React.Component {
         title='Continue'
         buttonStyle={styles.continueTrainingButton}
         titleStyle={styles.continueTrainingButtonText}
-        onPress={() => navigate('UDCBuildingSearch')}
+        onPress={() => navigate('UDCTrainDog')}
         color='black'
       />
     );
