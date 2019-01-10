@@ -11,16 +11,6 @@ export const UserSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    first_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
-    last_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
     password: {
         type: String,
         required: true,

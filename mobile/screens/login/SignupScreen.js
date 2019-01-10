@@ -22,38 +22,14 @@ export default class SignupScreen extends React.Component {
         headerTintColor: 'white',
     });
 
-
     constructor() {
         super();
         this.state = {
-            first_name: '',
-            last_name: '',
             email: '',
             password: '',
             password_conf: ''
         };
     }
-
-    /**
-     * Sets the value for the name
-     * @param name
-     */
-    handleName = (name) => {
-        this.setState({
-            first_name: name,
-        })
-    };
-
-    /**
-     * Sets the value for the last name
-     * @param name
-     */
-    handleLastName = (name) => {
-        this.setState({
-            last_name: name,
-        })
-    };
-
 
     /**
      * Sets the value for the email
@@ -97,8 +73,6 @@ export default class SignupScreen extends React.Component {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'first_name': this.state.first_name,
-                'last_name': this.state.last_name,
                 'email': this.state.email,
                 'password': this.state.password,
                 'password_conf': this.state.password_conf,

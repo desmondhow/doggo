@@ -69,7 +69,7 @@ router.post('/:id/create-UDC-session', function (req, res, next) {
     });
 
     let sessionData = {
-      user: user.first_name + ' ' + user.last_name,
+      user: user._id,
       temperature,
       humidity,
       wind,
@@ -104,7 +104,6 @@ router.get('/get-current-UDC-sessions', function (req, res) {
           return  res.status(400).send(JSON.stringify({status: false, message: 'There are no current UDC sessions'}));
       } else {
           let result = [];
-          console.log('hit')
 
           for (let i =0; i < sessions.length; i++) {
               let obj = {
@@ -127,7 +126,7 @@ router.get('/get-current-UDC-sessions', function (req, res) {
 /**
  * Get a specific UDC session by its uniquide ID
  */
-router.get('/getUDCSession/:SessionID', (req, res) => {
+router.get('/get-UDC-session/:SessionID', (req, res) => {
     const id = req.params.SessionID;
     console.log(id);
     if (id === undefined || id.length === 0) {
