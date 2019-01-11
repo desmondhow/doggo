@@ -142,7 +142,7 @@ export class UDCBuildingSearchScreen extends React.Component {
                 <TextInput 
                     style={styles.input}
                     keyboardType='numeric'
-                    onChangeText={(text)=> this.checkNumber(text)}
+                    onChangeText={(text)=> text}
                     value={this.state.barks}
                     maxLength={3}  //setting limit of input
                 />
@@ -283,6 +283,46 @@ export class UDCBuildingSearchScreen extends React.Component {
                 )}}
                 /> 
         </ScrollView>
+        <View>
+          <Text h3>Agility</Text>
+          <Text h4>Object Provided</Text>
+          <View>
+            {renderDropdown(`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.objectProvided`, BuildingSearchInfo.AgilityObjects, { width: 200, height: 100 })}
+          </View>
+          <Text h4>Object Used</Text>
+          <View>
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.objectUsed`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <ButtonGroup
+                  onPress={onChange}
+                  selectedIndex={value}
+                  buttons={['No', 'Yes']}
+                  containerStyle={{height: 50}}
+                />
+              )}}
+            />
+          </View>   
+          <Text h4>Surface Type</Text>
+          <View>
+            {renderDropdown(`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.surfaceType`, BuildingSearchInfo.SurfaceTypes, { width: 200, height: 100 })}
+          </View>
+          <Text h4>Canine End Height (ft)</Text>
+          <View>
+            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.endHeight`} component={(inputProps) => {
+              const { input: { value, onChange } } = inputProps;
+              return (
+                <TextInput 
+                    style={styles.input}
+                    keyboardType='numeric'
+                    onChangeText={(text)=> this.checkNumber(text)}
+                    value={0}
+                    maxLength={3}  //setting limit of input
+                />
+              )}}
+            />
+          </View>
+        </View>
       </View>
     );
   };

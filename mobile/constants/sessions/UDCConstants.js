@@ -293,6 +293,29 @@ export const BuildingSearchInfo = {
       label:'Disrupted scent source',
       value: '44'
     },
+  ],
+  AgilityObjects: [
+    'Crawl',
+    'Jump',
+    'Ladder',
+    'Plank',
+    'Ramp',
+    'Platform',
+    'Stairs',
+    'Unstable Surface'
+  ],
+  SurfaceTypes: [
+    'Wood',
+    'Metal',
+    'Concrete',
+    'Plastic',
+    'Rough',
+    'Slippery',
+    'Unstable',
+    'With Debris',
+    'Darkened',
+    'Blue Mat',
+    'Moving'
   ]
 }
 
