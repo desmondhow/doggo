@@ -66,39 +66,53 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
 
   let sessionId = req.body.id;
   console.log(JSON.stringify(req.body))
-  
-  if (sessionId) {
-    User.update({'sessions.UDC.id': sessionId},
-      { $set: { 
-        'sessions.UDC.$.temperature': sessionData.temperature,
-        'sessions.UDC.$.humidity': sessionData.humidity,
-        'sessions.UDC.$.wind': sessionData.wind,
-        'sessions.UDC.$.windDirection': sessionData.windDirection,
-        'sessions.UDC.$.hides': sessionData.hides,
-        }
-      },
-    ((err, updatedUser) => {
-      if (err) {
-        console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
-      }
-      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
-      return res.status(200).send({message: updatedUser, status: 200});
-    }));
-  }
-  else {
-    User.findByIdAndUpdate(userId, {
-      $push: { 'sessions.UDC': sessionData }
-    }, 
-    ((err, updatedUser) => {
-      if (err) {
-        console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
-      }
-      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
-      return res.status(200).send({message: updatedUser, status: 200});
-    }));
-  }  
+  console.log(`sessionData: ${JSON.stringify(sessionData)}`);
+
+  User.findById(userId)
+  .where('sessions.UDC.id').equals(sessionId)
+  .then(data => {
+    if (!data) {
+      console.log('nope... but why?')
+    } 
+    console.log(data);
+  })
+  .catch(err => {
+    console.log(err);
+    return res.status(400).send(JSON.stringify({status: false, message: err}));
+  })
+
+  // if (sessionId) {
+  //   User.update({'sessions.UDC.id': sessionId},
+  //     { $set: { 
+  //       'sessions.UDC.$.temperature': sessionData.temperature,
+  //       'sessions.UDC.$.humidity': sessionData.humidity,
+  //       'sessions.UDC.$.wind': sessionData.wind,
+  //       'sessions.UDC.$.windDirection': sessionData.windDirection,
+  //       'sessions.UDC.$.hides': sessionData.hides,
+  //       }
+  //     },
+  //   ((err, updatedUser) => {
+  //     if (err) {
+  //       console.log(err);
+  //       return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
+  //     }
+  //     console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+  //     return res.status(200).send({message: updatedUser, status: 200});
+  //   }));
+  // }
+  // else {
+  //   User.findByIdAndUpdate(userId, {
+  //     $push: { 'sessions.UDC': sessionData }
+  //   }, 
+  //   ((err, updatedUser) => {
+  //     if (err) {
+  //       console.log(err);
+  //       return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
+  //     }
+  //     console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+  //     return res.status(200).send({message: updatedUser, status: 200});
+  //   }));
+  // }  
 });
 
 /**

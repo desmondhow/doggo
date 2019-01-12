@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import {
   Table,
   TableWrapper,
@@ -182,16 +182,16 @@ export default class UDCHomeScreen extends React.Component {
         <View style={{flexDirection: 'row', marginLeft: 20}}>
           {rowData.map((cellData, j) => {
             width = j < 3 ? 150 : 100;
-            marginLeft = j == 1 ? 30 : 0;
-
+            marginLeft = j == 4 ? -20 : 0;
             return (
               <Cell
                 key={i + j}
-                data={j == 1 ? `\t\t${cellData}` : cellData}
+                data={j == 1 ? `\t${cellData}` : cellData}
                 style={[{
                   borderColor: 'transparent',
                   width: width,
                   height: 50,
+                  marginLeft: marginLeft
                 }, i % 2 == 0 ? null : styles.oddRow]}
                 textStyle={{
                   fontSize: 18,
@@ -220,38 +220,41 @@ export default class UDCHomeScreen extends React.Component {
               Current UDC Sessions
             </Text>
           </View>
-          <Table
-            style={styles.tableContainer}
-            borderStyle={{ borderColor: "transparent" }}
-          >
-            <View style={{flexDirection: 'row', marginTop: 20}}>
-              {currentSessionsTableHeaderText.map((cellData, j) => {
-                width = j < 3 ? 150 : 100;
-                return (
-                  <Cell
-                    key={j}
-                    data={cellData}
-                    style={{
-                      borderColor: 'transparent',
-                      width: width,
-                      borderBottomColor: "black",
-                      borderBottomWidth: 3,
-                    }}
-                    textStyle={{
-                      fontSize: 24,
-                      fontWeight: "bold",
-                      paddingLeft: 10,
-                      paddingBottom: 20,
-                      fontFamily: "montserrat"
-                    }}
-                  />       
-                )   
-              })}
-            </View>
-            <TableWrapper>
-              {rows}
-            </TableWrapper>
-          </Table>
+          <ScrollView>
+            <Table
+              style={styles.tableContainer}
+              borderStyle={{ borderColor: "transparent" }}
+            >
+              <View style={{flexDirection: 'row', marginTop: 20}}>
+                {currentSessionsTableHeaderText.map((cellData, j) => {
+                  width = j < 3 ? 150 : 100;
+                  return (
+                    <Cell
+                      key={j}
+                      data={cellData}
+                      style={{
+                        borderColor: 'transparent',
+                        width: width,
+                        borderBottomColor: "black",
+                        borderBottomWidth: 3,
+                      }}
+                      textStyle={{
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        paddingBottom: 20,
+                        paddingLeft: 10,
+                        fontFamily: "montserrat"
+                      }}
+                    />       
+                  )   
+                })}
+              </View>
+              <TableWrapper>
+                {rows}
+              </TableWrapper>
+            </Table>
+          </ScrollView>
+
         </View>
         <View style={styles.bottom}>
           <Button
@@ -301,7 +304,6 @@ const styles = StyleSheet.create({
     ...center,
     flexDirection: "column",
     marginTop: 50,
-    marginLeft: 30,
     width: '90%'
   },
   currentSessionsHeader: {
@@ -317,7 +319,8 @@ const styles = StyleSheet.create({
     marginTop: 40,
     backgroundColor: "white",
     height: 500,
-    width: '100%'
+    width: 800,
+    marginLeft: -20
   },
   oddRow: {
     backgroundColor: "#e3e3e3"
