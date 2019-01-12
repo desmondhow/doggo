@@ -45,6 +45,7 @@ class UDCNewSessionScreen extends React.Component {
 
       this.state = {
         addedHides: previousHides,
+        sessionId: sessionInfo.id,
         isEditing: this.props.navigation.getParam('isEditing', false),
         createdAt: sessionInfo.createdAt,
         temperature: sessionInfo.temperature,
@@ -59,6 +60,7 @@ class UDCNewSessionScreen extends React.Component {
     console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`)
 
     session = {
+      id: this.state.sessionId,
       temperature: sessionInfo.temperature,
       humidity: sessionInfo.humidity,
       wind: sessionInfo.wind,

@@ -1,6 +1,7 @@
 import express from 'express';
 import UDCSession from '../../db/schemas/UDCSchema'
 import User from '../../db/schemas/userSchema'
+import mongoose from 'mongoose';
 
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
@@ -53,6 +54,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   });
   
   let sessionData = {
+    id: mongoose.Types.ObjectId(),
     temperature,
     humidity,
     wind,
@@ -62,20 +64,19 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
     hides
   };
 
-  let createdAt = req.body.createdAt;
-  if (createdAt) {
-    console.log(createdAt)
-    console.log(JSON.stringify(sessionData));
-    User.findOne({ _id: userId},
-      // , {
-      // $set: { 
-      //   'sessions.UDC.$.temperature': sessionData.temperature,
-      //   'sessions.UDC.$.humidity': sessionData.humidity,
-      //   'sessions.UDC.$.wind': sessionData.wind,
-      //   'sessions.UDC.$.windDirection': sessionData.windDirection,
-      //   'sessions.UDC.$.hides': sessionData.hides,
-      // }
-    // }, 
+  let sessionId = req.body.id;
+  console.log(JSON.stringify(req.body))
+  
+  if (sessionId) {
+    User.update({'sessions.UDC.id': sessionId},
+      { $set: { 
+        'sessions.UDC.$.temperature': sessionData.temperature,
+        'sessions.UDC.$.humidity': sessionData.humidity,
+        'sessions.UDC.$.wind': sessionData.wind,
+        'sessions.UDC.$.windDirection': sessionData.windDirection,
+        'sessions.UDC.$.hides': sessionData.hides,
+        }
+      },
     ((err, updatedUser) => {
       if (err) {
         console.log(err);

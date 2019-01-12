@@ -67,7 +67,7 @@ export default class UDCHomeScreen extends React.Component {
                   ...prevState.currSessionsData,
                   res.list[i]
                 ],
-                currSessionIds: [...prevState.currSessionIds, res.list[i]._id]
+                currSessionIds: [...prevState.currSessionIds, res.list[i].id]
               }));
             }
           }
@@ -109,6 +109,8 @@ export default class UDCHomeScreen extends React.Component {
   _editTrainingSession(i) {
     const { navigate } = this.props.navigation;
     const sessionData = this.state.currSessionsData[i];
+
+    console.log(`sessionData: ${sessionData}`)
 
     navigate('UDC.NewSession', { isEditing: true, sessionInfo: sessionData })
   }

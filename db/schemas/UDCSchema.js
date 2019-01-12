@@ -1,11 +1,12 @@
-/**
- * Schema used for the different sessions
- */
+import { Schema } from 'mongoose';
+
 export default {
   /* 
     TODO: i guess we have them enter their name during creation? should we pull this from the list of trainers we already have?
     creator: String
   */
+  id: Schema.Types.ObjectId,
+  createdAt: { type: Date, default: Date.now },
   temperature: Number,
   humidity: Number,
   wind: Number,
@@ -14,7 +15,6 @@ export default {
     type: Boolean,
     required: true
   },
-  createdAt: Date,
   hides: [
     {
       concentration: {
