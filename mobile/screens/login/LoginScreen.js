@@ -62,7 +62,7 @@ export default class LoginScreen extends React.Component {
     handleLogin = () => {
         if (this.state.password.length === 0) return alert('Please type your password');
         if (this.state.email.length === 0) return alert('Please type your email');
-        fetch(Constants.getLoginApiURL, {
+        fetch(Constants.loginApiURL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

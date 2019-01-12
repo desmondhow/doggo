@@ -10,6 +10,9 @@ const MongoStore = require('connect-mongo')(expressSession);
 const emoji = require('node-emoji');
 const PORT = process.env.PORT || 3010;
 
+const users = require('./APIs/users');
+const sessions = require('./APIs/sessions');
+const dataAnalysis = require('./APIs/dataAnalysis');
 
 const app = express();
 
@@ -53,10 +56,6 @@ app.use(expressSession({
         mongooseConnection: db
     })
 }));
-const users = require('./APIs/users');
-const dataCollection = require('./APIs/dataCollection');
-const dataAnalysis = require('./APIs/dataAnalysis');
-
 
 
 // Syntax checker
@@ -75,7 +74,7 @@ app.use(function (req, res, next) {
 
 // API routes
 app.use('/api/users', users);
-app.use('/api/data_collection', dataCollection);
+app.use('/api/users', sessions);
 
 //Default page is index
 app.get('/', function (req, res) {

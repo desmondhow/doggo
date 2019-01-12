@@ -7,9 +7,9 @@ export const Sessions = [
 ]
 
 export const GeneralInfo = {
-  Temperature: arrayOfLengthN(100),
-  Humidity: arrayOfLengthN(100),
-  Wind: arrayOfLengthN(10),
+  temperature: arrayOfLengthN(100),
+  humidity: arrayOfLengthN(100),
+  wind: arrayOfLengthN(10),
   'Wind Direction': [
     'N',
     'NE',

@@ -1,14 +1,11 @@
 /**
  * Schema used for the different sessions
  */
-import mongoose from '../../server/node_modules/mongoose';
-
-const UDCSchema = new mongoose.Schema({
+export default {
   /* 
     TODO: i guess we have them enter their name during creation? should we pull this from the list of trainers we already have?
     creator: String
   */
-  user: String,
   temperature: Number,
   humidity: Number,
   wind: Number,
@@ -46,8 +43,4 @@ const UDCSchema = new mongoose.Schema({
       }
     }
   ],  
-});
-
-// Models that can be queried by the routes
-const UDC = mongoose.model('UDC', UDCSchema);
-module.exports = UDC;
+};

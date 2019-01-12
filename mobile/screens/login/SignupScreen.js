@@ -66,7 +66,7 @@ export default class SignupScreen extends React.Component {
      * Send Register credentials to the server (POST req)
      */
     handleRegister = () => {
-        fetch(Constants.getRegisterApiURL, {
+        fetch(Constants.registerApiURL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -96,8 +96,6 @@ export default class SignupScreen extends React.Component {
             <View style={(styles.container)}>
                 <Logo/>
                 <SignUpForm navigation={this.props.navigation}
-                            onSelectName={this.handleName}
-                            onSelectLastName={this.handleLastName}
                             onSelectEmail={this.handleEmail}
                             onSelectPassword={this.handlePassword}
                             onSelectPasswordConfirmation={this.handlePasswordConfirmation}

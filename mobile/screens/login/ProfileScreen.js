@@ -45,8 +45,8 @@ export default class ProfileScreen extends Component {
     loadProfile = () => {
         getUserID().then((user_id) => {
             user_id = user_id.replace(/['"]+/g, '');
-            console.log(Constants.getProfileApiURL + "/" + user_id);
-            fetch(Constants.getProfileApiURL + "/" + user_id, {
+            console.log(Constants.profileApiURL + "/" + user_id);
+            fetch(Constants.profileApiURL + "/" + user_id, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -74,7 +74,7 @@ export default class ProfileScreen extends Component {
      * Send logout get req to server
      */
     handleSignOut = () => {
-        fetch(Constants.getLogoutApiURL, {
+        fetch(Constants.logoutApiURL, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',

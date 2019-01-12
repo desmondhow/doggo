@@ -4,12 +4,9 @@ import Constants from "../../constants/Api";
 
 export default (state = {}, action) => {
   switch (action.type) {
-    case actions.GET_UDC_GENERAL_INITIAL_STATE: {
-      return { initial: InitialValues.General };
-    }
-    case actions.GET_UDC_HIDES_INITIAL_STATE: {
-      return { addedHides: {} };
-    }
+    // case actions.GET_UDC_NEW_SESSION_INITIAL_STATE: {
+    //   return { initial: InitialValues.General };
+    // }
     case actions.UPDATE_NEW_UDC_SESSION_HIDE: {
       const { concentration, size, property, value } = actions.hideInfo
       return {
@@ -44,11 +41,9 @@ export default (state = {}, action) => {
         }
       }
     }
-    case actions.SAVE_NEW_UDC_SESSION: {
-      const sessionInfo = action.sessionInfo
-      console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`)
-      
-      Constants.getSaveUDCSessionURL()
+    case actions.SAVE_UDC_SESSION: {
+      const sessionInfo = action.sessionInfo      
+      Constants.saveUDCSessionURL
       .then(url => (   
         fetch(url, {
           method: 'POST',
@@ -59,15 +54,14 @@ export default (state = {}, action) => {
           body: JSON.stringify(sessionInfo)
         })
       ))
-      .then(res => res.json())
-      .then((res) => { 
-        console.log(`New UDC Session Id: ${JSON.stringify(res)}`)
-      })
       .catch(err => {
         console.error(err);
         throw err;
       })
       return { hides: InitialValues.Hides };
+    }
+    case actions.EDIT_NEW_UDC_SESSION: {
+      const sessionInfo = action.sessionInfo
     }
     default:
       return state;

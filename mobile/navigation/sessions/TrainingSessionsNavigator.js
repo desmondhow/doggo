@@ -4,7 +4,8 @@ import { Icon, Button } from 'react-native-elements';
 
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
-import UDCNavigator from './UDCNavigator';
+import UDCNewSessionScreen from '../../screens/sessions/UDC/UDCNewSessionScreen';
+// import UDCNavigator from './UDCNavigator';
 import { onSignOut } from '../../components/auth';
 import store from '../../redux/store';
 
@@ -40,7 +41,7 @@ export default createStackNavigator({
     }
   },
   'UDC.NewSession': { 
-    screen: UDCNavigator,
+    screen: UDCNewSessionScreen,
     navigationOptions: { 
       title: 'New UDC Session'
     }

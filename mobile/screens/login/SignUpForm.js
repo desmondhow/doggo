@@ -20,18 +20,6 @@ export default class SignUpForm extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.inputBox }
-                           underlineColorAndroid='rgba(0,0,0,0)'
-                           placeholder='Name'
-                           placeHolderTextColor='white'
-                           onChangeText={(name) => this.props.onSelectName(name)}
-                />
-                <TextInput style={styles.inputBox}
-                           underlineColorAndroid='rgba(0,0,0,0)'
-                           placeholder='Last Name'
-                           placeHolderTextColor='white'
-                           onChangeText={(name) => this.props.onSelectLastName(name)}
-                />
                 <TextInput style={styles.inputBox}
                            underlineColorAndroid='rgba(0,0,0,0)'
                            placeholder='Email'

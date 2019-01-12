@@ -7,8 +7,7 @@ import { Field } from 'redux-form';
 export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispatchToProps) => (
   connect(mapStateToProps, mapDispatchToProps)(
     reduxForm({ 
-      form: formName, 
-      destroyOnUnmount: false 
+      form: formName
     })(formClass)
   )
 )

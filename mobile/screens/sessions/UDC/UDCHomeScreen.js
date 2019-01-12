@@ -17,13 +17,12 @@ import {
 import { Text, Button } from "react-native-elements";
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
 import Constants from "../../../constants/Api";
+import { Sessions } from "../../../constants/SessionsConstants";
 
-const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\tDogs"];
+const currentSessionsTableHeaderText = ["Created At", "# Hides", "Dogs", '', ''];
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
-  interval;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -32,14 +31,14 @@ export default class UDCHomeScreen extends React.Component {
       alertedCantFetch: false
     };
     this._fetchCurrentUDCSessions = this._fetchCurrentUDCSessions.bind(this);
-    this._fetchCurrentUDCSessions();
   }
 
   componentDidMount() {
     //Refresh every 5 seconds
+    this._fetchCurrentUDCSessions();
     this.interval = setInterval(
       () => this._fetchCurrentUDCSessions(),
-      5 * 1000
+      500 * 1000
     );
   }
 
@@ -48,7 +47,9 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   async _fetchCurrentUDCSessions() {
-    fetch(Constants.getCurrentUDCSessions)
+    Constants.getCurrentUDCSessions
+    .then(url => 
+      fetch(url)
       .then(res => res.json())
       .then(res => {
         if (res.status) {
@@ -61,38 +62,18 @@ export default class UDCHomeScreen extends React.Component {
             });
 
             for (let i = 0; i < res.list.length; i++) {
-              let creationDate = new Date(Date.parse(res.list[i].createdAt));
-              let todaysDate = new Date();
-
-              let createdToday = true;
-              let copyCreationDate = creationDate.toString();
-              if (
-                creationDate.setHours(0, 0, 0, 0) !=
-                todaysDate.setHours(0, 0, 0, 0)
-              ) {
-                createdToday = false;
-              }
-
-              let createdAt = `${new Date(
-                Date.parse(copyCreationDate)
-              ).toLocaleTimeString("en-US")}${
-                createdToday
-                  ? ""
-                  : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
-                      1})`
-              }`;
-
               this.setState(prevState => ({
                 currSessionsData: [
                   ...prevState.currSessionsData,
-                  [createdAt, res.list[i].hides.length, res.list[i].dogs]
+                  res.list[i]
                 ],
                 currSessionIds: [...prevState.currSessionIds, res.list[i]._id]
               }));
             }
           }
         } else {
-          alert(res.message);
+          alert(res.message)
+          console.log(res.message);
         }
       })
       .catch(err => {
@@ -102,7 +83,8 @@ export default class UDCHomeScreen extends React.Component {
           this.setState({ alertedCantFetch: true });
         }
       })
-      .done();
+      .done()  
+    )
   }
 
   _continueTrainingSession(i) {
@@ -114,7 +96,6 @@ export default class UDCHomeScreen extends React.Component {
             alert("Could not load UDC Session");
           } else {
             alert(JSON.stringify(res.data));
-            const { navigate } = this.props.navigation;
             // TODO: change name of screen
             // navigate('UDCTrainingScreen', { data: res.data });
           }
@@ -126,38 +107,11 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   _editTrainingSession(i) {
-    // fetch(Constants.getUDCSession + "/" + this.state.currSessionIds[i])
-    //   .then(res => res.json())
-    //   .then(res => {
-    //     if (res.status) {
-    //       if (res.data.length === 0) {
-    //         alert("Could not load UDC Session");
-    //       } else {
-    //         alert(JSON.stringify(res.data));
-    //         const { navigate } = this.props.navigation;
-    //         // TODO: change name of screen
-    //         // navigate('UDCTrainingScreen', { data: res.data });
-    //       }
-    //     } else {
-    //       alert(res.message);
-    //     }
-    //   })
-    //   .done();
-  }
+    const { navigate } = this.props.navigation;
+    const sessionData = this.state.currSessionsData[i];
 
-  _renderTableHeader = () => (
-    <Row
-      key={0}
-      data={currentSessionsTableHeaderText}
-      style={styles.tableHeader}
-      textStyle={{
-        fontSize: 24,
-        fontWeight: "bold",
-        paddingLeft: 20,
-        fontFamily: "montserrat"
-      }}
-    />
-  )
+    navigate('UDC.NewSession', { isEditing: true, sessionInfo: sessionData })
+  }
 
   _renderTableButtons = (continueButtons) => (
     <TableWrapper style={styles.table}>
@@ -172,11 +126,25 @@ export default class UDCHomeScreen extends React.Component {
     </TableWrapper>
   )
 
-  _sessionButtons = i => (
-    <View style={{flexDirection: 'row', marginLeft: 20}}>
-       
-    </View>
-   
+  _renderSessionButtons = i => (
+    [
+      <Button
+        transparent 
+        title="Train"
+        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
+        buttonStyle={{...styles.continueTrainingButton, marginRight: -35}}
+        onPress={() => this._continueTrainingSession(i)}
+        fontSize={17}
+      />,
+      <Button
+        transparent
+        title="Edit"
+        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
+        buttonStyle={styles.continueTrainingButton}
+        onPress={() => this._editTrainingSession(i)}
+        fontSize={15}
+      />
+    ]
   );
 
   render() {
@@ -184,44 +152,54 @@ export default class UDCHomeScreen extends React.Component {
     const { navigate } = this.props.navigation;
 
     const rows = [];
-    const buttons = [];
-
     state.currSessionsData.map((session, i) => {
-      rows.push(
-        <TableWrapper style={[row, i % 2 == 0 ? null : styles.oddRow]} key={i}>
-          {session.map((cellData, j) => (
-            <Cell
-              key={i + j}
-              data={cellData}
-              style={styles.cell}
-              textStyle={{
-                fontSize: 18,
-                marginLeft: j * 70 + 10,
-                fontFamily: "montserrat"
-              }}
-            />
-          ))}
-            <View style={{marginLeft: 50, flexDirection: 'row'}}>
-              <Button
-                title="Train"
-                textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
-                buttonStyle={{...styles.continueTrainingButton, marginRight: -35}}
-                onPress={() => this._continueTrainingSession(i)}
-                fontSize={17}
-              />
-              <Button
-                title="Edit"
-                textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
-                buttonStyle={styles.continueTrainingButton}
-                onPress={() => this._continueTrainingSession(i)}
-                fontSize={15}
-              />
-            </View>
-            
-        </TableWrapper>
-      );
+      let creationDate = new Date(Date.parse(session.createdAt));
+      let todaysDate = new Date();
 
-      buttons.push(this._sessionButtons(i));
+      let createdToday = true;
+      let copyCreationDate = creationDate.toString();
+      if (
+        creationDate.setHours(0, 0, 0, 0) !=
+        todaysDate.setHours(0, 0, 0, 0)
+      ) {
+        createdToday = false;
+      }
+
+      // show date if not created today
+      let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
+          ? ""
+          : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+              1})`
+      }`;
+
+      const numHides = session.hides.length
+      const dogs = 'FILL IN W DATA'
+      const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+
+      rows.push(
+        <View style={{flexDirection: 'row', marginLeft: 20}}>
+          {rowData.map((cellData, j) => {
+            width = j < 3 ? 150 : 100;
+            marginLeft = j == 1 ? 30 : 0;
+
+            return (
+              <Cell
+                key={i + j}
+                data={j == 1 ? `\t\t${cellData}` : cellData}
+                style={[{
+                  borderColor: 'transparent',
+                  width: width,
+                  height: 50,
+                }, i % 2 == 0 ? null : styles.oddRow]}
+                textStyle={{
+                  fontSize: 18,
+                  fontFamily: "montserrat"
+                }}
+              />    
+            )      
+          })}
+        </View>
+      );
     });
 
     return (
@@ -237,17 +215,38 @@ export default class UDCHomeScreen extends React.Component {
                 fontFamily: "montserrat"
               }}
             >
-              {" "}
-              Current UDC Sessions{" "}
+              Current UDC Sessions
             </Text>
           </View>
-
           <Table
             style={styles.tableContainer}
             borderStyle={{ borderColor: "transparent" }}
           >
-            <TableWrapper style={{ flex: 1, ...styles.table }}>
-              {this._renderTableHeader()}
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              {currentSessionsTableHeaderText.map((cellData, j) => {
+                width = j < 3 ? 150 : 100;
+                return (
+                  <Cell
+                    key={j}
+                    data={cellData}
+                    style={{
+                      borderColor: 'transparent',
+                      width: width,
+                      borderBottomColor: "black",
+                      borderBottomWidth: 3,
+                    }}
+                    textStyle={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      paddingLeft: 10,
+                      paddingBottom: 20,
+                      fontFamily: "montserrat"
+                    }}
+                  />       
+                )   
+              })}
+            </View>
+            <TableWrapper>
               {rows}
             </TableWrapper>
           </Table>
@@ -259,7 +258,7 @@ export default class UDCHomeScreen extends React.Component {
             title="Start New Session"
             rightIcon={{ name: "create", type: "montserrat" }}
             onPress={() =>
-              navigate("UDCNewSession", { onSubmit: this._handleGeneralSubmit })
+              navigate("UDC.NewSession", { onSubmit: this._handleGeneralSubmit })
             }
             buttonStyle={styles.newSessionButton}
             textStyle={buttonTextStyle}
@@ -292,14 +291,16 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     height: 60,
-    width: 500,
+    width: 700,
     borderBottomColor: "black",
     borderBottomWidth: 3
   },
   currentSessionsContainer: {
+    ...center,
     flexDirection: "column",
     marginTop: 50,
-    marginLeft: 30
+    marginLeft: 30,
+    width: '90%'
   },
   currentSessionsHeader: {
     flexDirection: "row",
@@ -310,22 +311,16 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   tableContainer: {
+    alignItems: 'center',
     marginTop: 40,
-    flexDirection: "row",
     backgroundColor: "white",
     height: 500,
-    width: "90%"
-  },
-  cell: {
-    borderColor: "transparent",
-    margin: 6
-    // width: 100
+    width: '100%'
   },
   oddRow: {
-    backgroundColor: "grey"
+    backgroundColor: "#e3e3e3"
   },
   continueTrainingButton: {
-    ...outlineButtonStyle,
     height: row.height,
     width: 75,
     margin: 10
@@ -334,7 +329,6 @@ const styles = StyleSheet.create({
     ...buttonStyle,
     marginTop: 10,
     width: 250,
-    height: 70,
     position: "absolute",
     bottom: 0
   },
