@@ -6,6 +6,29 @@ import mongoose from 'mongoose';
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
 
+const _parseHides = hidesData => {
+  let hides = []
+  Object.keys(hidesData).forEach(concentration => {
+    let concentrationSizes = hidesData[concentration]
+    Object.keys(concentrationSizes).forEach(size => {
+      let location = concentrationSizes[size].location;
+      let isConcealed = concentrationSizes[size].isConcealed;
+      let placementArea = concentrationSizes[size].placementArea;
+      let placementHeight = concentrationSizes[size].placementHeight
+
+      hides.push({
+        concentration: Number(concentration),
+        size,
+        location,
+        isConcealed,
+        placementArea,
+        placementHeight
+      });
+    });
+  });
+  return hides;
+}
+
 /**
  * Creates a new UDC session
  */
@@ -32,80 +55,40 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
     return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
   }
 
-  const userId = req.params.id;
-  let hides = []
-  Object.keys(hidesData).forEach(concentration => {
-    let concentrationSizes = hidesData[concentration]
-    Object.keys(concentrationSizes).forEach(size => {
-      let location = concentrationSizes[size].location;
-      let isConcealed = concentrationSizes[size].isConcealed;
-      let placementArea = concentrationSizes[size].placementArea;
-      let placementHeight = concentrationSizes[size].placementHeight
-
-      hides.push({
-        concentration: Number(concentration),
-        size,
-        location,
-        isConcealed,
-        placementArea,
-        placementHeight
-      });
-    });
-  });
-  
   let sessionData = {
-    id: mongoose.Types.ObjectId(),
     temperature,
     humidity,
     wind,
     windDirection,
     complete: false,
     createdAt: new Date(),
-    hides
+    hides: _parseHides(hidesData)
   };
 
-  let sessionId = req.body.id;
-  // console.log(JSON.stringify(req.body))
-  // console.log(`sessionData: ${JSON.stringify(sessionData)}`);
-
-  // User.findById(userId)
-  // .where('sessions.UDC.id').equals(sessionId)
-  // .then(data => {
-  //   if (!data) {
-  //     console.log('nope... but why?')
-  //   } 
-  //   console.log(data);
-  // })
-  // .catch(err => {
-  //   console.log(err);
-  //   return res.status(400).send(JSON.stringify({status: false, message: err}));
-  // })
-
+  // if user is editing session then sessionId will be sent with request
+  // if sessionId not sent then this is a new session
+  const sessionId = req.body.id;
   if (sessionId) {
-    User.update(
-      { _id: userId },
-      { $set: { 
-        'sessions.$[session].data.temperature': sessionData.temperature,
-        'sessions.$[session].data.humidity': sessionData.humidity,
-        'sessions.$[session].data.wind': sessionData.wind,
-        'sessions.$[session].data.windDirection': sessionData.windDirection,
-        'sessions.$[session].data.hides': sessionData.hides,
-        }
-      },
-      {
-        arrayFilters: [{ session: sessionId }], upsert: true
-      },
+    // only update the fields that the user edited
+    let updateObj = {$set: {}};
+    for (let param in req.body) {
+      updateObj.$set[`sessions.$.data.${param}`] = sessionData[param]
+    }
+
+    User.update({ 'sessions.data._id': sessionId }, updateObj,
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
         return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
       }
-      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
   }
   else {
     const newSession = { sessionType: 'UDC', data: sessionData }
+    const userId = req.params.id;  
+
     User.findByIdAndUpdate(userId, 
       { $push: { sessions: newSession}},
     ((err, updatedUser) => {
@@ -164,9 +147,9 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({status: false, message: 'There are no current UDC sessions'}));
+        return res.status(400).send(JSON.stringify({essage: 'There are no current UDC sessions'}));
     } else {
-      return res.status(200).send(JSON.stringify({status: true, list: data.sessions}));
+      return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }
   })
   .catch(err => {

@@ -5,7 +5,7 @@ import { Icon, Button } from 'react-native-elements';
 import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
 import UDCNewSessionScreen from '../../screens/sessions/UDC/UDCNewSessionScreen';
-// import UDCNavigator from './UDCNavigator';
+import UDCNavigator from './UDCNavigator';
 import { onSignOut } from '../../components/auth';
 import store from '../../redux/store';
 
@@ -35,27 +35,15 @@ export default createStackNavigator({
     })
   },
   UDC: { 
-    screen: UDCHomeScreen,
+    screen: UDCNavigator,
     navigationOptions: { 
       title: 'UDC'
     }
   },
-  'UDC.NewSession': { 
-    screen: UDCNewSessionScreen,
-    navigationOptions: { 
-      title: 'New UDC Session'
-    }
-  }
+  // 'UDC.NewSession': { 
+  //   screen: UDCNewSessionScreen,
+  //   navigationOptions: { 
+  //     title: 'New UDC Session'
+  //   }
+  // }
 });
-
-const getActiveRouteName = navigationState => {
-  if (!navigationState) {
-    return null;
-  }
-  const route = navigationState.routes[navigationState.index];
-  // dive into nested navigators
-  if (route.routes) {
-    return getActiveRouteName(route);
-  }
-  return route.routeName;
-}

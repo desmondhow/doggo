@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Text, Button, ButtonGroup, Divider } from 'react-native-elements';
 import { Field, formValueSelector, change, untouch } from 'redux-form'
+
 import { 
   center, 
   buttonStyle, 
@@ -30,6 +31,8 @@ class UDCNewSessionScreen extends React.Component {
 
     let previousHides = {};
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
+    console.log(`sessionInfo: ${sessionInfo}`);
+    
     if (sessionInfo) {
       sessionInfo.hides.forEach(hide => {
         previousHides[hide.concentration] = {
