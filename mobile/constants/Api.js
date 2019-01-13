@@ -25,5 +25,6 @@ export default {
   registerApiURL: formatAPILink(USERS_ROUTE + 'register'),
   logoutApiURL: formatAPILink(USERS_ROUTE + 'logout'),
   profileApiURL: formatAPILink(USERS_ROUTE + 'profile'),
-  saveUDCSessionURL: formatSessionsRoute('udc/create-new-session')
+  saveUDCSessionURL: formatSessionsRoute('udc/create-new-session'),
+  deleteUDCSessionURL: sessionId =>  formatSessionsRoute(`udc/delete-session/${sessionId}`)
 }

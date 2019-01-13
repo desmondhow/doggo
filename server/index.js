@@ -10,9 +10,9 @@ const MongoStore = require('connect-mongo')(expressSession);
 const emoji = require('node-emoji');
 const PORT = process.env.PORT || 3010;
 
-const users = require('./APIs/users');
-const sessions = require('./APIs/sessions');
-const dataAnalysis = require('./APIs/dataAnalysis');
+const users = require('./APIs/usersAPI');
+const sessions = require('./APIs/sessionsAPI');
+const dataAnalysis = require('./APIs/dataAnalysisAPI');
 
 const app = express();
 

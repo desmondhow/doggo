@@ -65,62 +65,92 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   };
 
   let sessionId = req.body.id;
-  console.log(JSON.stringify(req.body))
-  console.log(`sessionData: ${JSON.stringify(sessionData)}`);
+  // console.log(JSON.stringify(req.body))
+  // console.log(`sessionData: ${JSON.stringify(sessionData)}`);
 
-  User.findById(userId)
-  .where('sessions.UDC.id').equals(sessionId)
-  .then(data => {
-    if (!data) {
-      console.log('nope... but why?')
-    } 
-    console.log(data);
-  })
-  .catch(err => {
-    console.log(err);
-    return res.status(400).send(JSON.stringify({status: false, message: err}));
-  })
+  // User.findById(userId)
+  // .where('sessions.UDC.id').equals(sessionId)
+  // .then(data => {
+  //   if (!data) {
+  //     console.log('nope... but why?')
+  //   } 
+  //   console.log(data);
+  // })
+  // .catch(err => {
+  //   console.log(err);
+  //   return res.status(400).send(JSON.stringify({status: false, message: err}));
+  // })
 
-  // if (sessionId) {
-  //   User.update({'sessions.UDC.id': sessionId},
-  //     { $set: { 
-  //       'sessions.UDC.$.temperature': sessionData.temperature,
-  //       'sessions.UDC.$.humidity': sessionData.humidity,
-  //       'sessions.UDC.$.wind': sessionData.wind,
-  //       'sessions.UDC.$.windDirection': sessionData.windDirection,
-  //       'sessions.UDC.$.hides': sessionData.hides,
-  //       }
-  //     },
-  //   ((err, updatedUser) => {
-  //     if (err) {
-  //       console.log(err);
-  //       return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
-  //     }
-  //     console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
-  //     return res.status(200).send({message: updatedUser, status: 200});
-  //   }));
-  // }
-  // else {
-  //   User.findByIdAndUpdate(userId, {
-  //     $push: { 'sessions.UDC': sessionData }
-  //   }, 
-  //   ((err, updatedUser) => {
-  //     if (err) {
-  //       console.log(err);
-  //       return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
-  //     }
-  //     console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
-  //     return res.status(200).send({message: updatedUser, status: 200});
-  //   }));
-  // }  
+  if (sessionId) {
+    User.update(
+      { '_id': userId },
+      { $set: { 
+        'sessions.$[session].data.temperature': sessionData.temperature,
+        'sessions.$[session].data.humidity': sessionData.humidity,
+        'sessions.$[session].data.wind': sessionData.wind,
+        'sessions.$[session].data.windDirection': sessionData.windDirection,
+        'sessions.$[session].data.hides': sessionData.hides,
+        }
+      },
+      {
+        arrayFilters: [{ session: sessionId }], upsert: true
+      },
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+  }
+  else {
+    const newSession = { sessionType: 'UDC', data: sessionData }
+    User.findByIdAndUpdate(userId, 
+      { $push: { sessions: newSession}},
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+  }  
+});
+
+router.post(createSessionApiRoute('udc/delete-session/:sessionId'), function (req, res, next) {
+  req.checkParams('id').exists();
+  req.checkParams('sessionId').exists();
+  const isMissingIdParam = req.validationErrors();
+  if (isMissingIdParam) {
+    console.log(`UserId or sessionId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
+  }
+
+  const userId = req.params.id;
+  let sessionId = req.params.sessionId;
+  User.update(
+    { _id: userId }, 
+    { "$pull": { sessions: { UDC: { id: sessionId }}}}, 
+    { safe: true, multi:true }, 
+    (err, result) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: err}));
+      }
+      console.log(`sessionId: ${sessionId}`);
+      console.log(result);
+
+      return res.status(200).send(JSON.stringify({message: "Session delete successful."}));
+    }
+  );
 });
 
 /**
  * Returns all the non complete UDC sessions
  */
 router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res) {
-  console.log('hit')
-
   req.checkParams('id').exists();
   const isMissingIdParam = req.validationErrors();
   if (isMissingIdParam) {
@@ -130,14 +160,12 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   const userId = req.params.id;
 
   User.findById(userId)
-  .where('sessions.UDC.complete').equals(false)
+  .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
     if (!data) {
         return res.status(400).send(JSON.stringify({status: false, message: 'There are no current UDC sessions'}));
     } else {
-      const sessions = data.sessions.UDC;
-      console.log(`sessions: ${JSON.stringify(sessions)}`);
-      return res.status(200).send(JSON.stringify({status: true, list: sessions}));
+      return res.status(200).send(JSON.stringify({status: true, list: data.sessions}));
     }
   })
   .catch(err => {
