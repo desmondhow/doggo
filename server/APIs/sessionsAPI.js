@@ -83,7 +83,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
 
   if (sessionId) {
     User.update(
-      { '_id': userId },
+      { _id: userId },
       { $set: { 
         'sessions.$[session].data.temperature': sessionData.temperature,
         'sessions.$[session].data.humidity': sessionData.humidity,
@@ -130,9 +130,10 @@ router.post(createSessionApiRoute('udc/delete-session/:sessionId'), function (re
 
   const userId = req.params.id;
   let sessionId = req.params.sessionId;
+  console.log(`sessionId: ${sessionId}`);
   User.update(
     { _id: userId }, 
-    { "$pull": { sessions: { UDC: { id: sessionId }}}}, 
+    { "$pull": { sessions: { 'data._id': sessionId }}}, 
     { safe: true, multi:true }, 
     (err, result) => {
       if (err) {

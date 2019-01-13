@@ -31,7 +31,7 @@ class UDCNewSessionScreen extends React.Component {
     let previousHides = {};
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     if (sessionInfo) {
-      sessionInfo.hides.forEach(hide => {        
+      sessionInfo.hides.forEach(hide => {
         previousHides[hide.concentration] = {
           ...previousHides[hide.concentration],
           [hide.size]: {
@@ -45,7 +45,7 @@ class UDCNewSessionScreen extends React.Component {
 
       this.state = {
         addedHides: previousHides,
-        sessionId: sessionInfo.id,
+        sessionId: sessionInfo._id,
         isEditing: this.props.navigation.getParam('isEditing', false),
         createdAt: sessionInfo.createdAt,
         temperature: sessionInfo.temperature,
