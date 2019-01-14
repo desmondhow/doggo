@@ -13,7 +13,7 @@ import { Field } from 'redux-form';
 import { Dropdown } from 'react-native-material-dropdown';
 
 import { container, formContainer, center } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown } from '../../../components/helpers';
+import { connectReduxForm, renderDropdown, renderReduxDropdown } from '../../../components/helpers';
 import { BuildingSearchInfo } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
@@ -26,12 +26,16 @@ export class UDCBuildingSearchScreen extends React.Component {
     this._renderPage = this._renderPage.bind(this);
 
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
+    console.log('UDCBUILDING SEARCH!!', sessionInfo.hides);
 
     this.state = {
         activeSections: [],
         barks: '0',
-        dog: {},
-        hides: sessionInfo,
+        dog: {
+            name: '',
+            id: 0,
+        },
+        hides: sessionInfo.hides,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
     }
@@ -74,7 +78,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderHeader = section => {
     return (
       <View style={styles.field}>
-        <Text h3>{section.location}, {section.placement}, {section.concealed}</Text>
+        <Text h3>{section.location}, {section.placementArea}, {section.isConcealed ? 'Concealed' : 'Not Concealed'}</Text>
       </View>
     );
   };
@@ -302,29 +306,54 @@ export class UDCBuildingSearchScreen extends React.Component {
 
   _renderPage = () => (
     <View style={center}>
-        <View>
-            <Text>K9 Name</Text>
-            {renderDropdown(this.state.dog, (dog) => this.setState({ dog: dog }), BuildingSearchInfo.TempDogs, { width: 200, height: 100 })}
+     <View style={{ height: '40%', marginTop: 30, flexDirection: 'row'}}>
+        <View style={{
+          marginTop: 30,
+          height: 100, 
+          width: '23.5%',
+          marginLeft: 20,
+        }}>
+            <Text style={styles.labelStyle}>K9 Name</Text>
+            <Dropdown 
+                overlayStyle={{marginTop: 95}}
+                containerStyle={{ width: 200, height: 100 }}
+                fontSize={16}
+                value={this.state.dog.name}
+                data={BuildingSearchInfo.TempDogs} 
+                onChangeText={(dogName) => this.setState({ dog: { name: dogName }})}
+            />
         </View>
-      <View>
-        <Text>Handler</Text>
-        {renderDropdown(`dogs.${this.state.dog.id}.Handler`, null, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        <View style={{
+          marginTop: 30,
+          height: 100, 
+          width: '23.5%',
+          marginLeft: 20,
+        }}>
+            <Text style={styles.labelStyle}>Handler</Text>
+            {renderReduxDropdown(`dogs.${this.state.dog.id}.Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        </View>
+        <View style={{
+          marginTop: 30,
+          height: 100, 
+          width: '23.5%',
+          marginLeft: 20,
+        }}>
+            <Text style={styles.labelStyle}>Recorder</Text>
+            {renderReduxDropdown(`dogs.${this.state.dog.id}.Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        </View>
       </View>
       <View>
-        <Text>Recorder</Text>
-        {renderDropdown(`dogs.${this.state.dog.id}.Recorder`, null, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+        <Text h2>Searches</Text>
+        <Accordion
+              activeSections={this.state.activeSections}
+              sections={this.state.hides}
+              touchableComponent={TouchableOpacity}
+              renderHeader={this._renderHeader}
+              renderContent={this._renderContent}
+              onChange={this.setSections}
+              expandMultiple={false}
+          />
       </View>
-      <Text h2>Searches</Text>
-      {/* Desmond represents Hides as concentration_1: { size_1: {placement...}, size_2: {placement...} }, concentration_2: {...} which fucks everything up */}
-      <Accordion
-            activeSections={this.state.activeSections}
-            sections={this.state.hides}
-            touchableComponent={TouchableOpacity}
-            renderHeader={this._renderHeader}
-            renderContent={this._renderContent}
-            onChange={this.setSections}
-            expandMultiple={false}
-        />
       {this._renderSubmitBtn()}
     </View>
   )
@@ -342,6 +371,10 @@ export class UDCBuildingSearchScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },  
   field: {
     marginTop: 30,
     height: 100, 
@@ -350,13 +383,9 @@ const styles = StyleSheet.create({
     paddingRight: 65
   },
   fieldsContainer: {
-    marginLeft: 60,
-    marginTop: 50,
     borderColor: Colors.darkGrey,
     borderRadius: 10,
     borderWidth: 8,
-    height: '80%',
-    width: '85%'
   },
   dropdown: {
     width: 150,
@@ -367,6 +396,10 @@ const styles = StyleSheet.create({
     height: 40,
     width: 100,
   },
+  labelStyle: {
+    fontWeight: 'bold',
+    fontSize: 18
+  }
 });
 
 export default connectReduxForm(

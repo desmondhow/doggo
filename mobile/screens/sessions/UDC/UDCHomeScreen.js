@@ -80,23 +80,28 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   _continueTrainingSession(i) {
-    fetch(Constants.getUDCSession + "/" + this.state.currSessionIds[i])
-      .then(res => res.json())
-      .then(res => {
-        if (res.status) {
-          if (res.data.length === 0) {
-            alert("Could not load UDC Session");
-          } else {
-            alert(JSON.stringify(res.data));
-            // TODO: change name of screen
-            // navigate('UDCTrainingScreen', { data: res.data });
-            navigate('UDCBuildingSearch', {sessionInfo: res.data});
-          }
-        } else {
-          alert(res.message);
-        }
-      })
-      .done();
+    const { navigate } = this.props.navigation;
+    const sessionData = this.state.currSessionsData[i];
+
+    navigate('UDCBuildingSearch', { sessionInfo: sessionData });
+
+    // fetch(Constants.getUDCSession + "/" + this.state.currSessionIds[i])
+    //   .then(res => res.json())
+    //   .then(res => {
+    //     if (res.status) {
+    //       if (res.data.length === 0) {
+    //         alert("Could not load UDC Session");
+    //       } else {
+    //         alert(JSON.stringify(res.data));
+    //         // TODO: change name of screen
+    //         // navigate('UDCTrainingScreen', { data: res.data });
+    //         navigate('UDCBuildingSearch', {sessionInfo: res.data});
+    //       }
+    //     } else {
+    //       alert(res.message);
+    //     }
+    //   })
+    //   .done();
   }
 
   _editTrainingSession(i) {
