@@ -48,7 +48,7 @@ export default class UDCHomeScreen extends React.Component {
 
   async _fetchCurrentUDCSessions() {
     Constants.getCurrentUDCSessions
-    .then(url => 
+    .then(url =>
       fetch(url)
       .then(res => res.json())
       .then(res => {
@@ -72,7 +72,7 @@ export default class UDCHomeScreen extends React.Component {
             }
           }
         } else {
-          alert(res.message)
+          alert(res.message);
           console.log(res.message);
         }
       })

@@ -66,6 +66,7 @@ export default class SignupScreen extends React.Component {
      * Send Register credentials to the server (POST req)
      */
     handleRegister = () => {
+        console.log(Constants.registerApiURL);
         fetch(Constants.registerApiURL, {
             method: 'POST',
             headers: {
