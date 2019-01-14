@@ -10,7 +10,7 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
 import { container, formContainer, center } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown } from '../../../components/helpers';
-import { BuildingSearchInfo } from '../../../constants/sessions/UDCConstants';
+import { BuildingSearchInfo } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 

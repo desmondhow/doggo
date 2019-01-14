@@ -90,7 +90,7 @@ export default class UDCHomeScreen extends React.Component {
             alert(JSON.stringify(res.data));
             // TODO: change name of screen
             // navigate('UDCTrainingScreen', { data: res.data });
-            navigate('UDCTrainDog')
+            navigate('UDCBuildingSearch', {sessionInfo: res.data});
           }
         } else {
           alert(res.message);
