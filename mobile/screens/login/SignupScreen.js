@@ -22,38 +22,14 @@ export default class SignupScreen extends React.Component {
         headerTintColor: 'white',
     });
 
-
     constructor() {
         super();
         this.state = {
-            first_name: '',
-            last_name: '',
             email: '',
             password: '',
             password_conf: ''
         };
     }
-
-    /**
-     * Sets the value for the name
-     * @param name
-     */
-    handleName = (name) => {
-        this.setState({
-            first_name: name,
-        })
-    };
-
-    /**
-     * Sets the value for the last name
-     * @param name
-     */
-    handleLastName = (name) => {
-        this.setState({
-            last_name: name,
-        })
-    };
-
 
     /**
      * Sets the value for the email
@@ -90,15 +66,13 @@ export default class SignupScreen extends React.Component {
      * Send Register credentials to the server (POST req)
      */
     handleRegister = () => {
-        fetch(Constants.getRegisterApiURL, {
+        fetch(Constants.registerApiURL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                'first_name': this.state.first_name,
-                'last_name': this.state.last_name,
                 'email': this.state.email,
                 'password': this.state.password,
                 'password_conf': this.state.password_conf,
@@ -122,8 +96,6 @@ export default class SignupScreen extends React.Component {
             <View style={(styles.container)}>
                 <Logo/>
                 <SignUpForm navigation={this.props.navigation}
-                            onSelectName={this.handleName}
-                            onSelectLastName={this.handleLastName}
                             onSelectEmail={this.handleEmail}
                             onSelectPassword={this.handlePassword}
                             onSelectPasswordConfirmation={this.handlePasswordConfirmation}

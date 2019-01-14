@@ -28,6 +28,7 @@
     "react-native-elements": "^0.19.1",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal-dropdown": "^0.6.2",
+    "react-native-offline": "^4.1.1",
     "react-native-picker-dropdown": "^0.1.2",
     "react-native-table-component": "^1.1.8",
     "react-native-tiles": "^1.0.1",
@@ -39,7 +40,8 @@
     "redux": "^4.0.1",
     "redux-axios-middleware": "^4.0.0",
     "redux-form": "^7.4.2",
-    "redux-form-material-ui": "^4.3.4"
+    "redux-form-material-ui": "^4.3.4",
+    "redux-persist": "^5.10.0"
   },
   "devDependencies": {
     "jest-expo": "30.0.0",

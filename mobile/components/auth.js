@@ -1,6 +1,6 @@
 import {AsyncStorage} from "react-native";
 
-export const USER_KEY = "auth_v2";
+export const USER_KEY = "auth_v3";
 
 export async function onSignIn(user_id) {
     try {

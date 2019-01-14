@@ -61,7 +61,7 @@ var users = [
 
 createDBUri = name => (
   `mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/${name}?retryWrites=true`
-)
+);
 
 // mongoose.connect(createDBUri('users'))
 // mongoose.Promise = global.Promise;

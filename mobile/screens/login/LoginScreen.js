@@ -62,7 +62,7 @@ export default class LoginScreen extends React.Component {
     handleLogin = () => {
         if (this.state.password.length === 0) return alert('Please type your password');
         if (this.state.email.length === 0) return alert('Please type your email');
-        fetch(Constants.getLoginApiURL, {
+        fetch(Constants.loginApiURL, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -83,6 +83,7 @@ export default class LoginScreen extends React.Component {
                     alert(res.message);
                 }
             })
+            .catch(err => alert('There was an issue connecting to the server. Please try again.'))
             .done();
     };
 

@@ -5,11 +5,27 @@ export const center = {
   alignItems: 'center',
 }
 
-export const inputStyle = {
-  backgroundColor: Colors.lightGrey,
-  borderColor: "transparent",
+export const buttonStyle = {
+  backgroundColor: Colors.blue,
   borderRadius: 5,
-  height: 50,
+}
+
+export const outlineButtonStyle = {
+  backgroundColor: 'transparent',
+  borderColor: 'black',
+  borderRadius: 5,
+  borderWidth: 2
+}
+
+export const outlineButtonTextStyle = {
+  fontWeight: '700',
+  fontFamily: 'montserrat',
+  color: Colors.blue
+}
+
+export const buttonTextStyle = {
+  fontWeight: '700',
+  fontFamily: 'montserrat'
 }
 
 export const formContainer = {

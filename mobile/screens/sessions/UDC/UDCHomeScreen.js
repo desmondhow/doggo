@@ -1,120 +1,285 @@
-import React from 'react';
+import React from "react";
+import { StyleSheet, View, ScrollView } from "react-native";
 import {
-  StyleSheet,
-  View,
-  Alert,
-} from 'react-native';
-import { Table, TableWrapper, Row, Cell, Col } from 'react-native-table-component';
-import { center, inputStyle } from '../../../constants/Styles';
-import { Text, Button } from 'react-native-elements';
-import { withMappedNavigationProps } from 'react-navigation-props-mapper';
+  Table,
+  TableWrapper,
+  Row,
+  Cell,
+  Col
+} from "react-native-table-component";
+import {
+  center,
+  buttonStyle,
+  buttonTextStyle,
+  outlineButtonStyle,
+  outlineButtonTextStyle
+} from "../../../constants/Styles";
+import { Text, Button } from "react-native-elements";
+import { NavigationActions } from 'react-navigation'
+import { withMappedNavigationProps } from "react-navigation-props-mapper";
+import Constants from "../../../constants/Api";
+import { Sessions } from "../../../constants/SessionsConstants";
 
-const currentSessionsTableHeaderText = [
-  'Setup By',
-  'Location',
-  'Dogs Trained'
-];
+const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { currentSessionsData: []};
+    this.state = {
+      currSessionsData: [],
+      currSessionIds: [],
+      alertedCantFetch: false
+    };
     this._fetchCurrentUDCSessions = this._fetchCurrentUDCSessions.bind(this);
   }
 
   componentDidMount() {
+    //Refresh every 5 seconds
     this._fetchCurrentUDCSessions();
+    this.interval = setInterval(
+      () => this._fetchCurrentUDCSessions(),
+      1 * 1000
+    );
   }
 
-  _fetchCurrentUDCSessions() {
-    // fetch(Api.getCurrentUDCSessions)
-    // .then((res) => {
-      this.setState({ currentSessionsData: [['Jamie', 'Outside', 'Moxy, Roxy'], ['Desmond', 'Bulding', 'Nola']] });
-    // })
-    // .catch((err) => {
-    //   console.log(err);
-    // })
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
-  _continueTrainingSession() {
-    Alert.alert('hey');
+  async _fetchCurrentUDCSessions() {
+    Constants.getCurrentUDCSessions
+    .then(url => 
+      fetch(url)
+      .then(res => res.json())
+      .then(res => {
+        this.setState({
+          currSessionsData: [],
+          currSessionIds: []
+        });
+        
+        for (let i = 0; i < res.sessions.length; i++) {
+          console.log(res.sessions[i])
+          this.setState(prevState => ({
+            currSessionsData: [
+              ...prevState.currSessionsData,
+              res.sessions[i].data
+            ],
+            currSessionIds: [...prevState.currSessionIds, res.sessions[i]._id]
+          }));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        if (!this.state.alertedCantFetch) {
+          this.setState({ alertedCantFetch: true });
+        }
+      })
+      .done()  
+    )
   }
+
+  _continueTrainingSession(i) {
+    fetch(Constants.getUDCSession + "/" + this.state.currSessionIds[i])
+      .then(res => res.json())
+      .then(res => {
+        if (res.status) {
+          if (res.data.length === 0) {
+            alert("Could not load UDC Session");
+          } else {
+            alert(JSON.stringify(res.data));
+            // TODO: change name of screen
+            // navigate('UDCTrainingScreen', { data: res.data });
+            navigate('UDCTrainDog')
+          }
+        } else {
+          alert(res.message);
+        }
+      })
+      .done();
+  }
+
+  _editTrainingSession(i) {
+    const { navigate } = this.props.navigation;
+    const sessionData = this.state.currSessionsData[i];
+
+    navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
+  }
+
+  _renderTableButtons = (continueButtons) => (
+    <TableWrapper style={styles.table}>
+      <Cell data="" style={styles.emptyTableHeader} />
+      <Col
+        data={continueButtons}
+        heightArr={new Array(continueButtons.length).fill(
+          row.height,
+          0
+        )}
+      />
+    </TableWrapper>
+  )
+
+  _renderSessionButtons = i => (
+    [
+      <Button
+        transparent 
+        title="Train"
+        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
+        buttonStyle={{...styles.continueTrainingButton, marginRight: -35}}
+        onPress={() => this._continueTrainingSession(i)}
+        fontSize={17}
+      />,
+      <Button
+        transparent
+        title="Edit"
+        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
+        buttonStyle={styles.continueTrainingButton}
+        onPress={() => this._editTrainingSession(i)}
+        fontSize={15}
+      />
+    ]
+  );
 
   render() {
     const state = this.state;
     const { navigate } = this.props.navigation;
 
-    const continueTrainingButton = (session) => (
-      <Button
-        title='Continue'
-        buttonStyle={styles.continueTrainingButton}
-        titleStyle={styles.continueTrainingButtonText}
-        onPress={() => navigate('UDCTrainDog')}
-        color='black'
-      />
-    );
+    const currSessionRows = [];
+    state.currSessionsData.map((session, i) => {
+      let creationDate = new Date(Date.parse(session.createdAt));
+      let todaysDate = new Date();
 
-    const rows = [];
-    const continueButtons = [];
+      let createdToday = true;
+      let copyCreationDate = creationDate.toString();
+      if (
+        creationDate.setHours(0, 0, 0, 0) !=
+        todaysDate.setHours(0, 0, 0, 0)
+      ) {
+        createdToday = false;
+      }
 
-    state.currentSessionsData.map((session, i) => {
-      rows.push(
-        <TableWrapper 
-          style={[
-            styles.tableRowOdd, 
-            i % 2 && styles.tableRowEven, 
-            i == state.currentSessionsData.length-1 && styles.roundedBottomBorder
-          ]}
-          key={i}
-        >
-          {session.map((cellData, j) => (
-            <Cell
-              key={i+j}
-              data={cellData}
-              style={styles.cell}
-            />
-          ))}
-        </TableWrapper>
+      // show date if not created today
+      let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
+        ? ""
+        : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+            1})`
+      }`;
+
+      const numHides = session.hides.length
+      const dogs = 'FILL IN W DATA'
+      const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+
+      currSessionRows.push(
+        <View style={{flexDirection: 'row', marginLeft: 20}}>
+          {rowData.map((cellData, j) => {
+            width = j < 3 ? 150 : 100;
+            marginLeft = j == 4 ? -20 : 0;
+            return (
+              <Cell
+                key={i + j}
+                data={j == 1 ? `\t${cellData}` : cellData}
+                style={[{
+                  borderColor: 'transparent',
+                  width: width,
+                  height: 50,
+                  marginLeft: marginLeft
+                }, i % 2 == 0 ? null : styles.oddRow]}
+                textStyle={{
+                  fontSize: 18,
+                  fontFamily: "montserrat"
+                }}
+              />    
+            )      
+          })}
+        </View>
       );
-
-      continueButtons.push(continueTrainingButton(session));
     });
-
-    _handleGeneralSubmit = () => {
-      Alert.alert('hey');
-    }
 
     return (
       <View style={styles.container}>
-        <View style={styles.currentSessionsContainer}>
-          <View style={styles.currentSessionsHeader}>
-            <Text h4 style={{marginTop: 20}}> Current Sessions </Text>
-            <Button 
-              title="Start New Session" 
-              onPress={() => navigate('UDCNewSession', { onSubmit: this._handleGeneralSubmit })} 
-              buttonStyle={styles.newSessionButton} 
-              color='black'
-            />
-          </View>
-          <Table style={styles.table} borderStyle={{ borderColor: 'transparent' }}>
-            <TableWrapper style={{ flex: 1 }}>  
-                <Row
-                  key={0}
-                  data={currentSessionsTableHeaderText}
-                  style={styles.tableHeader}
-                  textStyle={{ fontWeight: 'bold', marginLeft: 6 }}
-                />
-              {rows}
-            </TableWrapper>
-            <TableWrapper>
-              <Cell data='' style={styles.emptyTableHeader}/>
-              <Col 
-                data={continueButtons} 
-                heightArr={new Array(continueButtons.length).fill(row.height, 0)}
-              />
-          </TableWrapper>
+        <View style={styles.sessionsContainer}>
+          <Text h4>Current Sessions</Text>
+          <Table
+            style={styles.tableContainer}
+            borderStyle={{ borderColor: "transparent" }}
+          >
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              {currentSessionsTableHeaderText.map((cellData, j) => {
+                width = j < 3 ? 150 : 100;
+                return (
+                  <Cell
+                    key={j}
+                    data={cellData}
+                    style={{
+                      borderColor: 'transparent',
+                      width: width,
+                      borderBottomColor: "black",
+                      borderBottomWidth: 3,
+                    }}
+                    textStyle={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      paddingBottom: 20,
+                      paddingLeft: 10,
+                      fontFamily: "montserrat"
+                    }}
+                  />       
+                )   
+              })}
+            </View>
+            <ScrollView>
+              {currSessionRows}
+            </ScrollView>
           </Table>
+        </View>
+        <View style={styles.sessionsContainer}>
+          <Text h4>Previous Sessions</Text>
+          <Table
+            style={styles.tableContainer}
+            borderStyle={{ borderColor: "transparent" }}
+          >
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              {currentSessionsTableHeaderText.map((cellData, j) => {
+                width = j < 3 ? 150 : 100;
+                return (
+                  <Cell
+                    key={j}
+                    data={cellData}
+                    style={{
+                      borderColor: 'transparent',
+                      width: width,
+                      borderBottomColor: "black",
+                      borderBottomWidth: 3,
+                    }}
+                    textStyle={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      paddingBottom: 20,
+                      paddingLeft: 10,
+                      fontFamily: "montserrat"
+                    }}
+                  />       
+                )   
+              })}
+            </View>
+            <ScrollView>
+              { /* TODO: FILL IN W ROWS*/}
+            </ScrollView>
+          </Table>
+        </View>
+        <View style={styles.bottom}>
+          <Button
+            large
+            raised
+            title="Start New Session"
+            rightIcon={{ name: "create", type: "montserrat" }}
+            onPress={() =>
+              navigate("UDCNewSession", { onSubmit: this._handleGeneralSubmit })
+            }
+            buttonStyle={styles.newSessionButton}
+            textStyle={buttonTextStyle}
+            fontSize={22}
+          />
         </View>
       </View>
     );
@@ -123,79 +288,69 @@ export default class UDCHomeScreen extends React.Component {
 
 const row = {
   height: 50,
-  flexDirection: 'row',
-}
-
-const header = {
-  height: row.height+10
-}
-
-const button = {
-  ...center,
-  ...inputStyle
-}
+  flexDirection: "row"
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "rgb(225,226,225)",
+    alignItems: "center"
   },
   roundedBottomBorder: {
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5
   },
   emptyTableHeader: {
-    ...header,
-    backgroundColor: 'transparent'
+    height: 60,
+    backgroundColor: "transparent"
   },
-  currentSessionsContainer: {
-    flexDirection: 'column',
+  tableHeader: {
+    height: 60,
+    width: 700,
+    borderBottomColor: "black",
+    borderBottomWidth: 3
+  },
+  sessionsContainer: {
+    flexDirection: "column",
     marginTop: 50,
-    marginLeft: 30
+    width: '90%'
   },
   currentSessionsHeader: {
-    flexDirection: 'row'
-  },
-  tableHeader: { 
-    ...header,
-    backgroundColor: '#7791c4',
-    borderBottomColor: 'black',
-    borderBottomWidth: 3,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5
+    flexDirection: "row",
+    justifyContent: "center"
   },
   table: {
-    width: 700,
-    marginLeft: 10,
-    marginTop: 20,
-    flexDirection: 'row'
+    marginLeft: 40,
+    marginTop: 20
   },
-  cell: {
-    flex: 1,
-    borderColor: 'transparent',
-    margin: 6
+  tableContainer: {
+    alignItems: 'center',
+    marginTop: 40,
+    backgroundColor: "white",
+    height: 300,
+    width: '100%',
   },
-  tableRowOdd: { 
-    ...row,
-    backgroundColor: '#d3ebff',
-  },
-  tableRowEven: { 
-    ...row,
-    backgroundColor: '#f4faff',
+  oddRow: {
+    backgroundColor: "#e3e3e3"
   },
   continueTrainingButton: {
-    ...button,
-    height: row.height-10, 
-    width: 100,
-    margin: 10,
-  },
-  continueTrainingButtonText: {
-    fontSize: 15
+    height: row.height,
+    width: 75,
+    margin: 10
   },
   newSessionButton: {
-    ...button,
-    width: 175,
-    marginLeft: 10,
-    marginTop: 10
+    ...buttonStyle,
+    marginTop: 10,
+    position: "absolute",
+    bottom: 0
+  },
+  bottom: {
+    flexGrow: 1,
+    alignItems: "flex-end",
+    justifyContent: "center",
+    marginBottom: 36,
+    marginRight: 250,
+    flexDirection: "row"
   }
 });

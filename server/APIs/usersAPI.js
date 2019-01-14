@@ -18,8 +18,6 @@ router.get('/', function (req, res) {
 router.post('/register', function (req, res) {
     console.log('Registering user');
     //Validate
-    req.checkBody('first_name').notEmpty();
-    req.checkBody('last_name').notEmpty();
     req.checkBody('email').notEmpty();
     req.checkBody('password').notEmpty();
     req.checkBody('password_conf').notEmpty();
@@ -46,8 +44,6 @@ router.post('/register', function (req, res) {
     else {
         // Get the values
         const userData = {
-            first_name: req.body.first_name,
-            last_name: req.body.last_name,
             email: req.body.email,
             password: req.body.password,
         };
@@ -111,14 +107,14 @@ router.get('/profile/:id', function (req, res, next) {
               return res.send(JSON.stringify({message: 'Not authorized!'}));
           } else {
               return res.status(200).send({
-                  first_name: user.first_name,
-                  last_name: user.last_name,
                   message: 'success'
               });
           }
       }
     });
 });
+
+
 
 /**
  * Logout the user

@@ -34,8 +34,6 @@ export default class ProfileScreen extends Component {
         super(props);
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.state = {
-            name: '',
-            last_name: '',
             role: '',
             current_sessions: '',
             isLoading: true,
@@ -47,8 +45,8 @@ export default class ProfileScreen extends Component {
     loadProfile = () => {
         getUserID().then((user_id) => {
             user_id = user_id.replace(/['"]+/g, '');
-            console.log(Constants.getProfileApiURL + "/" + user_id);
-            fetch(Constants.getProfileApiURL + "/" + user_id, {
+            console.log(Constants.profileApiURL + "/" + user_id);
+            fetch(Constants.profileApiURL + "/" + user_id, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -60,8 +58,6 @@ export default class ProfileScreen extends Component {
                     if (res.message === 'success') {
                         console.log(res);
                         this.setState({
-                            name: res.first_name,
-                            last_name: res.last_name,
                             isLoading: false,
                         });
                         console.log("State ", this.state);
@@ -78,7 +74,7 @@ export default class ProfileScreen extends Component {
      * Send logout get req to server
      */
     handleSignOut = () => {
-        fetch(Constants.getLogoutApiURL, {
+        fetch(Constants.logoutApiURL, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -110,7 +106,7 @@ export default class ProfileScreen extends Component {
             <View style={styles.container}>
                 <View style={{paddingVertical: 20}}>
                     <Card
-                        title={'Welcome ' + this.state.name + ' ' + this.state.last_name + '!'}
+                        title={'Welcome!'}
                         titleStyle={styles.title}>
                         <Text style={styles.subtitle}>My Sessions</Text>
                         {/*<ListView*/}

@@ -3,6 +3,7 @@
  */
 const mongoose = require('../../server/node_modules/mongoose');
 const bcrypt = require('../../server/node_modules/bcrypt');
+import UDCSchema from './UDCSchema';
 
 export const UserSchema = new mongoose.Schema({
     email: {
@@ -11,20 +12,14 @@ export const UserSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    first_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
-    last_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
-    }
+    },
+    sessions: [{
+      sessionType: String,
+      data: UDCSchema
+    }]
 });
 
 /**
@@ -69,4 +64,4 @@ UserSchema.pre('save', function (next) {
 
 
 const User = mongoose.model('User', UserSchema);
-export default User;
+module.exports = User;
