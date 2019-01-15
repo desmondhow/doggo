@@ -27,7 +27,19 @@ export class UDCBuildingSearchScreen extends React.Component {
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     console.log('UDCBUILDING SEARCH!!', sessionInfo.hides);
 
-    this.state = {
+    let barkStates = {};
+    
+    if (sessionInfo) {
+      sessionInfo.hides.forEach(hide => {
+        barkStates[hide.concentration] = {
+          ...barkStates[hide.concentration],
+          [hide.size]: {
+            barks: 0,
+          }
+        }
+      })
+
+      this.state = {
         activeSections: [],
         barks: '0',
         dog: {
@@ -37,6 +49,8 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: sessionInfo.hides,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
+        barkStates: barkStates ,
+      }
     }
 
   }
@@ -44,13 +58,17 @@ export class UDCBuildingSearchScreen extends React.Component {
   _onSubmit = (performanceInfo) => {
     console.log(performanceInfo)
     this.props.saveDogTraining(performanceInfo);
-    // Alert.alert('Finish Dog Training, save info for this session for this dog - requires submitting multiple forms with one click, thus maintaining a key for each search');
-    // this.props.navigation.navigate('UDC');
+    this.props.navigation.navigate('UDC');
   }
 
-  checkNumber = (text) => {
+  checkNumber = (text, section) => {
+    let barks = text.replace(/[^0-9]/g, '');
+    newState = {
+      ...this.state.barkStates
+    }
+    newState[section.concentration][section.size][barks] = barks;
     this.setState({
-        barks: text.replace(/[^0-9]/g, ''),
+        barkStates: newState,
     });
 }
 
@@ -87,7 +105,6 @@ export class UDCBuildingSearchScreen extends React.Component {
     );
   };
 
-  // section is each BuildingSearchInfo.TempSessions[0].Hides
   _renderContent = section => {
     const buttonGroupContainerStyle = { height: 50 }
     const scrollViewContainerStyle = { height: 300 }
@@ -157,21 +174,19 @@ export class UDCBuildingSearchScreen extends React.Component {
               )}}
             />
         </View>
-
         <Text h4>Barks</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.barks`} component={_ => 
-              <TextInput 
-                style={styles.input}
-                keyboardType='numeric'
-                onChangeText={(text)=> this.checkNumber(text)}
-                value={this.state.barks}
-                maxLength={3}  //setting limit of input
-              />
-            }
+          <Field name={`performance.${section.concentration}.${section.size}.barks`} component={_ => 
+            <TextInput 
+              style={styles.input}
+              keyboardType='numeric'
+              onChangeText={(text)=> this.checkNumber(text)}
+              value={this.state.barks}
+              maxLength={3}  //setting limit of input
             />
+          }
+          />
         </View>
-
         <Text h4>Handler Knows</Text>
         <View>
             <Field name={`performance.${section.concentration}.${section.size}.handlerKnows`} component={(inputProps) => {
