@@ -8,6 +8,7 @@ import {
   Col
 } from "react-native-table-component";
 import {
+  container,
   center,
   buttonStyle,
   buttonTextStyle,
@@ -59,7 +60,6 @@ export default class UDCHomeScreen extends React.Component {
         });
         
         for (let i = 0; i < res.sessions.length; i++) {
-          console.log(res.sessions[i])
           this.setState(prevState => ({
             currSessionsData: [
               ...prevState.currSessionsData,
@@ -201,7 +201,7 @@ export default class UDCHomeScreen extends React.Component {
     });
 
     return (
-      <View style={styles.container}>
+      <View style={container}>
         <View style={styles.sessionsContainer}>
           <Text h4>Current Sessions</Text>
           <Table
@@ -297,11 +297,6 @@ const row = {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "rgb(225,226,225)",
-    alignItems: "center"
-  },
   roundedBottomBorder: {
     borderBottomLeftRadius: 5,
     borderBottomRightRadius: 5

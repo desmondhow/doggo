@@ -388,7 +388,7 @@ class UDCNewSessionScreen extends React.Component {
 
   render = () => (
     <View style={styles.container}>
-      <View style={styles.formContainer}>
+      <View>
         {this._renderGeneralForm()}
       </View>
       <View style={{marginTop: -20}}>

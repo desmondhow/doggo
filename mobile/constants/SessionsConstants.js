@@ -58,20 +58,7 @@ export const BuildingSearchInfo = {
       ],
     },
   ],
-  TempDogs: [
-    {
-      label: 'Moxy-0',
-      value: 'Moxy-0'
-    },
-    {
-      label: 'Roxy-1',
-      value: 'Roxy-1'
-    },
-    {
-      label: 'Joe-2',
-      value: 'Joe-2'
-    }
-  ],
+  TempDogs: ['Moxy', 'Roxy', 'Ruby'],
   TempTrainers: [
     'Jamie',
     'Dani',

@@ -35,7 +35,8 @@ export const formContainer = {
 
 export const container = {
   flex: 1,
-  backgroundColor: 'white',
+  backgroundColor: "rgb(225,226,225)",
+  alignItems: "center"
 }
 
 export const fieldsContainer = {
