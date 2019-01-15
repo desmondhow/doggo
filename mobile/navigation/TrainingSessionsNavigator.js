@@ -2,14 +2,10 @@ import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { Icon, Button } from 'react-native-elements';
 
-import TrainingSessionsHomeScreen from '../../screens/sessions/SessionsHomeScreen';
-import UDCHomeScreen from '../../screens/sessions/UDC/UDCHomeScreen';
-import UDCBuildingSearch from '../../screens/sessions/UDC/UDCBuildingSearchScreen';
-import UDCTrainDog from '../../screens/sessions/UDC/UDCTrainDogScreen';
-import UDCNewSessionScreen from '../../screens/sessions/UDC/UDCNewSessionScreen';
-import UDCNavigator from './UDCNavigator';
-import { onSignOut } from '../../components/auth';
-import store from '../../redux/store';
+import TrainingSessionsHomeScreen from '../screens/sessions/SessionsHomeScreen';
+import UDCHomeScreen from '../screens/sessions/UDC/UDCHomeScreen';
+import UDCNewSessionScreen from '../screens/sessions/UDC/UDCNewSessionScreen';
+import { onSignOut } from '../components/auth';
 
 export default createStackNavigator({
   Home: {
@@ -37,17 +33,11 @@ export default createStackNavigator({
     })
   },
   UDC: { 
-    screen: UDCNavigator,
+    screen: UDCHomeScreen,
     navigationOptions: { 
       title: 'UDC'
     }
   },
-  // UDCNewSession: { 
-  //   screen: UDCNavigator,
-  //   navigationOptions: { 
-  //     title: 'New UDC Session'
-  //   }
-  // },
   UDCBuildingSearch: {
     screen: UDCBuildingSearch,
     navigationOptions: { 
@@ -58,6 +48,12 @@ export default createStackNavigator({
     screen: UDCTrainDog,
     navigationOptions: { 
       title: 'UDC Train Dog'
+    }
+  },
+  UDCNewSession: { 
+    screen: UDCNewSessionScreen,
+    navigationOptions: { 
+      title: 'New UDC Session'
     }
   }
 });

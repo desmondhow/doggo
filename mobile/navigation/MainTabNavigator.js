@@ -4,7 +4,7 @@ import {createStackNavigator, createBottomTabNavigator, createDrawerNavigator} f
 
 import TabBarIcon from '../components/TabBarIcon';
 
-import TrainingSessionsNavigator from './sessions/TrainingSessionsNavigator';
+import TrainingSessionsNavigator from './TrainingSessionsNavigator';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import ProfileScreen from '../screens/login/ProfileScreen';

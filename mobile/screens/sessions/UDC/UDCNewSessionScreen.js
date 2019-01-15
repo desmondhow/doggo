@@ -71,7 +71,8 @@ class UDCNewSessionScreen extends React.Component {
     };
 
     this.props.saveSession(session)
-    this.props.navigation.navigate('UDC');
+    // this.props.navigation.navigate('UDC');
+    this.props.navigation.goBack();
   };
 
   _updateGeneralState = (property, val) => this.setState({ [property]: val })
