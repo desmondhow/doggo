@@ -15,11 +15,12 @@ import {
   outlineButtonTextStyle
 } from "../../../constants/Styles";
 import { Text, Button } from "react-native-elements";
+import { NavigationActions } from 'react-navigation'
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
 import Constants from "../../../constants/Api";
 import { Sessions } from "../../../constants/SessionsConstants";
 
-const currentSessionsTableHeaderText = ["Created At", "# Hides", "Dogs", '', ''];
+const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
@@ -38,7 +39,7 @@ export default class UDCHomeScreen extends React.Component {
     this._fetchCurrentUDCSessions();
     this.interval = setInterval(
       () => this._fetchCurrentUDCSessions(),
-      500 * 1000
+      1 * 1000
     );
   }
 
@@ -48,38 +49,29 @@ export default class UDCHomeScreen extends React.Component {
 
   async _fetchCurrentUDCSessions() {
     Constants.getCurrentUDCSessions
-    .then(url =>
+    .then(url => 
       fetch(url)
       .then(res => res.json())
       .then(res => {
-        if (res.status) {
-          if (res.list.length === 0) {
-            alert("There are no active UDC Sessions");
-          } else {
-            this.setState({
-              currSessionsData: [],
-              currSessionIds: []
-            });
-
-            for (let i = 0; i < res.list.length; i++) {
-              this.setState(prevState => ({
-                currSessionsData: [
-                  ...prevState.currSessionsData,
-                  res.list[i]
-                ],
-                currSessionIds: [...prevState.currSessionIds, res.list[i].id]
-              }));
-            }
-          }
-        } else {
-          alert(res.message);
-          console.log(res.message);
+        this.setState({
+          currSessionsData: [],
+          currSessionIds: []
+        });
+        
+        for (let i = 0; i < res.sessions.length; i++) {
+          console.log(res.sessions[i])
+          this.setState(prevState => ({
+            currSessionsData: [
+              ...prevState.currSessionsData,
+              res.sessions[i].data
+            ],
+            currSessionIds: [...prevState.currSessionIds, res.sessions[i]._id]
+          }));
         }
       })
       .catch(err => {
         console.log(err);
         if (!this.state.alertedCantFetch) {
-          alert("Unable to fetch current UDC sessions.");
           this.setState({ alertedCantFetch: true });
         }
       })
@@ -110,9 +102,7 @@ export default class UDCHomeScreen extends React.Component {
     const { navigate } = this.props.navigation;
     const sessionData = this.state.currSessionsData[i];
 
-    console.log(`sessionData: ${sessionData}`)
-
-    navigate('UDC.NewSession', { isEditing: true, sessionInfo: sessionData })
+    navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
   }
 
   _renderTableButtons = (continueButtons) => (
@@ -153,7 +143,7 @@ export default class UDCHomeScreen extends React.Component {
     const state = this.state;
     const { navigate } = this.props.navigation;
 
-    const rows = [];
+    const currSessionRows = [];
     state.currSessionsData.map((session, i) => {
       let creationDate = new Date(Date.parse(session.createdAt));
       let todaysDate = new Date();
@@ -169,16 +159,16 @@ export default class UDCHomeScreen extends React.Component {
 
       // show date if not created today
       let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
-          ? ""
-          : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
-              1})`
+        ? ""
+        : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+            1})`
       }`;
 
       const numHides = session.hides.length
       const dogs = 'FILL IN W DATA'
       const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
 
-      rows.push(
+      currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>
           {rowData.map((cellData, j) => {
             width = j < 3 ? 150 : 100;
@@ -206,55 +196,75 @@ export default class UDCHomeScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        <View style={styles.currentSessionsContainer}>
-          <View style={styles.currentSessionsHeader}>
-            <Text
-              h4
-              style={{
-                fontWeight: "bold",
-                fontSize: 36,
-                marginTop: 20,
-                fontFamily: "montserrat"
-              }}
-            >
-              Current UDC Sessions
-            </Text>
-          </View>
-          <ScrollView>
-            <Table
-              style={styles.tableContainer}
-              borderStyle={{ borderColor: "transparent" }}
-            >
-              <View style={{flexDirection: 'row', marginTop: 20}}>
-                {currentSessionsTableHeaderText.map((cellData, j) => {
-                  width = j < 3 ? 150 : 100;
-                  return (
-                    <Cell
-                      key={j}
-                      data={cellData}
-                      style={{
-                        borderColor: 'transparent',
-                        width: width,
-                        borderBottomColor: "black",
-                        borderBottomWidth: 3,
-                      }}
-                      textStyle={{
-                        fontSize: 24,
-                        fontWeight: "bold",
-                        paddingBottom: 20,
-                        paddingLeft: 10,
-                        fontFamily: "montserrat"
-                      }}
-                    />       
-                  )   
-                })}
-              </View>
-              <TableWrapper>
-                {rows}
-              </TableWrapper>
-            </Table>
-          </ScrollView>
-
+        <View style={styles.sessionsContainer}>
+          <Text h4>Current Sessions</Text>
+          <Table
+            style={styles.tableContainer}
+            borderStyle={{ borderColor: "transparent" }}
+          >
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              {currentSessionsTableHeaderText.map((cellData, j) => {
+                width = j < 3 ? 150 : 100;
+                return (
+                  <Cell
+                    key={j}
+                    data={cellData}
+                    style={{
+                      borderColor: 'transparent',
+                      width: width,
+                      borderBottomColor: "black",
+                      borderBottomWidth: 3,
+                    }}
+                    textStyle={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      paddingBottom: 20,
+                      paddingLeft: 10,
+                      fontFamily: "montserrat"
+                    }}
+                  />       
+                )   
+              })}
+            </View>
+            <ScrollView>
+              {currSessionRows}
+            </ScrollView>
+          </Table>
+        </View>
+        <View style={styles.sessionsContainer}>
+          <Text h4>Previous Sessions</Text>
+          <Table
+            style={styles.tableContainer}
+            borderStyle={{ borderColor: "transparent" }}
+          >
+            <View style={{flexDirection: 'row', marginTop: 20}}>
+              {currentSessionsTableHeaderText.map((cellData, j) => {
+                width = j < 3 ? 150 : 100;
+                return (
+                  <Cell
+                    key={j}
+                    data={cellData}
+                    style={{
+                      borderColor: 'transparent',
+                      width: width,
+                      borderBottomColor: "black",
+                      borderBottomWidth: 3,
+                    }}
+                    textStyle={{
+                      fontSize: 24,
+                      fontWeight: "bold",
+                      paddingBottom: 20,
+                      paddingLeft: 10,
+                      fontFamily: "montserrat"
+                    }}
+                  />       
+                )   
+              })}
+            </View>
+            <ScrollView>
+              { /* TODO: FILL IN W ROWS*/}
+            </ScrollView>
+          </Table>
         </View>
         <View style={styles.bottom}>
           <Button
@@ -263,7 +273,7 @@ export default class UDCHomeScreen extends React.Component {
             title="Start New Session"
             rightIcon={{ name: "create", type: "montserrat" }}
             onPress={() =>
-              navigate("UDC.NewSession", { onSubmit: this._handleGeneralSubmit })
+              navigate("UDCNewSession", { onSubmit: this._handleGeneralSubmit })
             }
             buttonStyle={styles.newSessionButton}
             textStyle={buttonTextStyle}
@@ -300,8 +310,7 @@ const styles = StyleSheet.create({
     borderBottomColor: "black",
     borderBottomWidth: 3
   },
-  currentSessionsContainer: {
-    ...center,
+  sessionsContainer: {
     flexDirection: "column",
     marginTop: 50,
     width: '90%'
@@ -318,9 +327,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 40,
     backgroundColor: "white",
-    height: 500,
-    width: 800,
-    marginLeft: -20
+    height: 300,
+    width: '100%',
   },
   oddRow: {
     backgroundColor: "#e3e3e3"
@@ -333,7 +341,6 @@ const styles = StyleSheet.create({
   newSessionButton: {
     ...buttonStyle,
     marginTop: 10,
-    width: 250,
     position: "absolute",
     bottom: 0
   },

@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import { Text, Button, ButtonGroup, Divider } from 'react-native-elements';
 import { Field, formValueSelector, change, untouch } from 'redux-form'
+
 import { 
   center, 
   buttonStyle, 
@@ -30,8 +31,10 @@ class UDCNewSessionScreen extends React.Component {
 
     let previousHides = {};
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
+    console.log(`sessionInfo: ${sessionInfo}`);
+    
     if (sessionInfo) {
-      sessionInfo.hides.forEach(hide => {        
+      sessionInfo.hides.forEach(hide => {
         previousHides[hide.concentration] = {
           ...previousHides[hide.concentration],
           [hide.size]: {
@@ -45,7 +48,7 @@ class UDCNewSessionScreen extends React.Component {
 
       this.state = {
         addedHides: previousHides,
-        sessionId: sessionInfo.id,
+        sessionId: sessionInfo._id,
         isEditing: this.props.navigation.getParam('isEditing', false),
         createdAt: sessionInfo.createdAt,
         temperature: sessionInfo.temperature,
@@ -57,8 +60,6 @@ class UDCNewSessionScreen extends React.Component {
   }
 
   _onSubmit = sessionInfo => {
-    console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`)
-
     session = {
       id: this.state.sessionId,
       temperature: sessionInfo.temperature,
@@ -68,11 +69,6 @@ class UDCNewSessionScreen extends React.Component {
       hides: this.state.addedHides,
     };
 
-    if (this.state.isEditing) {
-      session.createdAt = this.state.createdAt;
-    }
-
-    // TODO: work on backend for edit
     this.props.saveSession(session)
     this.props.navigation.navigate('UDC');
   };
@@ -263,11 +259,18 @@ class UDCNewSessionScreen extends React.Component {
     </View>
   )
 
-  _renderSubmitBtn = () => (
-    <Button
+  _onDeleteSession = () => {
+    this.props.deleteSession(this.state.sessionId)
+    this.props.navigation.navigate('UDC');
+  }
+
+  _renderSubmitBtn = () => {
+    width = this.state.isEditing ? 150 : 300
+
+    createBtn = <Button
       raised
       rounded
-      title='Create'
+      title={this.state.isEditing? 'Edit' : 'Create'}
       onPress={this.props.handleSubmit(this._onSubmit)}
       fontSize={26}
       buttonStyle={{
@@ -275,15 +278,42 @@ class UDCNewSessionScreen extends React.Component {
         ...buttonStyle,
         marginLeft: 60,
         marginTop: 20,
-        width: 300
+        width: width
       }}
       titleStyle={{
         ...buttonTextStyle,
         fontSize: 20,
       }}
     />
-  );
 
+    deleteBtn = <Button
+      raised
+      rounded
+      title='Delete'
+      onPress={() => this._onDeleteSession()}
+      fontSize={26}
+      buttonStyle={{
+        ...center,
+        ...buttonStyle,
+        marginLeft: 60,
+        marginTop: 20,
+        width: width
+      }}
+      titleStyle={{
+        ...buttonTextStyle,
+        fontSize: 20,
+      }}
+    />
+
+    return (
+      this.state.isEditing ?
+        <View style={{flexDirection: 'row'}}>
+          {deleteBtn}
+          {createBtn}
+        </View> :
+        createBtn
+    )
+  };
   _resetFields = (fields) => {
     fields.forEach(field => {
       //reset the field's value
@@ -402,6 +432,7 @@ export default connectReduxForm(
   }), 
   dispatch => ({
     // getInitialState: () => dispatch({ type: actions.GET_UDC_NEW_SESSION_INITIAL_STATE }),
-    saveSession: sessionInfo => dispatch({ type: actions.SAVE_UDC_SESSION, sessionInfo: sessionInfo })
+    saveSession: sessionInfo => dispatch({ type: actions.SAVE_UDC_SESSION, sessionInfo: sessionInfo }),
+    deleteSession: sessionId => dispatch({ type: actions.DELETE_UDC_SESSION, sessionId: sessionId })
   })
 )

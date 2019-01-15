@@ -1,11 +1,10 @@
 import { Schema } from 'mongoose';
 
-export default {
+export default new Schema({
   /* 
     TODO: i guess we have them enter their name during creation? should we pull this from the list of trainers we already have?
     creator: String
   */
-  id: Schema.Types.ObjectId,
   createdAt: { type: Date, default: Date.now },
   temperature: Number,
   humidity: Number,
@@ -44,4 +43,4 @@ export default {
       }
     }
   ],  
-};
+});

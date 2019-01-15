@@ -32,7 +32,7 @@ const HomeScreen = class extends React.Component {
                   buttonStyle={buttonStyle}
                   title='Create New Session'
                   textStyle={{...buttonTextStyle, fontSize: 20 }}
-                  onPress={() => navigate(`${rowData}.NewSession`)} />
+                  onPress={() => navigate(`${rowData}NewSession`)} />
                 <Button
                   buttonStyle={buttonStyle}
                   title='View Current Sessions' 
