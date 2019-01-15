@@ -406,7 +406,8 @@ const styles = StyleSheet.create({
   hideContainer: {
     flexDirection: 'column',
     paddingLeft: 65,
-    paddingRight: 65
+    paddingRight: 65,
+    ...center
   },
   fieldsContainer: {
     borderColor: Colors.darkGrey,
