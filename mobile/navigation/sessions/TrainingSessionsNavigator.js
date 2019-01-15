@@ -40,10 +40,10 @@ export default createStackNavigator({
       title: 'UDC'
     }
   },
-  // 'UDC.NewSession': { 
-  //   screen: UDCNewSessionScreen,
-  //   navigationOptions: { 
-  //     title: 'New UDC Session'
-  //   }
-  // }
+  'UDCNewSession': { 
+    screen: UDCNewSessionScreen,
+    navigationOptions: { 
+      title: 'New UDC Session'
+    }
+  }
 });

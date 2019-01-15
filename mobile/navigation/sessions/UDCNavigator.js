@@ -8,8 +8,10 @@ const navigator = createStackNavigator({
   UDC: UDCHomeScreen,
   UDCNewSession: UDCNewSessionScreen
 }, {
-  headerMode: 'none'
+  // headerMode: 'none'
 });
 
 
-export default (navigator);
+
+// export default navigator;
+export default UDCHomeScreen;
