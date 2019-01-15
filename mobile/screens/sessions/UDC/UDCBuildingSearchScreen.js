@@ -10,7 +10,6 @@ import {
 import { Text, Icon, Button, ButtonGroup } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
 import { Field } from 'redux-form';
-import { Dropdown } from 'react-native-material-dropdown';
 
 import { container, formContainer, center, buttonStyle } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxDropdown } from '../../../components/helpers';
@@ -26,22 +25,11 @@ export class UDCBuildingSearchScreen extends React.Component {
 
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     console.log('UDCBUILDING SEARCH!!', sessionInfo);
-
-    let barkStates = {};
     
     if (sessionInfo) {
-      sessionInfo.hides.forEach(hide => {
-        barkStates[hide.concentration] = {
-          ...barkStates[hide.concentration],
-          [hide.size]: {
-            barks: 0,
-          }
-        }
-      })
 
       this.state = {
         activeSections: [],
-        barks: '0',
         dog: {
           name: '',
           id: 0,
@@ -49,7 +37,6 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: sessionInfo.hides,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
-        barkStates: barkStates,
       }
     }
 
@@ -67,19 +54,6 @@ export class UDCBuildingSearchScreen extends React.Component {
     this.props.saveDogTraining(dataToSave);
     this.props.navigation.navigate('UDC');
   }
-
-  checkNumber = (text, section) => {
-    const hideId = section._id
-
-    let barks = text.replace(/[^0-9]/g, '');
-    newState = {
-      ...this.state.barkStates
-    }
-    newState[hideId][barks] = barks;
-    this.setState({
-        barkStates: newState,
-    });
-}
 
   _renderSubmitBtn = () => (
     <Button
@@ -186,15 +160,17 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Barks</Text>
         <View>
-          <Field name={`Performance.${section._id}.barks`} component={_ => 
-            <TextInput 
-              style={styles.input}
-              keyboardType='numeric'
-              onChangeText={(text)=> this.checkNumber(text)}
-              value={this.state.barks}
-              maxLength={3}  //setting limit of input
-            />
-          }
+          <Field name={`Performance.${section._id}.barks`} component={inputProps => {
+            const { input: { value, onChange } } = inputProps;
+            return (
+              <TextInput 
+                style={styles.input}
+                keyboardType='numeric'
+                onChangeText={onChange}
+                value={value}
+                maxLength={3}  //setting limit of input
+              />
+            )}}
           />
         </View>
         <Text h4>Handler Knows</Text>
@@ -313,7 +289,6 @@ export class UDCBuildingSearchScreen extends React.Component {
           <Text h4>Failure Codes</Text>
           <ScrollView style={scrollViewContainerStyle}>
             <Field name={`Performance.${section._id}.failCodes`} component={_ => 
-              // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
               <CheckboxContainer name='FailCodes' checkboxes={BuildingSearchInfo.FailCodes}/>
               }
             /> 
@@ -323,7 +298,6 @@ export class UDCBuildingSearchScreen extends React.Component {
           <Text h4>Distractions</Text>
           <ScrollView style={scrollViewContainerStyle}>
             <Field name={`Performance.${section._id}.distractions`} component={_ => 
-              // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
                 <CheckboxContainer name='Distractions' checkboxes={BuildingSearchInfo.Distractions}/>
               }
             /> 
