@@ -25,7 +25,7 @@ export class UDCBuildingSearchScreen extends React.Component {
     this._renderPage = this._renderPage.bind(this);
 
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    console.log('UDCBUILDING SEARCH!!', sessionInfo.hides);
+    console.log('UDCBUILDING SEARCH!!', sessionInfo);
 
     let barkStates = {};
     
@@ -49,7 +49,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: sessionInfo.hides,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
-        barkStates: barkStates ,
+        barkStates: barkStates,
       }
     }
 
@@ -57,16 +57,25 @@ export class UDCBuildingSearchScreen extends React.Component {
 
   _onSubmit = (performanceInfo) => {
     console.log(performanceInfo)
-    this.props.saveDogTraining(performanceInfo);
+    const dataToSave = {
+      // dogId: this.state.dogId,
+      sessionId: this.state.sessionId,
+      handler: performanceInfo.Handler,
+      recorder: performanceInfo.Recorder,
+      ...performanceInfo.Performance
+    }
+    this.props.saveDogTraining(dataToSave);
     this.props.navigation.navigate('UDC');
   }
 
   checkNumber = (text, section) => {
+    const hideId = section._id
+
     let barks = text.replace(/[^0-9]/g, '');
     newState = {
       ...this.state.barkStates
     }
-    newState[section.concentration][section.size][barks] = barks;
+    newState[hideId][barks] = barks;
     this.setState({
         barkStates: newState,
     });
@@ -94,7 +103,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderHeader = section => {
     return (
       <View style={styles.hideContainer}>
-        <Text h3>
+        <Text h4>
         {
           `${section.location ? `${section.location}` : ''}` + 
           `${section.placementArea ? `, ${section.placementArea}` : ''}` + 
@@ -110,7 +119,8 @@ export class UDCBuildingSearchScreen extends React.Component {
     const scrollViewContainerStyle = { height: 300 }
     const yesNoButtons = ['No', 'Yes']
 
-    console.log(`section: ${JSON.stringify(section)}`)
+    const concentration = section.concentration.toString().concat('#');
+    const size = section.size.toString().replace('.', '#')  
 
     return (
       <View style={{
@@ -119,7 +129,7 @@ export class UDCBuildingSearchScreen extends React.Component {
       }}>
         <Text h4>Handler Radius - Alert</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.radiusAlert`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.radiusAlert`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -133,7 +143,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Handler Radius - Reward</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.radiusReward`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.radiusReward`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -147,7 +157,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Handler Radius - Search</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.radiusSearch`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.radiusSearch`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -162,7 +172,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         {/* need to show actual string of the things instead of "selectedIndex" being returned */}
         <Text h4>Rewarder</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.rewarder`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.rewarder`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -176,7 +186,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Barks</Text>
         <View>
-          <Field name={`performance.${section.concentration}.${section.size}.barks`} component={_ => 
+          <Field name={`Performance.${section._id}.barks`} component={_ => 
             <TextInput 
               style={styles.input}
               keyboardType='numeric'
@@ -189,7 +199,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Handler Knows</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.handlerKnows`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.handlerKnows`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -203,7 +213,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Fringe</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.fringe`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.fringe`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -217,7 +227,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Reset</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.reset`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.reset`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -231,7 +241,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>False Alert</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.falseAlert`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.falseAlert`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -245,7 +255,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>On Lead</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.lead`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.lead`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -259,7 +269,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>False Indication</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.falseIndication`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.falseIndication`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -273,7 +283,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Detail Search</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.detailSearch`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.detailSearch`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -287,7 +297,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         </View>
         <Text h4>Successful</Text>
         <View>
-            <Field name={`performance.${section.concentration}.${section.size}.successful`} component={(inputProps) => {
+            <Field name={`Performance.${section._id}.successful`} component={(inputProps) => {
               const { input: { value, onChange } } = inputProps;
               return (
                 <ButtonGroup
@@ -302,9 +312,9 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
           <Text h4>Failure Codes</Text>
           <ScrollView style={scrollViewContainerStyle}>
-            <Field name={`performance.${section.concentration}.${section.size}.failCodes`} component={_ => 
+            <Field name={`Performance.${section._id}.failCodes`} component={_ => 
               // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-              <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
+              <CheckboxContainer name='FailCodes' checkboxes={BuildingSearchInfo.FailCodes}/>
               }
             /> 
           </ScrollView>
@@ -312,9 +322,9 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
           <Text h4>Distractions</Text>
           <ScrollView style={scrollViewContainerStyle}>
-            <Field name={`performance.${section.concentration}.${section.size}.distractions`} component={_ => 
+            <Field name={`Performance.${section._id}.distractions`} component={_ => 
               // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-                <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
+                <CheckboxContainer name='Distractions' checkboxes={BuildingSearchInfo.Distractions}/>
               }
             /> 
           </ScrollView>     
@@ -354,11 +364,11 @@ export class UDCBuildingSearchScreen extends React.Component {
           </View>
           <View style={containerStyle}>
               <Text style={styles.labelStyle}>Handler</Text>
-              {renderReduxDropdown(`dogs.${this.state.dog.id}.Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+              {renderReduxDropdown(`Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
           </View>
           <View style={containerStyle}>
               <Text style={styles.labelStyle}>Recorder</Text>
-              {renderReduxDropdown(`dogs.${this.state.dog.id}.Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+              {renderReduxDropdown(`Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
           </View>
         </View>
         <View style={{height: '75%'}}>

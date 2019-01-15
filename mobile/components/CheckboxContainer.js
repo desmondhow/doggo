@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { CheckBox } from 'react-native-elements';
+import { Field } from 'redux-form';
 
 export default class CheckboxContainer extends Component {
   constructor(props) {
@@ -20,16 +21,61 @@ export default class CheckboxContainer extends Component {
 
   render() {
     return (
-        <View>
-        {
+      <View>
+        <Field
+          name={this.props.name}
+          component={inputProps => {
+            const { input } = inputProps;
+
+            return this.props.checkboxes.map(item => {
+              const checkboxName = item.label;
+              const isChecked = input.value.indexOf(checkboxName) !== -1;
+
+              return (
+                <CheckBox 
+                  title={checkboxName} 
+                  checked={isChecked} 
+                  onPress={_ => {
+                    const newValue = [...input.value];
+
+                    if (!isChecked) {
+                      newValue.push(checkboxName);
+                    } else {
+                      newValue.splice(newValue.indexOf(checkboxName), 1);
+                    }
+
+                    return input.onChange(newValue);
+                  }}
+                />
+              )
+            });
+          }}
+        />
+        {/* {
           this.props.checkboxes.map(item => (
-            <View key={item.value}>
-              <CheckBox title={item.label} checked={this.state.checkedItems.get(item.value)} onPress={this.handleChange.bind(this, item.value)}/>
-              {/* <CheckBox title={item.label} checked={this.state.checked} onPress={() => this.setState({checked: !this.state.checked})}/> */}
+            <View>
+              
+                key={item.value}
+                name={`${this.props.name}.${item.label}`} 
+                checked={this.state.checkedItems.get(item.value)}
+                component={(inputProps) => {
+                const { input: { checked, onChange } } = inputProps;
+                return (
+                  <CheckBox 
+                    title={item.label} 
+                    checked={checked} 
+                    onPress={_ => {
+                      this.handleChange(item.value);
+                      onChange(item.value)
+                    }}
+                  />
+                )
+              }}>
+              </Field>
             </View>
           ))
-        }
-        </View>
+        */}
+      </View>
     );
   }
 }
