@@ -5,30 +5,13 @@ import { Icon, Button } from 'react-native-elements';
 import TrainingSessionsHomeScreen from '../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../screens/sessions/UDC/UDCHomeScreen';
 import UDCNewSessionScreen from '../screens/sessions/UDC/UDCNewSessionScreen';
-import { onSignOut } from '../components/auth';
+import { mainNavHeader } from './helpers';
 
 export default createStackNavigator({
   Home: {
     screen: TrainingSessionsHomeScreen,
     navigationOptions: ({navigation}) => ({
-      headerLeft: 
-        <Icon 
-          type='font-awesome' 
-          name="paw" 
-          size={35} 
-          containerStyle={{marginLeft: 20}} 
-          onPress={() => navigation.toggleDrawer()} 
-        />,
-      headerRight: 
-        <Button
-          transparent
-          title='Logout'
-          color='black'
-          onPress={() => {
-            onSignOut();
-            navigation.navigate('SignedOut')
-          }} 
-        />,
+      ...mainNavHeader(navigation),
       title: 'Sessions'
     })
   },

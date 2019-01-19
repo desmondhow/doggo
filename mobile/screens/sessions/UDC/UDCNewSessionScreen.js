@@ -15,6 +15,7 @@ import {
 } from '../../../constants/Styles';
 import { connectReduxForm, renderReduxDropdown, renderDropdown } from '../../../components/helpers';
 import { GeneralInfo, HidesInfo } from '../../../constants/SessionsConstants';
+import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 
@@ -69,9 +70,22 @@ class UDCNewSessionScreen extends React.Component {
       hides: this.state.addedHides,
     };
 
-    this.props.saveSession(session)
-    // this.props.navigation.navigate('UDC');
-    this.props.navigation.goBack();
+    API.saveUDCSessionURL
+    .then(url => (   
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(session)
+      })
+    ))
+    .then(res =>  this.props.navigation.goBack())
+    .catch(err => {
+      console.error(err);
+      throw err;
+    })
   };
 
   _updateGeneralState = (property, val) => this.setState({ [property]: val })
@@ -261,8 +275,22 @@ class UDCNewSessionScreen extends React.Component {
   )
 
   _onDeleteSession = () => {
-    this.props.deleteSession(this.state.sessionId)
-    this.props.navigation.navigate('UDC');
+    API.deleteUDCSessionURL(this.state.sessionId)
+    .then(url =>    
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId: sessionId })
+      })
+    )
+    .then(res => this.props.navigation.navigate('UDC'))
+    .catch(err => {
+      console.error(err);
+      throw err;
+    })
   }
 
   _renderSubmitBtn = () => {
@@ -281,10 +309,6 @@ class UDCNewSessionScreen extends React.Component {
         marginTop: 20,
         width: width
       }}
-      titleStyle={{
-        ...buttonTextStyle,
-        fontSize: 20,
-      }}
     />
 
     deleteBtn = <Button
@@ -299,10 +323,6 @@ class UDCNewSessionScreen extends React.Component {
         marginLeft: 60,
         marginTop: 20,
         width: width
-      }}
-      titleStyle={{
-        ...buttonTextStyle,
-        fontSize: 20,
       }}
     />
 
@@ -389,7 +409,7 @@ class UDCNewSessionScreen extends React.Component {
 
   render = () => (
     <View style={styles.container}>
-      <View style={styles.formContainer}>
+      <View>
         {this._renderGeneralForm()}
       </View>
       <View style={{marginTop: -20}}>

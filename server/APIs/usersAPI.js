@@ -3,6 +3,7 @@
  */
 const express = require('express');
 const router = express.Router();
+import { isParamEmpty, errors } from './helpers';
 
 //Import user schema
 const User = require('../../db/schemas/userSchema');
@@ -95,7 +96,8 @@ router.post('/login', function (req, res, next) {
 /**
  * Get the user profile in the app
  */
-router.get('/profile/:id', function (req, res, next) {
+router.get('/:id/profile', function (req, res, next) {
+  console.log('hit')
   User.findById(req.params.id)
     .exec(function (error, user) {
       if (error) {
@@ -106,13 +108,69 @@ router.get('/profile/:id', function (req, res, next) {
               res.status(400);
               return res.send(JSON.stringify({message: 'Not authorized!'}));
           } else {
+              console.log(user)
               return res.status(200).send({
-                  message: 'success'
+                user: user
               });
           }
       }
     });
 });
+
+/**
+ * Get the user profile in the app
+ */
+router.post('/:id/profile/add-trainer', function (req, res, next) {
+  if (isParamEmpty(req, 'id')) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
+  else if (isParamEmpty(req, 'trainerName', true)) {
+    const error = 'Trainer name was not sent with request.'
+    console.log(error)
+    return res.status(400).send(JSON.stringify({ message: error }));
+  }
+
+  const trainerData = {
+    name: req.body.trainerName
+  }
+
+  User.findByIdAndUpdate(req.params.id, 
+      { $push: { trainers: trainerData }},
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error adding trainer to user profile.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+});
+
+router.post('/:id/profile/delete-trainer/:trainerId', function (req, res, next) {
+  if (isParamEmpty(req, 'id')) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
+  else if (isParamEmpty(req, 'trainerId', true)) {
+    const error = 'TrainerId was not sent with request.'
+    console.log(error)
+    return res.status(400).send(JSON.stringify({ message: error }));
+  }
+  
+  User.findByIdAndUpdate(req.params.id, 
+      { $pull: { trainers: { '_id': req.params.trainerId }}},
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error adding trainer to user profile.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+});
+
+
 
 
 

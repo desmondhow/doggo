@@ -21,7 +21,7 @@ const HomeScreen = class extends React.Component {
         <ListView contentContainerStyle={styles.sessionsList}
           dataSource={ds.cloneWithRows(Sessions)}
           renderRow={(rowData) => (
-            <Card title={rowData} titleStyle={{ fontSize: 24 }}>
+            <Card title={rowData}>
               <View style={{
                 flexDirection: 'column', 
                 height: 110,

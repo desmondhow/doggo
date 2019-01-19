@@ -19,6 +19,13 @@ export const UserSchema = new mongoose.Schema({
     sessions: [{
       sessionType: String,
       data: UDCSchema
+    }],
+    trainers: [{
+      name: String
+    }],
+    dogs: [{
+      name: String,
+      startDate: Date
     }]
 });
 
