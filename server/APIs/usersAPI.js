@@ -108,10 +108,8 @@ router.get('/:id/profile', function (req, res, next) {
               res.status(400);
               return res.send(JSON.stringify({message: 'Not authorized!'}));
           } else {
-              console.log(user)
-              return res.status(200).send({
-                user: user
-              });
+            console.log(user)
+            return res.status(200).send(JSON.stringify({ dogs: user.dogs, trainers: user.trainers }));
           }
       }
     });
@@ -163,14 +161,65 @@ router.post('/:id/profile/delete-trainer/:trainerId', function (req, res, next) 
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error adding trainer to user profile.`}));
+        return res.status(400).send(JSON.stringify({message: `Error removing trainer from user profile.`}));
       }
       console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
 });
 
+/**
+ * Get the user profile in the app
+ */
+router.post('/:id/profile/add-dog', function (req, res, next) {
+  if (isParamEmpty(req, 'id')) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
+  else if (isParamEmpty(req, 'dog', true)) {
+    const error = 'Dog info was not sent with request.'
+    console.log(error)
+    return res.status(400).send(JSON.stringify({ message: error }));
+  }
 
+  const dogData = {
+    ...req.body.dog
+  };
+
+  User.findByIdAndUpdate(req.params.id, 
+      { $push: { dogs: dogData }},
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error adding dog to user profile.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+});
+
+router.post('/:id/profile/delete-dog/:dogId', function (req, res, next) {
+  if (isParamEmpty(req, 'id')) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
+  else if (isParamEmpty(req, 'dogId', true)) {
+    const error = 'DogId was not sent with request.'
+    console.log(error)
+    return res.status(400).send(JSON.stringify({ message: error }));
+  }
+  
+  User.findByIdAndUpdate(req.params.id, 
+      { $pull: { dogs: { '_id': req.params.dogId }}},
+    ((err, updatedUser) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).send(JSON.stringify({message: `Error removing dog from user profile.`}));
+      }
+      console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+      return res.status(200).send({message: updatedUser, status: 200});
+    }));
+});
 
 
 

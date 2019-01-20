@@ -30,13 +30,15 @@ const formatSessionsRoute = route => (
 export default {
   UDCSessionURL: formatAPILink(formatSessionsRoute('udc/get-session')),
   currentUDCSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
-  loginURL: formatAPILink(USERS_ROUTE + 'login'),
-  registeURL: formatAPILink(USERS_ROUTE + 'register'),
-  logoutURL: formatAPILink(USERS_ROUTE + 'logout'),
-  profileURL: formatAPILink(USERS_ROUTE + 'profile'),
+  loginURL: formatAPILink(USERS_ROUTE + '/login'),
+  registeURL: formatAPILink(USERS_ROUTE + '/register'),
+  logoutURL: formatAPILink(USERS_ROUTE + '/logout'),
+  profileURL: formatAPILink(USERS_ROUTE + '/profile'),
   saveUDCSessionURL: formatSessionsRoute('udc/create-new-session'),
   deleteUDCSessionURL: sessionId =>  formatSessionsRoute(`udc/delete-session/${sessionId}`),
+  loadProfileURL: formatUsersRoute('profile'),
   addTrainerURL: formatUsersRoute('profile/add-trainer'),
   deleteTrainerURL: trainerId => formatUsersRoute(`profile/delete-trainer/${trainerId}`),
-  loadProfileURL: formatUsersRoute('profile')
+  addDogURL: formatUsersRoute('profile/add-dog'),
+  deleteDogURL: dogId => formatUsersRoute(`profile/delete-dog/${dogId}`),
 }
