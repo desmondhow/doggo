@@ -9,16 +9,30 @@ import { Text, Button } from 'react-native-elements';
 import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
 import { container, formContainer, center } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown } from '../../../components/helpers';
+import { connectReduxForm, renderDropdown, request } from '../../../components/helpers';
 import { BuildingSearchInfo } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
+import Api from '../../../constants/Api';
 
 export class UDCTrainDogScreen extends React.Component {
   constructor(props) {
     super(props);
     this._renderPage = this._renderPage.bind(this);
   }
+
+  componentDidMount() {
+    this._loadProfile();
+  }
+
+  _loadProfile = () => {
+    Api.profileApiURL
+    .then(url => (
+      request(url, null, 'GET')
+    ))
+  }
+
+
 
   _onSubmit = (dogInfo) => {
     temp = {

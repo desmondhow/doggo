@@ -6,15 +6,17 @@ import {
   Alert,
   TouchableOpacity,
   TextInput,
+  SectionList
 } from 'react-native';
-import { Text, Icon, Button, ButtonGroup } from 'react-native-elements';
+import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
+import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field } from 'redux-form';
-import { Dropdown } from 'react-native-material-dropdown';
 
-import { container, formContainer, center, buttonStyle } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown, renderReduxDropdown } from '../../../components/helpers';
+import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle } from '../../../constants/Styles';
+import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput, request } from '../../../components/helpers';
 import { BuildingSearchInfo } from '../../../constants/SessionsConstants';
+import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
 import CheckboxContainer from '../../../components/CheckboxContainer';
@@ -22,50 +24,68 @@ import CheckboxContainer from '../../../components/CheckboxContainer';
 export class UDCBuildingSearchScreen extends React.Component {
   constructor(props) {
     super(props);
-    this._renderPage = this._renderPage.bind(this);
-
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    console.log('UDCBUILDING SEARCH!!', sessionInfo);
-
-    let barkStates = {};
-    
     if (sessionInfo) {
-      sessionInfo.hides.forEach(hide => {
-        barkStates[hide.concentration] = {
-          ...barkStates[hide.concentration],
-          [hide.size]: {
-            barks: 0,
-          }
-        }
-      })
-
+      const hideSections = [];
+      sessionInfo.hides.forEach(hide => 
+        hideSections.push({
+          title: this._renderSectionTitle(hide),
+          data: [hide]
+        })
+      );
       this.state = {
-        activeSections: [],
-        barks: '0',
-        dog: {
-          name: '',
-          id: 0,
-        },
-        hides: sessionInfo.hides,
+        activeSection: '',
+        dog: { name: '', _id: -1, },
+        trainer: { name: '', _id: -1, },
+        dogs: [],
+        trainers: [],
+        hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
-        barkStates: barkStates,
-      }
+      };
     }
 
   }
 
-  _onSubmit = (performanceInfo) => {
-    console.log(performanceInfo)
-    const dataToSave = {
-      // dogId: this.state.dogId,
-      sessionId: this.state.sessionId,
-      handler: performanceInfo.Handler,
-      recorder: performanceInfo.Recorder,
-      ...performanceInfo.Performance
-    }
-    this.props.saveDogTraining(dataToSave);
+  componentDidMount() {
+    loadUserProfile()
+    .then(profile => this.setState({ dogs: profile.dogs, trainers: profile.trainers }))
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+  }
+
+  _onSubmit = (sessionInfo) => {
+    API.UDCTrainURL
+    .then(url => {
+      console.log(url)
+      Object.keys(sessionInfo).forEach(dogId => (
+        Object.keys(sessionInfo[dogId]['performance']).map(hideId => (
+          Object.keys(sessionInfo[dogId]['performance'][hideId]).map(field => {
+            const hideInfo = sessionInfo[dogId]['performance'][hideId];
+            console.log(typeof hideInfo[field])
+            sessionInfo[dogId]['performance'][hideId][field] = typeof hideInfo[field] == 'object' ? 
+              hideInfo[field].text : 
+              hideInfo[field]
+          })
+        ))
+      ))
+      console.log(sessionInfo);
+      return request(url, JSON.stringify({ sessionId: this.state.sessionId, sessionInfo: sessionInfo }), 'POST')
+    })
+    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+    })
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
+    
+
     this.props.navigation.navigate('UDC');
+
   }
 
   checkNumber = (text, section) => {
@@ -100,93 +120,77 @@ export class UDCBuildingSearchScreen extends React.Component {
     />
   )
 
-  _renderHeader = section => {
-    return (
-      <View style={styles.hideContainer}>
-        <Text h4>
-        {
-          `${section.location ? `${section.location}` : ''}` + 
-          `${section.placementArea ? `, ${section.placementArea}` : ''}` + 
-          `${section.placementHeight ? `, ${section.placementHeight} ` : ''}`
-        }
-        </Text>
-      </View>
-    );
-  };
+  _renderSectionTitle = section => (
+    `${section.location ? `${section.location}` : ''}` + 
+    `${section.placementArea ? `, ${section.placementArea}` : ''}` + 
+    `${section.placementHeight ? `, ${section.placementHeight} ` : ''}`
+  );
 
-  _renderContent = section => {
+  _renderLabeledButtonGroup = (
+    label,
+    fieldName,
+    buttons,
+    containerStyle
+  ) => (
+    <View>
+      <Text h4>{label}</Text>
+      <View>
+        <Field
+          name={fieldName}
+          component={inputProps => {
+            const { input: { value, onChange } } = inputProps;
+            return (
+              <ButtonGroup
+                onPress={i => onChange({ i: i, text: buttons[i] })}
+                selectedIndex={value.i}
+                buttons={buttons}
+                containerStyle={containerStyle}
+              />
+            );
+          }}
+        />
+      </View>
+    </View>
+  );
+
+  _renderContent = sectionId => {
     const buttonGroupContainerStyle = { height: 50 }
     const scrollViewContainerStyle = { height: 300 }
     const yesNoButtons = ['No', 'Yes']
 
-    const concentration = section.concentration.toString().concat('#');
-    const size = section.size.toString().replace('.', '#')  
-
+    const dogId = this.state.dog._id;
     return (
       <View style={{
         marginTop: 20,
-        marginLeft: 70
+       justifyContent: 'center'
       }}>
-        <Text h4>Handler Radius - Alert</Text>
-        <View>
-            <Field name={`Performance.${section._id}.radiusAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Handler Radius - Reward</Text>
-        <View>
-            <Field name={`Performance.${section._id}.radiusReward`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Handler Radius - Search</Text>
-        <View>
-            <Field name={`Performance.${section._id}.radiusSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        {/* need to show actual string of the things instead of "selectedIndex" being returned */}
-        <Text h4>Rewarder</Text>
-        <View>
-            <Field name={`Performance.${section._id}.rewarder`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['Handler', 'Trainer']}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
+        {this._renderLabeledButtonGroup(
+          'Handler Radius - Alert', 
+          `${dogId}.performance.${sectionId}.radiusAlert`, 
+          BuildingSearchInfo.HandlerRadius, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Handler Radius - Reward', 
+          `${dogId}.performance.${sectionId}.radiusReward`, 
+          BuildingSearchInfo.HandlerRadius, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Handler Radius - Search', 
+          `${dogId}.performance.${sectionId}.radiusSearch`, 
+          BuildingSearchInfo.HandlerRadius, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Rewarder', 
+          `${dogId}.performance.${sectionId}.rewarder`, 
+          ['Handler', 'Trainer'], 
+          buttonGroupContainerStyle
+        )}
         <Text h4>Barks</Text>
         <View>
-          <Field name={`Performance.${section._id}.barks`} component={_ => 
+          <Field name={`${dogId}.performance.${sectionId}.barks`} component={_ => 
             <TextInput 
               style={styles.input}
               keyboardType='numeric'
@@ -197,197 +201,173 @@ export class UDCBuildingSearchScreen extends React.Component {
           }
           />
         </View>
-        <Text h4>Handler Knows</Text>
-        <View>
-            <Field name={`Performance.${section._id}.handlerKnows`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Fringe</Text>
-        <View>
-            <Field name={`Performance.${section._id}.fringe`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Reset</Text>
-        <View>
-            <Field name={`Performance.${section._id}.reset`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Alert</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>On Lead</Text>
-        <View>
-            <Field name={`Performance.${section._id}.lead`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Indication</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseIndication`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Detail Search</Text>
-        <View>
-            <Field name={`Performance.${section._id}.detailSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Successful</Text>
-        <View>
-            <Field name={`Performance.${section._id}.successful`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
+        {this._renderLabeledButtonGroup(
+          'Handler Knows', 
+          `${dogId}.performance.${sectionId}.handlerKnows`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Fringe', 
+          `${dogId}.performance.${sectionId}.fringe`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Reset', 
+          `${dogId}.performance.${sectionId}.reset`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'False Alert', 
+          `${dogId}.performance.${sectionId}.falseAlert`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'On Lead', 
+          `${dogId}.performance.${sectionId}.lead`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'False Indication', 
+          `${dogId}.performance.${sectionId}.falseIndication`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Detail Search', 
+          `${dogId}.performance.${sectionId}.detailSearch`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
+        {this._renderLabeledButtonGroup(
+          'Successful', 
+          `${dogId}.performance.${sectionId}.successful`, 
+          yesNoButtons, 
+          buttonGroupContainerStyle
+        )}
         <View>
           <Text h4>Failure Codes</Text>
           <ScrollView style={scrollViewContainerStyle}>
-            <Field name={`Performance.${section._id}.failCodes`} component={_ => 
-              // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-              <CheckboxContainer name='FailCodes' checkboxes={BuildingSearchInfo.FailCodes}/>
-              }
-            /> 
+            <CheckboxContainer name={`${dogId}.performance.${sectionId}.failCodes`} checkboxes={BuildingSearchInfo.FailCodes}/>
           </ScrollView>
         </View>
         <View>
           <Text h4>Distractions</Text>
           <ScrollView style={scrollViewContainerStyle}>
-            <Field name={`Performance.${section._id}.distractions`} component={_ => 
-              // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-                <CheckboxContainer name='Distractions' checkboxes={BuildingSearchInfo.Distractions}/>
-              }
-            /> 
+            <CheckboxContainer name={`${dogId}.performance.${sectionId}.distractions`} checkboxes={BuildingSearchInfo.Distractions}/>
           </ScrollView>     
         </View>
       </View>
     );
   };
 
-  setSections = sections => {
-    this.setState({
-      activeSections: sections.includes(undefined) ? [] : sections,
-    });
-  };
+  setActiveSection = sectionTitle => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : sectionTitle }));
+  _renderTextInput(inputProps) {
+    const textInputStyle = { width: '60%', marginTop: 10 }
+    return renderTextInput(inputProps, 'Name', textInputStyle)
+  }
 
-  _renderPage =   () => {
-    const containerStyle = { flexDirection: 'column', width: '30%', ...center }
+  _renderPage = () => {
+    const labelFieldContainerStyle = { flexDirection: 'column', width: '30%', ...center }
+    const dropdownStyle = { width: '60%', height: 100, marginTop: -30 };
+    const dropdownFontSize = 16;
+    const labelStyle = { fontWeight: 'bold', fontSize: 16 };
 
     return (
       <View style={{
-        marginTop: 50,
+        marginTop: 30,
         backgroundColor: 'white',
-        alignItems: 'center'
+        alignItems: 'center',
+        width: '70%',
+        height: '89%'
       }}>
         <View style={{
           marginTop: 30,
           flexDirection: 'row'
           }}>
-          <View style={containerStyle}>
-            <Text style={styles.labelStyle}>K9 Name</Text>
+          <View style={labelFieldContainerStyle}>
+            <Text style={labelStyle}>K9 Name</Text>
             {renderDropdown(
               this.state.dog.name, 
-              (dogName) => this.setState({ dog: { name: dogName }}),
-              BuildingSearchInfo.TempDogs,
-              { width: 200, height: 100 },
-              16
+              (_, i) => this.setState({ dog: this.state.dogs[i]}),
+              this.state.dogs.map(dog => dog.name),
+              dropdownStyle,
+              dropdownFontSize,
             )}
           </View>
-          <View style={containerStyle}>
-              <Text style={styles.labelStyle}>Handler</Text>
-              {renderReduxDropdown(`Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
-          </View>
-          <View style={containerStyle}>
-              <Text style={styles.labelStyle}>Recorder</Text>
-              {renderReduxDropdown(`Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
+          <View style={labelFieldContainerStyle}>
+            <Text style={labelStyle}>Trainer</Text>
+            <Field name={`${this.state.dog._id}.trainer`} component={({input}) => (
+              renderDropdown(
+                input.value.name,
+                (_, i) => input.onChange(this.state.trainers[i]),
+                this.state.trainers.map(trainer => trainer.name),
+                dropdownStyle,
+                dropdownFontSize,
+              )
+            )}/>
           </View>
         </View>
-        <View style={{height: '75%'}}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={labelFieldContainerStyle}>
+              <Text style={labelStyle}>Handler</Text>
+              <Field 
+                name={`${this.state.dog._id}.handler`} 
+                component={this._renderTextInput}
+              />  
+          </View>
+          <View style={labelFieldContainerStyle}>
+              <Text style={labelStyle}>Recorder</Text>
+              <Field 
+                name={`${this.state.dog._id}.recorder`} 
+                component={this._renderTextInput}
+              />  
+          </View>
+        </View>
+        <View style={{height: '75%', marginTop: 30, alignItems: 'center'}}> 
           <Text h3>Searches</Text>
-          <ScrollView>
-            <Accordion
-              activeSections={this.state.activeSections}
-              sections={this.state.hides}
-              touchableComponent={TouchableOpacity}
-              renderHeader={this._renderHeader}
-              renderContent={this._renderContent}
-              onChange={this.setSections}
-              expandMultiple={false}
-              containerStyle={{height: '100%'}}
-            />
-          </ScrollView>
+          <SectionList
+            sections={this.state.hides}
+            keyExtractor={a => a}
+            style={{ marginTop: 15 }}
+            renderSectionHeader={({ section }) => (
+              <Button 
+                title={section.title}
+                buttonStyle={outlineButtonStyle}
+                textStyle={outlineButtonTextStyle}
+                fontSize={20}
+                onPress={() => this.setActiveSection(section.title)}
+              />
+            )}
+            renderItem={({ item, section }) => (
+              <Collapsible
+                key={item}
+                collapsed={section.title !== this.state.activeSection}>
+                {this._renderContent(item._id)}
+              </Collapsible>
+            )}
+          />
         </View>
       </View>
     )
+  }
+
+  _renderAddDogNameField(inputProps) {
+    return (
+      <FormInput
+        placeholder="Name"
+        value={inputProps.input.value}
+        onChangeText={inputProps.input.onChange}
+        editable={true}
+        maxLength={35}
+        multiline={false}
+        containerStyle={{ width: "40%" }}
+      />
+    );
   }
 
   render = () => (
@@ -422,10 +402,6 @@ const styles = StyleSheet.create({
   input: {
     height: 40,
     width: 100,
-  },
-  labelStyle: {
-    fontWeight: 'bold',
-    fontSize: 18
   }
 });
 
@@ -433,10 +409,6 @@ export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
     state => ({
-        dog: state.udc.dog
-    }),
-    dispatch => ({
-        saveDogTraining: performanceInfo =>
-          dispatch({ type: actions.SAVE_UDC_DOG_TRAINING, performanceInfo })
-      })
+      
+    })
   )

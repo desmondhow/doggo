@@ -13,7 +13,7 @@ import {
   buttonTextStyle,
   outlineButtonTextStyle
 } from '../../../constants/Styles';
-import { connectReduxForm, renderReduxDropdown, renderDropdown } from '../../../components/helpers';
+import { connectReduxForm, renderReduxDropdown, renderDropdown, request } from '../../../components/helpers';
 import { GeneralInfo, HidesInfo } from '../../../constants/SessionsConstants';
 import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
@@ -61,7 +61,6 @@ class UDCNewSessionScreen extends React.Component {
   }
 
   _onSubmit = sessionInfo => {
-    console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`)
     session = {
       id: this.state.sessionId,
       temperature: sessionInfo.temperature,
@@ -71,18 +70,9 @@ class UDCNewSessionScreen extends React.Component {
       hides: this.state.addedHides,
     };
 
-    API.saveUDCSessionURL
-    .then(url => (   
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(session)
-      })
-    ))
-    .then(res =>  this.props.navigation.goBack())
+    API.UDCSaveSessionURL
+    .then(url => request(url, JSON.stringify(session)))
+    .then(_ =>  this.props.navigation.goBack())
     .catch(err => {
       console.error(err);
       throw err;
@@ -276,18 +266,9 @@ class UDCNewSessionScreen extends React.Component {
   )
 
   _onDeleteSession = () => {
-    API.deleteUDCSessionURL(this.state.sessionId)
-    .then(url =>    
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ sessionId: sessionId })
-      })
-    )
-    .then(res => this.props.navigation.navigate('UDC'))
+    API.UDCDeleteSessionURL(this.state.sessionId)
+    .then(url => request(url, JSON.stringify({ sessionId: sessionId })))
+    .then(_ => this.props.navigation.navigate('UDC'))
     .catch(err => {
       console.error(err);
       throw err;

@@ -33,13 +33,11 @@ const _parseHides = hidesData => {
 /**
  * Creates a new UDC session
  */
-router.post(createSessionApiRoute('udc/create-new-session'), function (req, res, next) {
-  console.log(`body: ${JSON.stringify(req.body)}\n`)
-
-  let temperature = req.body.temperature
-  let humidity = req.body.humidity
-  let wind = req.body.wind
-  let windDirection = req.body.windDirection
+router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
+  let temperature = req.body.temperature;
+  let humidity = req.body.humidity;
+  let wind = req.body.wind;
+  let windDirection = req.body.windDirection;
 
   if (isParamEmpty(req, 'id')) {
     console.log(`UserId was not sent with request.`)
@@ -98,8 +96,56 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   }  
 });
 
-router.post(createSessionApiRoute('udc/delete-session/:sessionId'), function (req, res, next) {
-  if (isParamEmpty(req, 'id') || isParamEmpty(req, 'seddionId')) {
+/**
+ * Trains dogs under a UDC session
+ */
+router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
+
+  if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId', true)) {
+    console.log(`UserId or sessionId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
+  else if (isParamEmpty(req, 'sessionInfo', true)) {
+    console.log(`SessionInfo was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.sessionInfo }));
+  }
+  const sessionInfo = req.body.sessionInfo;
+
+  let dogsTrained = [];
+  console.log(JSON.stringify(sessionInfo));
+  Object.keys(sessionInfo).forEach(dogId => {
+
+    dogsTrained.push({
+      dogId,
+      trainerId: sessionInfo[dogId].trainer._id,
+      handler: sessionInfo[dogId].handler,
+      recorder: sessionInfo[dogId].recorder,
+      hides: 
+        Object.keys(sessionInfo[dogId].performance).map(hideId => ({
+          hideId,
+          performance: sessionInfo[dogId].performance[hideId]
+        }))
+    })
+  });
+  console.log(JSON.stringify(dogsTrained))
+
+  const sessionId = req.body.sessionId;
+  User.update(
+    { 'sessions.data._id': sessionId }, 
+    { $set: { 'sessions.$.data.dogsTrained': dogsTrained }}, 
+    { upsert: true },
+  ((err, updatedUser) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).send(JSON.stringify({message: `Error updating UDC session.`}));
+    }
+    console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
+    return res.status(200).send(JSON.stringify({message: updatedUser, status: 200}));
+  }));
+})
+
+router.delete(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
+  if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }

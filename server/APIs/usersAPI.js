@@ -97,7 +97,6 @@ router.post('/login', function (req, res, next) {
  * Get the user profile in the app
  */
 router.get('/:id/profile', function (req, res, next) {
-  console.log('hit')
   User.findById(req.params.id)
     .exec(function (error, user) {
       if (error) {
@@ -108,7 +107,6 @@ router.get('/:id/profile', function (req, res, next) {
               res.status(400);
               return res.send(JSON.stringify({message: 'Not authorized!'}));
           } else {
-            console.log(user)
             return res.status(200).send(JSON.stringify({ dogs: user.dogs, trainers: user.trainers }));
           }
       }

@@ -5,6 +5,9 @@ import { Icon, Button } from 'react-native-elements';
 import TrainingSessionsHomeScreen from '../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../screens/sessions/UDC/UDCHomeScreen';
 import UDCNewSessionScreen from '../screens/sessions/UDC/UDCNewSessionScreen';
+import UDCBuildingSearchScreen from '../screens/sessions/UDC/UDCBuildingSearchScreen';
+import UDCTrainDogScreen from '../screens/sessions/UDC/UDCTrainDogScreen';
+
 import { mainNavHeader } from './helpers';
 
 export default createStackNavigator({
@@ -22,13 +25,13 @@ export default createStackNavigator({
     }
   },
   UDCBuildingSearch: {
-    screen: UDCBuildingSearch,
+    screen: UDCBuildingSearchScreen,
     navigationOptions: { 
       title: 'UDC Building Search'
     }
   },
   UDCTrainDog: {
-    screen: UDCTrainDog,
+    screen: UDCTrainDogScreen,
     navigationOptions: { 
       title: 'UDC Train Dog'
     }

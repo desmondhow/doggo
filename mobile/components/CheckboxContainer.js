@@ -36,45 +36,20 @@ export default class CheckboxContainer extends Component {
                   title={checkboxName} 
                   checked={isChecked} 
                   onPress={_ => {
-                    const newValue = [...input.value];
+                    const checkedBoxes = [...input.value];
 
                     if (!isChecked) {
-                      newValue.push(checkboxName);
+                      checkedBoxes.push(checkboxName);
                     } else {
-                      newValue.splice(newValue.indexOf(checkboxName), 1);
+                      checkedBoxes.splice(checkedBoxes.indexOf(checkboxName), 1);
                     }
-
-                    return input.onChange(newValue);
+                    return input.onChange(checkedBoxes);
                   }}
                 />
               )
             });
           }}
         />
-        {/* {
-          this.props.checkboxes.map(item => (
-            <View>
-              
-                key={item.value}
-                name={`${this.props.name}.${item.label}`} 
-                checked={this.state.checkedItems.get(item.value)}
-                component={(inputProps) => {
-                const { input: { checked, onChange } } = inputProps;
-                return (
-                  <CheckBox 
-                    title={item.label} 
-                    checked={checked} 
-                    onPress={_ => {
-                      this.handleChange(item.value);
-                      onChange(item.value)
-                    }}
-                  />
-                )
-              }}>
-              </Field>
-            </View>
-          ))
-        */}
       </View>
     );
   }

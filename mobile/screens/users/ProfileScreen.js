@@ -19,7 +19,7 @@ import {
   outlineButtonTextStyle
 } from "../../constants/Styles";
 import * as actions from "../../redux/actions/index.actions";
-import { connectReduxForm } from "../../components/helpers";
+import { connectReduxForm, request, renderTextInput } from "../../components/helpers";
 
 /**
  * Displays the Sign up form
@@ -31,17 +31,13 @@ class ProfileScreen extends Component {
     this.interval = setInterval(() => this._loadProfile(), 1 * 1000);
   }
 
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
   _loadProfile = () =>
     API.loadProfileURL
-      .then(url =>
-        fetch(url, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          }
-        })
-      )
+      .then(url => request(url, null, 'GET'))
       .then(res => res.json())
       .then(profile => {
         this.setState({ trainers: profile.trainers, dogs: profile.dogs });
@@ -68,20 +64,11 @@ class ProfileScreen extends Component {
 
   _deleteTrainer = trainerId =>
     API.deleteTrainerURL(trainerId)
-      .then(url =>
-        fetch(url, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ trainerId: trainerId })
-        })
-      )
-      .catch(err => {
-        console.error(err);
-        throw err;
-      });
+    .then(url => request(url, JSON.stringify({ trainerId: trainerId }, 'DELETE')))
+    .catch(err => {
+      console.error(err);
+      throw err;
+    });
 
   _renderDeleteTrainerButton = trainerId => (
     <Button
@@ -94,17 +81,8 @@ class ProfileScreen extends Component {
 
   _addTrainer = () => {
     API.addTrainerURL
-    .then(url =>
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ trainerName: this.props.addTrainerName })
-      })
-    )
-    .then(res => {
+    .then(url => request(url, JSON.stringify({ trainerName: this.props.addTrainerName })))
+    .then(_ => {
       this.props.dispatch(change('profile', 'add-trainer', ''));
       this.props.dispatch(untouch('profile', 'add-trainer'));
     })
@@ -255,19 +233,15 @@ class ProfileScreen extends Component {
   _addDog = () => {
     API.addDogURL
     .then(url =>
-      fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+      request(
+        url,
+        JSON.stringify({
           dog: {
             name: this.props.addDogName,
-            startDate: this.props.addDogStartDate
+           startDate: this.props.addDogStartDate
           }
         })
-      })
+      )
     )
     .then(res => {
       this.props.dispatch(change('profile', 'add-dog-name', ''));
@@ -282,22 +256,15 @@ class ProfileScreen extends Component {
   }
     
 
-  _deleteDog = dogId =>
+  _deleteDog = dogId => (
     API.deleteDogURL(dogId)
-      .then(url =>
-        fetch(url, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ dogId: dogId })
-        })
-      )
-      .catch(err => {
-        console.error(err);
-        throw err;
-      });
+    .then(url => request(url, JSON.stringify({ dogId: dogId })))
+    .catch(err => {
+      console.error(err);
+      throw err;
+    })
+  );
+
 
   _renderDeleteDogButton = dogId => (
     <Button
@@ -307,6 +274,11 @@ class ProfileScreen extends Component {
       onPress={() => this._deleteDog(dogId)}
     />
   );
+
+  _renderTextInput(inputProps) {
+    const textInputStyle = { width: '60%', marginTop: 10 }
+    return renderTextInput(inputProps, 'Name', textInputStyle)
+  }
 
   _renderDogsTable = () => {
     const headers = ["Dogs", "", ""];
@@ -372,7 +344,7 @@ class ProfileScreen extends Component {
           <View style={{ flexDirection: "row" }}>
             <Field
               name="add-dog-name"
-              component={this._renderAddDogNameField}
+              component={this._renderTextInput}
             />
             <Field
               name="add-dog-startDate"

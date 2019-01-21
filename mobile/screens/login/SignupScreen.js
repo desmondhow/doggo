@@ -9,6 +9,7 @@ import Logo from "./Logo";
 import SignUpForm from "./SignUpForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../components/auth";
+import { request } from '../../components/helpers';
 
 export default class SignupScreen extends React.Component {
     //Modifies the top header
@@ -66,29 +67,24 @@ export default class SignupScreen extends React.Component {
      * Send Register credentials to the server (POST req)
      */
     handleRegister = () => {
-        fetch(Constants.registeURL, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'email': this.state.email,
-                'password': this.state.password,
-                'password_conf': this.state.password_conf,
-
-            })
+        request(
+          Constants.registerURL, 
+          JSON.stringify({
+            'email': this.state.email,
+            'password': this.state.password,
+            'password_conf': this.state.password_conf,
+          })
+        )
+        .then((res) => res.json())
+        .then((res) => {
+            if (res.status === 200) {
+              onSignIn(res.message).then(() => this.props.navigation.navigate('SignedIn'));
+            }
+            else {
+                alert(res.message);
+            }
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.status === 200) {
-                    onSignIn(res.message).then(() => this.props.navigation.navigate('SignedIn'));
-                }
-                else {
-                    alert(res.message);
-                }
-            })
-            .done();
+        .done();
     };
 
     render() {

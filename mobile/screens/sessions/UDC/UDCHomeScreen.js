@@ -7,25 +7,19 @@ import {
   Cell,
   Col
 } from "react-native-table-component";
-import {
-  container,
-  center,
-  buttonStyle,
-  buttonTextStyle,
-  outlineButtonStyle,
-  outlineButtonTextStyle
-} from "../../../constants/Styles";
 import { Text, Button } from "react-native-elements";
 import { NavigationActions } from 'react-navigation'
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
 
 import {
+  container,
   buttonStyle,
   buttonTextStyle,
   outlineButtonTextStyle,
   oddTableRow
 } from "../../../constants/Styles";
 import API from "../../../constants/Api";
+import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
@@ -53,9 +47,9 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   async _fetchCurrentUDCSessions() {
-    API.currentUDCSessionsURL
+    API.UDCCurrentSessionsURL
     .then(url => 
-      fetch(url)
+      request(url, null, 'GET')
       .then(res => res.json())
       .then(res => {
         this.setState({

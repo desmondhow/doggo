@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, ObjectId } from 'mongoose';
 
 export default new Schema({
   /* 
@@ -44,12 +44,13 @@ export default new Schema({
   ],
   dogsTrained: [
     {
-      dog: String,
+      dogId: ObjectId,
+      trainerId: ObjectId,
       handler: String,
       recorder: String,
       hides: [
         {
-          hide: String, //${concentration}-size
+          hideId: ObjectId, //${concentration}-size
           performance: {
             radiusAlert: {
               type: String,

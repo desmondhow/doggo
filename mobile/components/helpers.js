@@ -3,6 +3,7 @@ import { reduxForm } from 'redux-form'
 import { connect } from 'react-redux'
 import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
+import { FormInput } from 'react-native-elements';
 
 export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispatchToProps) => (
   connect(mapStateToProps, mapDispatchToProps)(
@@ -55,6 +56,39 @@ export const renderReduxDropdown = (
     )
   }}/>
 )
+
+// should not be an arrow function (screws up rendering)
+export const renderTextInput = (
+  inputProps,
+  placeholder='',
+  containerStyle={ width: "40%" },
+  editable=true, 
+  maxLength=35,
+  multiline=false,
+) => { 
+  return (
+    <FormInput
+      placeholder={placeholder}
+      value={inputProps.input.value}
+      onChangeText={inputProps.input.onChange}
+      editable={editable}
+      maxLength={maxLength}
+      multiline={multiline}
+      containerStyle={containerStyle}
+    />
+  );
+}
+
+export const request = (url, body, method = 'POST') => (
+  fetch(url, {
+    method: method,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: body
+  })
+);
 
 
 
