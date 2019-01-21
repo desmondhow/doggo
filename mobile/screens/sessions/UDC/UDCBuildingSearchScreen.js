@@ -3,9 +3,6 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Alert,
-  TouchableOpacity,
-  TextInput,
   SectionList
 } from 'react-native';
 import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
@@ -15,7 +12,7 @@ import { Field } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput, request } from '../../../components/helpers';
-import { BuildingSearchInfo } from '../../../constants/SessionsConstants';
+import { UDCInfo } from '../../../constants/SessionsConstants';
 import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
@@ -36,7 +33,6 @@ export class UDCBuildingSearchScreen extends React.Component {
       this.state = {
         activeSection: '',
         dog: { name: '', _id: -1, },
-        trainer: { name: '', _id: -1, },
         dogs: [],
         trainers: [],
         hides: hideSections,
@@ -59,24 +55,24 @@ export class UDCBuildingSearchScreen extends React.Component {
   _onSubmit = (sessionInfo) => {
     API.UDCTrainURL
     .then(url => {
-      console.log(url)
-      Object.keys(sessionInfo).forEach(dogId => (
-        Object.keys(sessionInfo[dogId]['performance']).map(hideId => (
-          Object.keys(sessionInfo[dogId]['performance'][hideId]).map(field => {
+      // only send the part of the object that we care about
+      Object.keys(sessionInfo).forEach(dogId => {
+        if (!!sessionInfo[dogId]['trainer']['_id']) {
+          sessionInfo[dogId]['trainerId'] = sessionInfo[dogId]['trainer']['_id'];
+        }
+        Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
+          Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
             const hideInfo = sessionInfo[dogId]['performance'][hideId];
-            console.log(typeof hideInfo[field])
-            sessionInfo[dogId]['performance'][hideId][field] = typeof hideInfo[field] == 'object' ? 
-              hideInfo[field].text : 
-              hideInfo[field]
+            if (typeof hideInfo[field] == 'object') {
+              if (!!hideInfo[field]['text']) {
+                sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
+              }
+            }
           })
-        ))
-      ))
-      console.log(sessionInfo);
+        });
+      })
+      console.log(sessionInfo)
       return request(url, JSON.stringify({ sessionId: this.state.sessionId, sessionInfo: sessionInfo }), 'POST')
-    })
-    .then(res => res.json())
-    .then(res => {
-      console.log(res);
     })
     .catch(err => {
       console.log(err);
@@ -87,19 +83,6 @@ export class UDCBuildingSearchScreen extends React.Component {
     this.props.navigation.navigate('UDC');
 
   }
-
-  checkNumber = (text, section) => {
-    const hideId = section._id
-
-    let barks = text.replace(/[^0-9]/g, '');
-    newState = {
-      ...this.state.barkStates
-    }
-    newState[hideId][barks] = barks;
-    this.setState({
-        barkStates: newState,
-    });
-}
 
   _renderSubmitBtn = () => (
     <Button
@@ -157,8 +140,9 @@ export class UDCBuildingSearchScreen extends React.Component {
     const buttonGroupContainerStyle = { height: 50 }
     const scrollViewContainerStyle = { height: 300 }
     const yesNoButtons = ['No', 'Yes']
-
+    
     const dogId = this.state.dog._id;
+    const BuildingSearchInfo = UDCInfo.BuildingSearch;
     return (
       <View style={{
         marginTop: 20,
@@ -190,16 +174,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         )}
         <Text h4>Barks</Text>
         <View>
-          <Field name={`${dogId}.performance.${sectionId}.barks`} component={_ => 
-            <TextInput 
-              style={styles.input}
-              keyboardType='numeric'
-              onChangeText={(text)=> this.checkNumber(text)}
-              value={this.state.barks}
-              maxLength={3}  //setting limit of input
-            />
-          }
-          />
+          {renderReduxDropdown(
+            `${dogId}.performance.${sectionId}.barks`, 
+            BuildingSearchInfo.Barks, 
+            { width: '100%', height: 100 }, 
+            null, null,
+            20
+          )}
         </View>
         {this._renderLabeledButtonGroup(
           'Handler Knows', 

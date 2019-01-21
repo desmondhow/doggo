@@ -14,7 +14,7 @@ import {
   outlineButtonTextStyle
 } from '../../../constants/Styles';
 import { connectReduxForm, renderReduxDropdown, renderDropdown, request } from '../../../components/helpers';
-import { GeneralInfo, HidesInfo } from '../../../constants/SessionsConstants';
+import { UDCInfo } from '../../../constants/SessionsConstants';
 import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import * as actions from '../../../redux/actions/index.actions';
@@ -83,7 +83,7 @@ class UDCNewSessionScreen extends React.Component {
 
   _renderGeneralForm = () => (
     <View style={{center, ...styles.fieldsContainer, height: '40%', marginTop: 30, flexDirection: 'row'}}>
-      {Object.keys(GeneralInfo).map(name => 
+      {Object.keys(UDCInfo.General).map(name => 
         <View style={{
           marginTop: 30,
           height: 100, 
@@ -93,7 +93,7 @@ class UDCNewSessionScreen extends React.Component {
           <Text style={styles.labelStyle}>{name[0].toUpperCase() + name.substr(1)}:</Text>
           {renderReduxDropdown(
             name, 
-            GeneralInfo[name], 
+            UDCInfo.General[name], 
             { width: 150, height: 100 }, 
             this.state.isEditing ? val => this._updateGeneralState(name, val) : null,
             this.state.isEditing ? this.state[name] : null, 
@@ -159,7 +159,7 @@ class UDCNewSessionScreen extends React.Component {
             renderDropdown(
               this.state.addHideConcentration, 
               (concentration) => this.setState({ addHideConcentration: concentration }), 
-              HidesInfo.Hides.Concentrations,
+              UDCInfo.Hides.Measurements.Concentrations,
               dropdownContainerStyle
             )
           }
@@ -170,7 +170,7 @@ class UDCNewSessionScreen extends React.Component {
             renderDropdown(
               this.state.addHideSize, 
               (size) => this.setState({ addHideSize: size }), 
-              HidesInfo.Hides.Sizes.map(size => size.replace('#', '.')),
+              UDCInfo.Hides.Measurements.Sizes.map(size => size.replace('#', '.')),
               dropdownContainerStyle
             )
           }
@@ -208,7 +208,7 @@ class UDCNewSessionScreen extends React.Component {
         <Text style={styles.labelStyle}>Location:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.location`,
-          HidesInfo.Locations,
+          UDCInfo.Hides.Locations,
           styles.dropdown,
           userIsAddingHide ? null : location => this._updateHideState(concentration, size, 'location', location),
           userIsAddingHide ? this.props.addHideLocation : this.state.addedHides[concentration][size].location
@@ -237,7 +237,7 @@ class UDCNewSessionScreen extends React.Component {
         <Text style={styles.labelStyle}>Placement Area:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.placementArea`,
-          HidesInfo.PlacementAreas,
+          UDCInfo.Hides.PlacementAreas,
           styles.dropdown,
           userIsAddingHide ? null : placementArea => this._updateHideState(concentration, size, 'placementArea', placementArea),
           userIsAddingHide ? this.props.addHidePlacementArea : this.state.addedHides[concentration][size].placementArea
@@ -248,7 +248,7 @@ class UDCNewSessionScreen extends React.Component {
         <Text style={styles.labelStyle}>Placement Height:</Text>
         {renderReduxDropdown(
           `Hides.${concentration}.${size}.placementHeight`,
-          HidesInfo.PlacementHeights,
+          UDCInfo.Hides.PlacementHeights,
           styles.dropdown,
           userIsAddingHide ? null : placementHeight => this._updateHideState(concentration, size, 'placementHeight', placementHeight),
           userIsAddingHide ? this.props.addHidePlacementHeight : this.state.addedHides[concentration][size].placementHeight

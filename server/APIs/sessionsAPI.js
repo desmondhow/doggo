@@ -117,7 +117,7 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
 
     dogsTrained.push({
       dogId,
-      trainerId: sessionInfo[dogId].trainer._id,
+      trainerId: sessionInfo[dogId].trainerId,
       handler: sessionInfo[dogId].handler,
       recorder: sessionInfo[dogId].recorder,
       hides: 
@@ -127,7 +127,6 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
         }))
     })
   });
-  console.log(JSON.stringify(dogsTrained))
 
   const sessionId = req.body.sessionId;
   User.update(
