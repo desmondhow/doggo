@@ -1,13 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
-import { Icon, Button } from 'react-native-elements';
 
 import TrainingSessionsHomeScreen from '../screens/sessions/SessionsHomeScreen';
 import UDCHomeScreen from '../screens/sessions/UDC/UDCHomeScreen';
 import UDCNewSessionScreen from '../screens/sessions/UDC/UDCNewSessionScreen';
 import UDCBuildingSearchScreen from '../screens/sessions/UDC/UDCBuildingSearchScreen';
 import UDCTrainDogScreen from '../screens/sessions/UDC/UDCTrainDogScreen';
-
 import { mainNavHeader } from './helpers';
 
 export default createStackNavigator({
