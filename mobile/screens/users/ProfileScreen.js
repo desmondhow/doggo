@@ -130,7 +130,7 @@ class ProfileScreen extends Component {
   }
 
   _renderTrainersTable = () => {
-    const headers = ["Trainer", "", ""];
+    const headers = ["Trainers", "", ""];
     let trainerRows = [];
 
     this.state.trainers.map((trainer, i) => {
@@ -309,7 +309,7 @@ class ProfileScreen extends Component {
   );
 
   _renderDogsTable = () => {
-    const headers = ["Dog", "", ""];
+    const headers = ["Dogs", "", ""];
     let dogRows = [];
 
     this.state.dogs.map((dog, i) => {
