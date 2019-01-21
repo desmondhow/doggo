@@ -18,10 +18,14 @@ import {
 import { Text, Button } from "react-native-elements";
 import { NavigationActions } from 'react-navigation'
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
-import Constants from "../../../constants/Api";
-import { Sessions } from "../../../constants/SessionsConstants";
 
-const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
+import {
+  buttonStyle,
+  buttonTextStyle,
+  outlineButtonTextStyle,
+  oddTableRow
+} from "../../../constants/Styles";
+import API from "../../../constants/Api";
 
 @withMappedNavigationProps()
 export default class UDCHomeScreen extends React.Component {
@@ -36,8 +40,8 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   componentDidMount() {
-    //Refresh every 5 seconds
-    this._fetchCurrentUDCSessions();
+    // Refresh every second
+    this._fetchCurrentUDCSessions()
     this.interval = setInterval(
       () => this._fetchCurrentUDCSessions(),
       1 * 1000
@@ -49,7 +53,7 @@ export default class UDCHomeScreen extends React.Component {
   }
 
   async _fetchCurrentUDCSessions() {
-    Constants.getCurrentUDCSessions
+    API.currentUDCSessionsURL
     .then(url => 
       fetch(url)
       .then(res => res.json())
@@ -177,18 +181,18 @@ export default class UDCHomeScreen extends React.Component {
       currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>
           {rowData.map((cellData, j) => {
-            width = j < 3 ? 150 : 100;
+            width = j < 3 ? 150 : 110;
             marginLeft = j == 4 ? -20 : 0;
             return (
               <Cell
                 key={i + j}
-                data={j == 1 ? `\t${cellData}` : cellData}
+                data={j == 1 ? `\t\t  ${cellData}` : cellData}
                 style={[{
                   borderColor: 'transparent',
                   width: width,
                   height: 50,
                   marginLeft: marginLeft
-                }, i % 2 == 0 ? null : styles.oddRow]}
+                }, i % 2 == 0 ? null : oddTableRow]}
                 textStyle={{
                   fontSize: 18,
                   fontFamily: "montserrat"
@@ -200,6 +204,7 @@ export default class UDCHomeScreen extends React.Component {
       );
     });
 
+    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\tDogs", '', ''];
     return (
       <View style={container}>
         <View style={styles.sessionsContainer}>
@@ -330,9 +335,6 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     height: 300,
     width: '100%',
-  },
-  oddRow: {
-    backgroundColor: "#e3e3e3"
   },
   continueTrainingButton: {
     height: row.height,

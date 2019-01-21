@@ -1,7 +1,8 @@
 import express from 'express';
+
 import UDCSession from '../../db/schemas/UDCSchema'
-import User from '../../db/schemas/userSchema'
-import mongoose from 'mongoose';
+import User from '../../db/schemas/userSchema';
+import { isParamEmpty, errors } from './helpers';
 
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
@@ -40,22 +41,17 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   let wind = req.body.wind
   let windDirection = req.body.windDirection
 
-  req.checkBody('hides').exists();
-  let hidesData = req.body.hides
+  if (isParamEmpty(req, 'id')) {
+    console.log(`UserId was not sent with request.`)
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
+  }
 
-  let isMissingHides = req.validationErrors();
-  if (isMissingHides) {
+  let hidesData = req.body.hides
+  if (isParamEmpty(req, 'hides', true)) {
     return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
   }
 
-  req.checkParams('id').exists();
-  const isMissingIdParam = req.validationErrors();
-  if (isMissingIdParam) {
-    console.log(`UserId was not sent with request.`)
-    return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
-  }
-
-  let sessionData = {
+  const sessionData = {
     temperature,
     humidity,
     wind,
@@ -103,17 +99,13 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
 });
 
 router.post(createSessionApiRoute('udc/delete-session/:sessionId'), function (req, res, next) {
-  req.checkParams('id').exists();
-  req.checkParams('sessionId').exists();
-  const isMissingIdParam = req.validationErrors();
-  if (isMissingIdParam) {
+  if (isParamEmpty(req, 'id') || isParamEmpty(req, 'seddionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
-    return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
 
   const userId = req.params.id;
   let sessionId = req.params.sessionId;
-  console.log(`sessionId: ${sessionId}`);
   User.update(
     { _id: userId }, 
     { "$pull": { sessions: { 'data._id': sessionId }}}, 
@@ -135,11 +127,9 @@ router.post(createSessionApiRoute('udc/delete-session/:sessionId'), function (re
  * Returns all the non complete UDC sessions
  */
 router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res) {
-  req.checkParams('id').exists();
-  const isMissingIdParam = req.validationErrors();
-  if (isMissingIdParam) {
+  if (isParamEmpty(req, 'id')) {
     console.log(`UserId was not sent with request.`)
-    return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
+    return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
   const userId = req.params.id;
 
