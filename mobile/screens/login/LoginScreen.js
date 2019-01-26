@@ -76,6 +76,7 @@ export default class LoginScreen extends React.Component {
             .then((res) => res.json())
             .then((res) => {
                 if (res.status === 200) {
+                    console.log(res);
                     const message = res.message;
                     onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
                 }
@@ -84,7 +85,6 @@ export default class LoginScreen extends React.Component {
                 }
             })
             .catch(err => alert('There was an issue connecting to the server. Please try again.'))
-            .done();
     };
 
     render() {

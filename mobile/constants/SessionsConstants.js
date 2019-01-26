@@ -4,7 +4,7 @@ export const Sessions = [
   'UDC',
   'Agility',
   'Noise'
-]
+];
 
 export const GeneralInfo = {
   temperature: arrayOfLengthN(100),
@@ -20,7 +20,7 @@ export const GeneralInfo = {
     'W',
     'NW'
   ]
-}
+};
 
 export const HidesInfo = {
   Hides: 
@@ -48,7 +48,7 @@ export const HidesInfo = {
     'Med (4-6 ft.)',
     'High (> 6 ft.)'
   ]
-}
+};
 
 export const InitialValues = {
   General: {
@@ -57,4 +57,4 @@ export const InitialValues = {
     Wind: 7,
     'Wind Direction': 'N'
   }
-}
+};

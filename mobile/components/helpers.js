@@ -4,38 +4,38 @@ import { connect } from 'react-redux'
 import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
 
-export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispatchToProps) => (
-  connect(mapStateToProps, mapDispatchToProps)(
-    reduxForm({ 
+export const connectReduxForm = (formName, formClass, mapStateToProps) => (
+  connect(mapStateToProps)(
+    reduxForm({
       form: formName
     })(formClass)
   )
-)
+);
 
 export const renderDropdown = (
-  value, 
-  onChange, 
-  dropdownOptions, 
-  containerStyle={}, 
+  value,
+  onChange,
+  dropdownOptions,
+  containerStyle={},
   fontSize=16,
   placeholder=null,
 ) => (
-  <Dropdown 
+  <Dropdown
     overlayStyle={{marginTop: 95}}
     containerStyle={containerStyle}
     fontSize={fontSize}
     value={value}
-    data={dropdownOptions.map(option => ({ value: option }))} 
+    data={dropdownOptions.map(option => ({ value: option }))}
     onChangeText={onChange}
     placeholder={placeholder}
   />
 )
 
 export const renderReduxDropdown = (
-  name, 
-  dropdownOptions, 
-  containerStyle = {}, 
-  customOwnChange = null, 
+  name,
+  dropdownOptions,
+  containerStyle = {},
+  customOwnChange = null,
   customValue = null,
   fontSize=16,
   placeholder = ''
@@ -44,12 +44,12 @@ export const renderReduxDropdown = (
     const { input: { value, onChange } } = inputProps;
     return (
       renderDropdown(
-        !!customValue ? customValue : value, 
-        !!customOwnChange ? 
-          val => {onChange(val); customOwnChange(val)} : 
-          onChange, 
-        dropdownOptions, 
-        containerStyle, 
+        !!customValue ? customValue : value,
+        !!customOwnChange ?
+          val => {onChange(val); customOwnChange(val)} :
+          onChange,
+        dropdownOptions,
+        containerStyle,
         fontSize,
         placeholder)
     )

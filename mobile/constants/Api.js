@@ -1,10 +1,10 @@
 import {getUserID} from '../components/auth';
 
 HEROKU_API_URL = 'https://doggoplatform.herokuapp.com/api/';
-LOCAL_API_URL = 'http://localhost:3010/api/';
+LOCAL_API_URL = 'http://localhost:3010/';
 
 // routes
-USERS_ROUTE = 'users/';
+USERS_ROUTE = 'users';
 SESSIONS_ROUTE = 'sessions';
 
 const formatAPILink = url => LOCAL_API_URL + url;
@@ -26,5 +26,6 @@ export default {
   logoutApiURL: formatAPILink(USERS_ROUTE + 'logout'),
   profileApiURL: formatAPILink(USERS_ROUTE + 'profile'),
   saveUDCSessionURL: formatSessionsRoute('udc/create-new-session'),
-  deleteUDCSessionURL: sessionId =>  formatSessionsRoute(`udc/delete-session/${sessionId}`)
+  deleteUDCSessionURL: sessionId =>  formatSessionsRoute(`udc/delete-session/${sessionId}`),
+    ping: LOCAL_API_URL + 'ping'
 }

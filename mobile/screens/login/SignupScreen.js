@@ -89,7 +89,6 @@ export default class SignupScreen extends React.Component {
                     alert(res.message);
                 }
             })
-            .done();
     };
 
     render() {

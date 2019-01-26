@@ -6,28 +6,6 @@ import mongoose from 'mongoose';
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
 
-const _parseHides = hidesData => {
-  let hides = []
-  Object.keys(hidesData).forEach(concentration => {
-    let concentrationSizes = hidesData[concentration]
-    Object.keys(concentrationSizes).forEach(size => {
-      let location = concentrationSizes[size].location;
-      let isConcealed = concentrationSizes[size].isConcealed;
-      let placementArea = concentrationSizes[size].placementArea;
-      let placementHeight = concentrationSizes[size].placementHeight
-
-      hides.push({
-        concentration: Number(concentration),
-        size,
-        location,
-        isConcealed,
-        placementArea,
-        placementHeight
-      });
-    });
-  });
-  return hides;
-}
 
 /**
  * Creates a new UDC session
@@ -39,6 +17,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   let humidity = req.body.humidity
   let wind = req.body.wind
   let windDirection = req.body.windDirection
+
 
   req.checkBody('hides').exists();
   let hidesData = req.body.hides
@@ -62,7 +41,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
     windDirection,
     complete: false,
     createdAt: new Date(),
-    hides: _parseHides(hidesData)
+    hides: hidesData
   };
 
   // if user is editing session then sessionId will be sent with request
@@ -142,12 +121,13 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
     return res.status(400).send(JSON.stringify({message: "UserId was not sent with request."}));
   }
   const userId = req.params.id;
-
+  console.log('here');
   User.findById(userId)
   .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({essage: 'There are no current UDC sessions'}));
+      console.log('There are no current UDC sessions');
+        return res.status(200).send(JSON.stringify({message: 'There are no current UDC sessions'}));
     } else {
       return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }

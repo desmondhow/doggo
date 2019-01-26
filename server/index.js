@@ -73,12 +73,17 @@ app.use(function (req, res, next) {
 });
 
 // API routes
-app.use('/api/users', users);
-app.use('/api/users', sessions);
+app.use('/users', users);
+app.use('/users', sessions);
 
 //Default page is index
 app.get('/', function (req, res) {
     res.send('Server is working!')
+});
+
+//Default page is index
+app.get('/ping', function (req, res) {
+    res.send({status: true})
 });
 
 app.listen(PORT, function () {

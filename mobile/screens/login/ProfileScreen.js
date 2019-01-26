@@ -8,11 +8,14 @@ import {
 import {getUserID, onSignOut} from "../../components/auth";
 import {Card, Icon} from "react-native-elements";
 import Constants from "../../constants/Api";
+import {saveUDCSessionLater, RESET_STATE} from "../../redux/actions/udc.actions";
+import {SERVER_STATE} from "../../redux/actions/connection.actions";
+import {connect} from "react-redux";
 
 /**
  * Displays the Sign up form
  */
-export default class ProfileScreen extends Component {
+class ProfileScreen extends Component {
     static navigationOptions = ({navigation}) => ({
         title: 'Login',
         headerStyle: {
@@ -66,7 +69,6 @@ export default class ProfileScreen extends Component {
                         alert(res.message);
                     }
                 })
-                .done();
         });
     };
 
@@ -85,12 +87,12 @@ export default class ProfileScreen extends Component {
             .then((res) => {
                 if (res.message === 'success') {
                     onSignOut().then(() => this.props.navigation.navigate("SignedOut"));
+                    return this.props.dispatch({type: RESET_STATE});
                 }
                 else {
                     alert(res.message);
                 }
             })
-            .done();
     };
 
 
@@ -129,6 +131,8 @@ export default class ProfileScreen extends Component {
         );
     }
 }
+export default connect(null)(ProfileScreen);
+
 
 const styles = StyleSheet.create({
     container: {
