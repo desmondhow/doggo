@@ -38,6 +38,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
+        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 }
       };
     }
 
@@ -172,7 +173,6 @@ export class UDCBuildingSearchScreen extends React.Component {
         )}
         <Text h4>Barks</Text>
         <View>
-<<<<<<< HEAD
           {renderReduxDropdown(
             `${dogId}.performance.${sectionId}.barks`, 
             BuildingSearchInfo.Barks, 
@@ -180,132 +180,6 @@ export class UDCBuildingSearchScreen extends React.Component {
             null, null,
             20
           )}
-=======
-          <Field name={`Performance.${section._id}.barks`} component={inputProps => {
-            const { input: { value, onChange } } = inputProps;
-            return (
-              <TextInput 
-                style={styles.input}
-                keyboardType='numeric'
-                onChangeText={onChange}
-                value={value}
-                maxLength={3}  //setting limit of input
-              />
-            )}}
-          />
-        </View>
-        <Text h4>Handler Knows</Text>
-        <View>
-            <Field name={`Performance.${section._id}.handlerKnows`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Fringe</Text>
-        <View>
-            <Field name={`Performance.${section._id}.fringe`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Reset</Text>
-        <View>
-            <Field name={`Performance.${section._id}.reset`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Alert</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>On Lead</Text>
-        <View>
-            <Field name={`Performance.${section._id}.lead`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Indication</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseIndication`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Detail Search</Text>
-        <View>
-            <Field name={`Performance.${section._id}.detailSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Successful</Text>
-        <View>
-            <Field name={`Performance.${section._id}.successful`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
         </View>
         {this._renderLabeledButtonGroup(
           'Handler Knows', 
@@ -358,38 +232,79 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
           <Text h4>Failure Codes</Text>
           <ScrollView style={scrollViewContainerStyle}>
-<<<<<<< HEAD
             <CheckboxContainer name={`${dogId}.performance.${sectionId}.failCodes`} checkboxes={BuildingSearchInfo.FailCodes}/>
-=======
-            <Field name={`Performance.${section._id}.failCodes`} component={_ => 
-              <CheckboxContainer name='FailCodes' checkboxes={BuildingSearchInfo.FailCodes}/>
-              }
-            /> 
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
           </ScrollView>
         </View>
         <View>
           <Text h4>Distractions</Text>
           <ScrollView style={scrollViewContainerStyle}>
-<<<<<<< HEAD
             <CheckboxContainer name={`${dogId}.performance.${sectionId}.distractions`} checkboxes={BuildingSearchInfo.Distractions}/>
-=======
-            <Field name={`Performance.${section._id}.distractions`} component={_ => 
-                <CheckboxContainer name='Distractions' checkboxes={BuildingSearchInfo.Distractions}/>
-              }
-            /> 
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
           </ScrollView>     
         </View>
       </View>
     );
   };
 
-  setActiveSection = sectionTitle => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : sectionTitle }));
+  setActiveSection = section => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : section }));
+  
   _renderTextInput(inputProps) {
     const textInputStyle = { width: '60%', marginTop: 10 }
     return renderTextInput(inputProps, 'Name', textInputStyle)
   }
+
+  _addStopwatchTime = onChange => {
+    let time = this.state.stopwatchTime;
+
+    time.seconds++;
+    if (time.seconds >= 60) {
+      time.seconds = 0;
+      time.minutes++;
+      if (time.minutes >= 60) {
+        time.minutes = 0;
+        time.hours++;
+      }
+    }
+    
+    onChange(time);
+    this.setState({ stopwatchTime: time })
+  }
+
+  _toggleStopwatch = onChange => {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    else {
+      this.interval = setInterval(() => this._addStopwatchTime(onChange), 1000)
+    }
+  }
+
+  _renderStopwatch = () => (
+    !!this.state.activeSection && 
+    <Field 
+      name={`${this.state.dog._id}.performance.${this.state.activeSection._id}.time`}
+      component={(inputProps) => {
+        const { input } = inputProps;
+
+        const time = this.state.stopwatchTime;
+        const hours = time.hours === 0 ? '00' : time.hours;
+        const minutes = time.minutes === 0 ? '00' : time.minutes;
+        const seconds = time.seconds === 0 ? '00' : time.seconds;
+
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <Button 
+              title={!this.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
+              onPress={() => this._toggleStopwatch(input.onChange)}
+              textStyle={buttonTextStyle}
+              buttonStyle={buttonStyle}
+            />
+            <Text style={{marginTop: 15}}>{`${hours}:${minutes}:${seconds}`}</Text>
+          </View>
+        )
+      }}
+    />
+  )
 
   _renderPage = () => {
     const labelFieldContainerStyle = { flexDirection: 'column', width: '30%', ...center }
@@ -449,7 +364,13 @@ export class UDCBuildingSearchScreen extends React.Component {
           </View>
         </View>
         <View style={{height: '75%', marginTop: 30, alignItems: 'center'}}> 
-          <Text h3>Searches</Text>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            <Text h3>Searches</Text>
+            {this._renderStopwatch()}
+          </View>
           <SectionList
             sections={this.state.hides}
             keyExtractor={a => a}
@@ -460,13 +381,13 @@ export class UDCBuildingSearchScreen extends React.Component {
                 buttonStyle={outlineButtonStyle}
                 textStyle={outlineButtonTextStyle}
                 fontSize={20}
-                onPress={() => this.setActiveSection(section.title)}
+                onPress={() => this.setActiveSection(section)}
               />
             )}
             renderItem={({ item, section }) => (
               <Collapsible
                 key={item}
-                collapsed={section.title !== this.state.activeSection}>
+                collapsed={section.title !== this.state.activeSection.title}>
                 {this._renderContent(item._id)}
               </Collapsible>
             )}
