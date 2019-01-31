@@ -38,7 +38,8 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
-        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 }
+        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
+        interval: null,
       };
     }
 
@@ -269,13 +270,18 @@ export class UDCBuildingSearchScreen extends React.Component {
     this.setState({ stopwatchTime: time })
   }
 
+  _clearStopwatch = onChange => {
+    this.setState({ stopwatchTime: { seconds: 0, minutes: 0, hours: 0 } })
+  }
+
   _toggleStopwatch = onChange => {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
+    if (this.state.interval) {
+      clearInterval(this.state.interval);
+      this.setState({ interval: null })
     }
     else {
-      this.interval = setInterval(() => this._addStopwatchTime(onChange), 1000)
+      let int = setInterval(() => this._addStopwatchTime(onChange), 1000)
+      this.setState({ interval: int })
     }
   }
 
@@ -294,12 +300,21 @@ export class UDCBuildingSearchScreen extends React.Component {
         return (
           <View style={{flexDirection: 'row'}}>
             <Button 
-              title={!this.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
+              title={!this.state.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
               onPress={() => this._toggleStopwatch(input.onChange)}
               textStyle={buttonTextStyle}
               buttonStyle={buttonStyle}
             />
             <Text style={{marginTop: 15}}>{`${hours}:${minutes}:${seconds}`}</Text>
+            {
+              !this.state.interval &&
+              <Button 
+                title={'Clear'}
+                onPress={() => this._clearStopwatch(input.onChange)}
+                textStyle={buttonTextStyle}
+                buttonStyle={buttonStyle}
+              />
+            }
           </View>
         )
       }}
