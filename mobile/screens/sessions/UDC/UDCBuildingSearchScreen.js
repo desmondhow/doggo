@@ -172,7 +172,6 @@ export class UDCBuildingSearchScreen extends React.Component {
         )}
         <Text h4>Barks</Text>
         <View>
-<<<<<<< HEAD
           {renderReduxDropdown(
             `${dogId}.performance.${sectionId}.barks`, 
             BuildingSearchInfo.Barks, 
@@ -180,132 +179,6 @@ export class UDCBuildingSearchScreen extends React.Component {
             null, null,
             20
           )}
-=======
-          <Field name={`Performance.${section._id}.barks`} component={inputProps => {
-            const { input: { value, onChange } } = inputProps;
-            return (
-              <TextInput 
-                style={styles.input}
-                keyboardType='numeric'
-                onChangeText={onChange}
-                value={value}
-                maxLength={3}  //setting limit of input
-              />
-            )}}
-          />
-        </View>
-        <Text h4>Handler Knows</Text>
-        <View>
-            <Field name={`Performance.${section._id}.handlerKnows`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Fringe</Text>
-        <View>
-            <Field name={`Performance.${section._id}.fringe`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Reset</Text>
-        <View>
-            <Field name={`Performance.${section._id}.reset`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Alert</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>On Lead</Text>
-        <View>
-            <Field name={`Performance.${section._id}.lead`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Indication</Text>
-        <View>
-            <Field name={`Performance.${section._id}.falseIndication`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Detail Search</Text>
-        <View>
-            <Field name={`Performance.${section._id}.detailSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Successful</Text>
-        <View>
-            <Field name={`Performance.${section._id}.successful`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={yesNoButtons}
-                  containerStyle={buttonGroupContainerStyle}
-                />
-              )}}
-            />
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
         </View>
         {this._renderLabeledButtonGroup(
           'Handler Knows', 
@@ -358,27 +231,13 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View>
           <Text h4>Failure Codes</Text>
           <ScrollView style={scrollViewContainerStyle}>
-<<<<<<< HEAD
             <CheckboxContainer name={`${dogId}.performance.${sectionId}.failCodes`} checkboxes={BuildingSearchInfo.FailCodes}/>
-=======
-            <Field name={`Performance.${section._id}.failCodes`} component={_ => 
-              <CheckboxContainer name='FailCodes' checkboxes={BuildingSearchInfo.FailCodes}/>
-              }
-            /> 
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
           </ScrollView>
         </View>
         <View>
           <Text h4>Distractions</Text>
           <ScrollView style={scrollViewContainerStyle}>
-<<<<<<< HEAD
             <CheckboxContainer name={`${dogId}.performance.${sectionId}.distractions`} checkboxes={BuildingSearchInfo.Distractions}/>
-=======
-            <Field name={`Performance.${section._id}.distractions`} component={_ => 
-                <CheckboxContainer name='Distractions' checkboxes={BuildingSearchInfo.Distractions}/>
-              }
-            /> 
->>>>>>> a27972e3c4b71ac0c495df0ed922d4a1e901a493
           </ScrollView>     
         </View>
       </View>
