@@ -9,6 +9,7 @@ export const Sessions = [
 export const UDCInfo = {
   General: {
     Temperature: arrayOfLengthN(100),
+    Humidity: arrayOfLengthN(100),
     Wind: arrayOfLengthN(10),
     'Wind Direction': [
       'N',

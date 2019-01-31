@@ -5,13 +5,27 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
 import { FormInput } from 'react-native-elements';
 
+import API from "../constants/Api";
+
 export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispatchToProps) => (
   connect(mapStateToProps, mapDispatchToProps)(
     reduxForm({ 
       form: formName
     })(formClass)
   )
-)
+);
+
+// takes in a reference to 'this' instance of current screen
+export const updateProfileState = (that) => (
+  new Promise((res, rej) => (
+    API.loadProfileURL
+    .then(url => request(url, null, 'GET'))
+    .then(res => res.json())
+    .then(profile => res(that.setState({ trainers: profile.trainers, dogs: profile.dogs })))
+    .catch(err => { console.log(err); rej(err); })
+  ))
+);
+  
 
 export const renderDropdown = (
   value, 

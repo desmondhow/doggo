@@ -38,6 +38,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
+        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 }
       };
     }
 
@@ -244,11 +245,66 @@ export class UDCBuildingSearchScreen extends React.Component {
     );
   };
 
-  setActiveSection = sectionTitle => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : sectionTitle }));
+  setActiveSection = section => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : section }));
+  
   _renderTextInput(inputProps) {
     const textInputStyle = { width: '60%', marginTop: 10 }
     return renderTextInput(inputProps, 'Name', textInputStyle)
   }
+
+  _addStopwatchTime = onChange => {
+    let time = this.state.stopwatchTime;
+
+    time.seconds++;
+    if (time.seconds >= 60) {
+      time.seconds = 0;
+      time.minutes++;
+      if (time.minutes >= 60) {
+        time.minutes = 0;
+        time.hours++;
+      }
+    }
+    
+    onChange(time);
+    this.setState({ stopwatchTime: time })
+  }
+
+  _toggleStopwatch = onChange => {
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+    }
+    else {
+      this.interval = setInterval(() => this._addStopwatchTime(onChange), 1000)
+    }
+  }
+
+  _renderStopwatch = () => (
+    !!this.state.activeSection && 
+    <Field 
+      name={`${this.state.dog._id}.performance.${this.state.activeSection._id}.time`}
+      component={(inputProps) => {
+        const { input } = inputProps;
+
+        const time = this.state.stopwatchTime;
+        const hours = time.hours === 0 ? '00' : time.hours;
+        const minutes = time.minutes === 0 ? '00' : time.minutes;
+        const seconds = time.seconds === 0 ? '00' : time.seconds;
+
+        return (
+          <View style={{flexDirection: 'row'}}>
+            <Button 
+              title={!this.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
+              onPress={() => this._toggleStopwatch(input.onChange)}
+              textStyle={buttonTextStyle}
+              buttonStyle={buttonStyle}
+            />
+            <Text style={{marginTop: 15}}>{`${hours}:${minutes}:${seconds}`}</Text>
+          </View>
+        )
+      }}
+    />
+  )
 
   _renderPage = () => {
     const labelFieldContainerStyle = { flexDirection: 'column', width: '30%', ...center }
@@ -308,7 +364,13 @@ export class UDCBuildingSearchScreen extends React.Component {
           </View>
         </View>
         <View style={{height: '75%', marginTop: 30, alignItems: 'center'}}> 
-          <Text h3>Searches</Text>
+          <View style={{
+            flexDirection: 'row',
+            alignItems: 'center'
+          }}>
+            <Text h3>Searches</Text>
+            {this._renderStopwatch()}
+          </View>
           <SectionList
             sections={this.state.hides}
             keyExtractor={a => a}
@@ -319,13 +381,13 @@ export class UDCBuildingSearchScreen extends React.Component {
                 buttonStyle={outlineButtonStyle}
                 textStyle={outlineButtonTextStyle}
                 fontSize={20}
-                onPress={() => this.setActiveSection(section.title)}
+                onPress={() => this.setActiveSection(section)}
               />
             )}
             renderItem={({ item, section }) => (
               <Collapsible
                 key={item}
-                collapsed={section.title !== this.state.activeSection}>
+                collapsed={section.title !== this.state.activeSection.title}>
                 {this._renderContent(item._id)}
               </Collapsible>
             )}
