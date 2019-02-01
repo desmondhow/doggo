@@ -2,7 +2,7 @@
 import Constants from "../../constants/Api";
 import fetch from 'cross-fetch'
 import 'babel-polyfill'
-import {getAllUDCLater, saveUDCSession, saveUDCSessionLater} from "./udc.actions";
+import {deleteUDCSessionLater, getAllUDCLater, saveUDCSession, saveUDCSessionLater} from "./udc.actions";
 
 
 /**
@@ -15,8 +15,9 @@ export const SERVER_STATE = 'SERVER_STATE';
 export const RESET_STATE = 'RESET_STATE';
 
 export const ActionQueueTypes = {
-    GET_ALL_UDC_LATER: 'GET_ALL_UDC_LATER',
-    SAVE_NEW_UDC_LATER: 'SAVE_NEW_UDC_LATER'
+    SAVE_NEW_UDC_LATER: 'SAVE_NEW_UDC_LATER',
+    DELETE_UDC_LATER: 'DELETE_UDC_LATER'
+
 };
 
 /**
@@ -35,7 +36,8 @@ export const pingServer = ({url}) => {
             .then((res) => {
                 dispatch({type: SERVER_STATE, isServerOnline: true});
             }).catch(function (error) {
-            dispatch({type: SERVER_STATE, isServerOnline: false});
+                console.log(error);
+                dispatch({type: SERVER_STATE, isServerOnline: false});
         });
     };
 };
@@ -47,13 +49,7 @@ export const pingServer = ({url}) => {
 export const dispatchActionQueueElt = ({elts}) => {
     return (dispatch) => {
         for (let i = 0; i < elts.length; i++) {
-            switch (elts[i].type) {
-                case ActionQueueTypes.GET_ALL_UDC_LATER: {
-                    dispatch({type: REMOVE_FROM_ACTION_QUEUE, payload: ActionQueueTypes.GET_ALL_UDC_LATER});
-                    dispatch(getAllUDCLater({url: Constants.getCurrentUDCSessions}));
-                    return;
-                }
-                case ActionQueueTypes.SAVE_NEW_UDC_LATER: {
+            if (elts[i].type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
                     dispatch({
                         type: REMOVE_FROM_ACTION_QUEUE, payload: {
                             type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
@@ -61,17 +57,26 @@ export const dispatchActionQueueElt = ({elts}) => {
                         }
                     });
                     dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
-                    return;
 
-                }
-                default:
-                    console.log('error action queue', elts[i].type);
-                    return;
+            }
+            else if(elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.DELETE_UDC_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(deleteUDCSessionLater({sessionId: elts[i].data}));
+            }
 
+            else {
+                console.log('error action queue', elts[i].type);
             }
         }
     }
 };
+
+
 
 
 /**
@@ -79,8 +84,20 @@ export const dispatchActionQueueElt = ({elts}) => {
  * @param getState
  * @returns {*|boolean}
  */
-export function isOnline(getState) {
-    const isConnected = getState().connection.isConnected;
-    const isServerOnline = getState().connection.isServerOnline;
-    return isConnected && isServerOnline;
+export function isOnline() {
+    return (getState) => {
+        const isConnected = getState().connection.isConnected;
+        const isServerOnline = getState().connection.isServerOnline;
+        return isConnected && isServerOnline;
+    }
+}
+
+export function guidGenerator() {
+    /**
+     * @return {string}
+     */
+    let S4 = function () {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
 }

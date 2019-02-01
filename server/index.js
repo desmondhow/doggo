@@ -73,8 +73,8 @@ app.use(function (req, res, next) {
 });
 
 // API routes
-app.use('/users', users);
-app.use('/users', sessions);
+app.use('/api/users', users);
+app.use('/api/users', sessions);
 
 //Default page is index
 app.get('/', function (req, res) {
@@ -82,7 +82,7 @@ app.get('/', function (req, res) {
 });
 
 //Default page is index
-app.get('/ping', function (req, res) {
+app.get('/api/ping', function (req, res) {
     res.send({status: true})
 });
 

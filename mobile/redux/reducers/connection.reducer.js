@@ -55,7 +55,6 @@ const reducer = (state = initialState, action) => {
                 });
             }
         case REMOVE_FROM_ACTION_QUEUE:
-            console.log('State action queue', state.actionQueue);
             return {
                 ...state,
                 actionQueue: [...state.actionQueue.slice(1)]

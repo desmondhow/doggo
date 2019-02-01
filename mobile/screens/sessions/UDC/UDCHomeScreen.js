@@ -9,7 +9,6 @@ import {
 import { Text, Button } from "react-native-elements";
 import { NavigationActions } from 'react-navigation'
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
-
 import {
   container,
   buttonStyle,
@@ -17,14 +16,8 @@ import {
   outlineButtonTextStyle,
   oddTableRow
 } from "../../../constants/Styles";
-import {Text, Button} from "react-native-elements";
-import {withMappedNavigationProps} from "react-navigation-props-mapper";
-import Constants from "../../../constants/Api";
 import {connect} from "react-redux";
 import { getAllUDC} from "../../../redux/actions/udc.actions";
-
-
-
 const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
 import API from "../../../constants/Api";
 import { request } from "../../../components/helpers";
@@ -37,16 +30,18 @@ import { request } from "../../../components/helpers";
 
     componentDidMount() {
         //Get all UDCs whenever user opens this screen
-        this.props.dispatch(getAllUDC({ url: Constants.getCurrentUDCSessions}));
+        this.props.dispatch(getAllUDC());
         //Keep fetching for data every minute.
-        this.interval = setInterval(() => this.getAllUDCs, 60* 1000);
+        this.interval = setInterval(() => this.getAllUDCs, 10* 1000);
     }
 
     getAllUDCs(){
-        this.props.dispatch(getAllUDC({ url: Constants.getCurrentUDCSessions}));
+        this.props.dispatch(getAllUDC());
     }
 
-
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
 
 
     _continueTrainingSession(i) {

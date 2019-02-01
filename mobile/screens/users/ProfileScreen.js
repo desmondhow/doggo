@@ -18,7 +18,6 @@ import {
   center,
   outlineButtonTextStyle
 } from "../../constants/Styles";
-import * as actions from "../../redux/actions/index.actions";
 import { connectReduxForm, request, renderTextInput } from "../../components/helpers";
 
 /**
@@ -28,7 +27,7 @@ class ProfileScreen extends Component {
   componentDidMount() {
     // fetch profile every second
     this._loadProfile();
-    this.interval = setInterval(() => this._loadProfile(), 1 * 1000);
+    this.interval = setInterval(() => this._loadProfile(), 10 * 1000);
   }
 
   componentWillUnmount() {
@@ -419,8 +418,8 @@ export default connectReduxForm(
     addDogStartDate: selector(state, "add-dog-startDtae")
   }),
   dispatch => ({
-    loadProfile: () => dispatch({ type: actions.LOAD_USER_PROFILE }),
-    addTrainer: trainerInfo =>
-      dispatch({ type: actions.ADD_TRAINER, trainerInfo: trainerInfo })
+    // loadProfile: () => dispatch({ type: actions.LOAD_USER_PROFILE }),
+    // addTrainer: trainerInfo =>
+      // dispatch({ type: actions.ADD_TRAINER, trainerInfo: trainerInfo })
   })
 );

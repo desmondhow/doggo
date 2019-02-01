@@ -13,13 +13,13 @@ import {
     buttonTextStyle,
     outlineButtonTextStyle
 } from '../../../constants/Styles';
-import {connectReduxForm, renderReduxDropdown, renderDropdown} from '../../../components/helpers';
 import {GeneralInfo, HidesInfo} from '../../../constants/SessionsConstants';
-import { connectReduxForm, renderReduxDropdown, renderDropdown, request } from '../../../components/helpers';
-import { UDCInfo } from '../../../constants/SessionsConstants';
+import {connectReduxForm, renderReduxDropdown, renderDropdown, request} from '../../../components/helpers';
+import {UDCInfo} from '../../../constants/SessionsConstants';
 import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
-import {saveUDCSession} from "../../../redux/actions/udc.actions";
+import {deleteUDCSession, saveUDCSession} from "../../../redux/actions/udc.actions";
+import {guidGenerator} from "../../../redux/actions/connection.actions";
 
 class UDCNewSessionScreen extends React.Component {
     constructor(props) {
@@ -33,8 +33,9 @@ class UDCNewSessionScreen extends React.Component {
 
         let previousHides = {};
         const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-        console.log("sessionInfo", sessionInfo.hides);
+        console.log("sessionInfo", sessionInfo);
 
+        //If data comes from server
         if (sessionInfo) {
             sessionInfo.hides.forEach(hide => {
                 previousHides[hide.concentration] = {
@@ -46,12 +47,11 @@ class UDCNewSessionScreen extends React.Component {
                         placementHeight: hide.placementHeight
                     }
                 }
-            })
-
-            console.log('Previous hides', previousHides);
+            });
             this.state = {
+                isNew: false,
+                sessionId: sessionInfo.sessionId,
                 addedHides: previousHides,
-                sessionId: sessionInfo._id,
                 isEditing: this.props.navigation.getParam('isEditing', false),
                 createdAt: sessionInfo.createdAt,
                 temperature: sessionInfo.temperature,
@@ -59,52 +59,67 @@ class UDCNewSessionScreen extends React.Component {
                 wind: sessionInfo.wind,
                 'Wind Direction': sessionInfo.windDirection
             }
+        } else {
+            //We are creating a new session
+            const localID = guidGenerator();
+            this.state = {
+                isNew: true,
+                sessionId: localID,
+                addedHides: {},
+                isEditing: false,
+                createdAt: new Date(),
+                temperature: null,
+                humidity: null,
+                wind: null,
+                'Wind Direction': null
+            }
         }
+
     }
 
-    _onSubmit = sessionInfo => {
+    _onSubmit = () => {
 
-
-        session = {
-            id: this.state.sessionId,
-            temperature: sessionInfo.temperature,
-            humidity: sessionInfo.humidity,
-            wind: sessionInfo.wind,
-            windDirection: sessionInfo['Wind Direction'],
+        let session = {
+            isNew: this.state.isNew,
+            temperature: this.state.temperature,
+            humidity: this.state.humidity,
+            wind: this.state.wind,
+            windDirection: this.state['Wind Direction'],
             complete: false,
-            createdAt: new Date(),
+            sessionId: this.state.sessionId,
+            createdAt: this.state.createdAt,
             hides: this.state.addedHides,
 
         };
 
-        this.props.dispatch(saveUDCSession({ sessionInfo: session}));
+        this.props.dispatch(saveUDCSession({sessionInfo: session}));
         this.props.navigation.navigate('UDC');
     };
 
     _updateGeneralState = (property, val) => this.setState({[property]: val})
 
-  _renderGeneralForm = () => (
-    <View style={{center, ...styles.fieldsContainer, height: '40%', marginTop: 30, flexDirection: 'row'}}>
-      {Object.keys(UDCInfo.General).map(name =>
-        <View style={{
-          marginTop: 30,
-          height: 100,
-          width: '23.5%',
-          marginLeft: 20,
-        }} key={name}>
-          <Text style={styles.labelStyle}>{name[0].toUpperCase() + name.substr(1)}:</Text>
-          {renderReduxDropdown(
-            name,
-            UDCInfo.General[name],
-            { width: 150, height: 100 }, 
-            this.state.isEditing ? val => this._updateGeneralState(name, val) : null,
-            this.state.isEditing ? this.state[name] : null, 
-            20
-          )}
+    _renderGeneralForm = () => (
+        <View style={{center, ...styles.fieldsContainer, height: '40%', marginTop: 30, flexDirection: 'row'}}>
+            {Object.keys(UDCInfo.General).map(name =>
+                <View style={{
+                    marginTop: 30,
+                    height: 100,
+                    width: '23.5%',
+                    marginLeft: 20,
+                }} key={name}>
+                    <Text style={styles.labelStyle}>{name[0].toUpperCase() + name.substr(1)}:</Text>
+                    {renderReduxDropdown(
+                        name,
+                        UDCInfo.General[name],
+                        {width: 150, height: 100},
+                        this.state.isEditing ? val => this._updateGeneralState(name, val) : null,
+                        this.state.isEditing ? this.state[name] : null,
+                        20
+                    )}
+                </View>
+            )}
         </View>
-      )}
-    </View>
-  )
+    )
 
     _renderAddedHides = () => (
         <View>
@@ -147,39 +162,39 @@ class UDCNewSessionScreen extends React.Component {
             containerViewStyle={{paddingBottom: 10, marginRight: 50}}
             onPress={() => this._addHide()}
         />
-    )
+    );
 
     _renderAddHideTypeDropdowns = () => {
         const containerStyle = {flexDirection: 'column', width: '40%', ...center}
         const dropdownContainerStyle = {marginTop: -20, width: '100%'}
 
-    return (
-      <View style={{flexDirection: 'row', width: '55%', justifyContent: 'space-between', marginTop: 25}}>
-        <View style={containerStyle}>
-          <Text style={styles.labelStyle}>Concentration:</Text>
-          {
-            renderDropdown(
-              this.state.addHideConcentration, 
-              (concentration) => this.setState({ addHideConcentration: concentration }), 
-              UDCInfo.Hides.Measurements.Concentrations,
-              dropdownContainerStyle
-            )
-          }
-        </View>
-        <View style={containerStyle}>
-          <Text style={styles.labelStyle}>Size:</Text>
-          {
-            renderDropdown(
-              this.state.addHideSize,
-              (size) => this.setState({ addHideSize: size }),
-              UDCInfo.Hides.Measurements.Sizes.map(size => size.replace('#', '.')),
-              dropdownContainerStyle
-            )
-          }
-        </View>
-      </View>
-    );
-  }
+        return (
+            <View style={{flexDirection: 'row', width: '55%', justifyContent: 'space-between', marginTop: 25}}>
+                <View style={containerStyle}>
+                    <Text style={styles.labelStyle}>Concentration:</Text>
+                    {
+                        renderDropdown(
+                            this.state.addHideConcentration,
+                            (concentration) => this.setState({addHideConcentration: concentration}),
+                            UDCInfo.Hides.Measurements.Concentrations,
+                            dropdownContainerStyle
+                        )
+                    }
+                </View>
+                <View style={containerStyle}>
+                    <Text style={styles.labelStyle}>Size:</Text>
+                    {
+                        renderDropdown(
+                            this.state.addHideSize,
+                            (size) => this.setState({addHideSize: size}),
+                            UDCInfo.Hides.Measurements.Sizes.map(size => size.replace('#', '.')),
+                            dropdownContainerStyle
+                        )
+                    }
+                </View>
+            </View>
+        );
+    };
 
     _updateHideState = (concentration, size, property, value) => {
         this.setState(prevState => ({
@@ -195,70 +210,70 @@ class UDCNewSessionScreen extends React.Component {
             }
         }))
 
-    }
+    };
 
-  _renderHideFields = (concentration, size, userIsAddingHide = false) => (
-    <View
-      style={{
-        flexDirection: 'row',
-        marginTop: 15,
-        justifyContent: 'space-between',
-        width: '90%'
-      }}
-    >
-      <View style={{ flexDirection: 'column', ...center }}>
-        {/* Location */}
-        <Text style={styles.labelStyle}>Location:</Text>
-        {renderReduxDropdown(
-          `Hides.${concentration}.${size}.location`,
-          UDCInfo.Hides.Locations,
-          styles.dropdown,
-          userIsAddingHide ? null : location => this._updateHideState(concentration, size, 'location', location),
-          userIsAddingHide ? this.props.addHideLocation : this.state.addedHides[concentration][size].location
-        )}
-      </View>
-      <View style={{ flexDirection: 'column', ...center, marginBottom: 30 }}>
-        {/* Concealed */}
-        <Text style={styles.labelStyle}>Concealed:</Text>
-        <View>
-          <Field
-            name={`Hides.${concentration}.${size}.isConcealed`}
-            component={inputProps =>
-              <ButtonGroup
-                onPress={userIsAddingHide ? inputProps.input.onChange : isConcealed => this._updateHideState(concentration, size, 'isConcealed', isConcealed)}
-                selectedIndex={userIsAddingHide ? this.props.addHideIsConcealed : this.state.addedHides[concentration][size].isConcealed}
-                buttons={['No', 'Yes']}
-                textStyle={outlineButtonTextStyle}
-                containerStyle={{ height: 40, width: 100}}
-              />
-            }
-          />
+    _renderHideFields = (concentration, size, userIsAddingHide = false) => (
+        <View
+            style={{
+                flexDirection: 'row',
+                marginTop: 15,
+                justifyContent: 'space-between',
+                width: '90%'
+            }}
+        >
+            <View style={{flexDirection: 'column', ...center}}>
+                {/* Location */}
+                <Text style={styles.labelStyle}>Location:</Text>
+                {renderReduxDropdown(
+                    `Hides.${concentration}.${size}.location`,
+                    UDCInfo.Hides.Locations,
+                    styles.dropdown,
+                    userIsAddingHide ? null : location => this._updateHideState(concentration, size, 'location', location),
+                    userIsAddingHide ? this.props.addHideLocation : this.state.addedHides[concentration][size].location
+                )}
+            </View>
+            <View style={{flexDirection: 'column', ...center, marginBottom: 30}}>
+                {/* Concealed */}
+                <Text style={styles.labelStyle}>Concealed:</Text>
+                <View>
+                    <Field
+                        name={`Hides.${concentration}.${size}.isConcealed`}
+                        component={inputProps =>
+                            <ButtonGroup
+                                onPress={userIsAddingHide ? inputProps.input.onChange : isConcealed => this._updateHideState(concentration, size, 'isConcealed', isConcealed)}
+                                selectedIndex={userIsAddingHide ? this.props.addHideIsConcealed : this.state.addedHides[concentration][size].isConcealed}
+                                buttons={['No', 'Yes']}
+                                textStyle={outlineButtonTextStyle}
+                                containerStyle={{height: 40, width: 100}}
+                            />
+                        }
+                    />
+                </View>
+            </View>
+            {/* Placement Area */}
+            <View style={{flexDirection: 'column', ...center}}>
+                <Text style={styles.labelStyle}>Placement Area:</Text>
+                {renderReduxDropdown(
+                    `Hides.${concentration}.${size}.placementArea`,
+                    UDCInfo.Hides.PlacementAreas,
+                    styles.dropdown,
+                    userIsAddingHide ? null : placementArea => this._updateHideState(concentration, size, 'placementArea', placementArea),
+                    userIsAddingHide ? this.props.addHidePlacementArea : this.state.addedHides[concentration][size].placementArea
+                )}
+            </View>
+            {/* Placement Height */}
+            <View style={{flexDirection: 'column', ...center}}>
+                <Text style={styles.labelStyle}>Placement Height:</Text>
+                {renderReduxDropdown(
+                    `Hides.${concentration}.${size}.placementHeight`,
+                    UDCInfo.Hides.PlacementHeights,
+                    styles.dropdown,
+                    userIsAddingHide ? null : placementHeight => this._updateHideState(concentration, size, 'placementHeight', placementHeight),
+                    userIsAddingHide ? this.props.addHidePlacementHeight : this.state.addedHides[concentration][size].placementHeight
+                )}
+            </View>
         </View>
-      </View>
-      {/* Placement Area */}
-      <View style={{ flexDirection: 'column', ...center }}>
-        <Text style={styles.labelStyle}>Placement Area:</Text>
-        {renderReduxDropdown(
-          `Hides.${concentration}.${size}.placementArea`,
-          UDCInfo.Hides.PlacementAreas,
-          styles.dropdown,
-          userIsAddingHide ? null : placementArea => this._updateHideState(concentration, size, 'placementArea', placementArea),
-          userIsAddingHide ? this.props.addHidePlacementArea : this.state.addedHides[concentration][size].placementArea
-        )}
-      </View>
-      {/* Placement Height */}
-      <View style={{ flexDirection: 'column', ...center }}>
-        <Text style={styles.labelStyle}>Placement Height:</Text>
-        {renderReduxDropdown(
-          `Hides.${concentration}.${size}.placementHeight`,
-          UDCInfo.Hides.PlacementHeights,
-          styles.dropdown,
-          userIsAddingHide ? null : placementHeight => this._updateHideState(concentration, size, 'placementHeight', placementHeight),
-          userIsAddingHide ? this.props.addHidePlacementHeight : this.state.addedHides[concentration][size].placementHeight
-        )}
-      </View>
-    </View>
-  );
+    );
 
     _renderAddHideSection = () => (
         <View style={{marginTop: 20, ...center}}>
@@ -266,50 +281,44 @@ class UDCNewSessionScreen extends React.Component {
             {this._renderAddHideTypeDropdowns()}
             {this._renderHideFields(null, null, true)}
         </View>
-    )
+    );
 
-  _onDeleteSession = () => {
-    API.UDCDeleteSessionURL(this.state.sessionId)
-    .then(url => request(url, JSON.stringify({ sessionId: sessionId })))
-    .then(_ => this.props.navigation.navigate('UDC'))
-    .catch(err => {
-      console.error(err);
-      throw err;
-    })
-  }
+    _onDeleteSession = () => {
+        this.props.dispatch(deleteUDCSession({sessionId: this.state.sessionId}));
+        this.props.navigation.navigate('UDC');
+    };
 
     _renderSubmitBtn = () => {
-        width = this.state.isEditing ? 150 : 300
+        let width = this.state.isEditing ? 150 : 300;
+        let createBtn = <Button
+            raised
+            rounded
+            title={this.state.isEditing ? 'Edit' : 'Create'}
+            onPress={this.props.handleSubmit(this._onSubmit)}
+            fontSize={26}
+            buttonStyle={{
+                ...center,
+                ...buttonStyle,
+                marginLeft: 60,
+                marginTop: 20,
+                width: width
+            }}
+        />;
 
-    createBtn = <Button
-      raised
-      rounded
-      title={this.state.isEditing? 'Edit' : 'Create'}
-      onPress={this.props.handleSubmit(this._onSubmit)}
-      fontSize={26}
-      buttonStyle={{
-        ...center,
-        ...buttonStyle,
-        marginLeft: 60,
-        marginTop: 20,
-        width: width
-      }}
-    />
-
-    deleteBtn = <Button
-      raised
-      rounded
-      title='Delete'
-      onPress={() => this._onDeleteSession()}
-      fontSize={26}
-      buttonStyle={{
-        ...center,
-        ...buttonStyle,
-        marginLeft: 60,
-        marginTop: 20,
-        width: width
-      }}
-    />
+        let deleteBtn = <Button
+            raised
+            rounded
+            title='Delete'
+            onPress={() => this._onDeleteSession()}
+            fontSize={26}
+            buttonStyle={{
+                ...center,
+                ...buttonStyle,
+                marginLeft: 60,
+                marginTop: 20,
+                width: width
+            }}
+        />;
 
         return (
             this.state.isEditing ?
@@ -328,27 +337,27 @@ class UDCNewSessionScreen extends React.Component {
             //reset the field's error
             this.props.dispatch(untouch('udc', field));
         });
-    }
+    };
 
     _addHide = () => {
         const concentration = this.state.addHideConcentration;
         const size = this.state.addHideSize;
         const location = this.props.addHideLocation;
         const isConcealed = this.props.addHideIsConcealed;
-        const placementArea = this.props.addHidePlacementArea
-        const placementHeight = this.props.addHidePlacementHeight
+        const placementArea = this.props.addHidePlacementArea;
+        const placementHeight = this.props.addHidePlacementHeight;
 
         // should all the fields be required?
         if (!concentration || !size) {
-            alert('You must specify a concentration and a size to add a hide.')
+            alert('You must specify a concentration and a size to add a hide.');
             return;
         }
         else if (!location) {
-            alert('You must specify a location to add a hide.')
+            alert('You must specify a location to add a hide.');
             return;
         }
         else if (this.state.addedHides[concentration] && this.state.addedHides[concentration][size]) {
-            alert('You have already added this hide. Please edit the one above.')
+            alert('You have already added this hide. Please edit the one above.');
             return;
         }
 
@@ -358,7 +367,7 @@ class UDCNewSessionScreen extends React.Component {
             'Hides.null.null.location',
             'Hides.null.null.isConcealed',
             'Hides.null.null.placementArea',
-            'Hides.null.null.placementHeight'])
+            'Hides.null.null.placementHeight']);
 
         // store new hide
         this.setState(prevState => ({
@@ -375,7 +384,7 @@ class UDCNewSessionScreen extends React.Component {
                 }
             }
         }))
-    }
+    };
 
     _renderHidesForm = () => (
         <View style={center}>
@@ -392,16 +401,16 @@ class UDCNewSessionScreen extends React.Component {
         </View>
     );
 
-  render = () => (
-    <View style={styles.container}>
-      <View>
-        {this._renderGeneralForm()}
-      </View>
-      <View style={{marginTop: -20}}>
-        {this._renderHidesForm()}
-      </View>
-    </View>
-  )
+    render = () => (
+        <View style={styles.container}>
+            <View>
+                {this._renderGeneralForm()}
+            </View>
+            <View style={{marginTop: -20}}>
+                {this._renderHidesForm()}
+            </View>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -430,11 +439,9 @@ export default connectReduxForm(
     'udc',
     UDCNewSessionScreen,
     state => ({
-        initialValues: state.udc.initial,
         addHideLocation: selector(state, 'Hides.null.null.location'),
         addHideIsConcealed: selector(state, 'Hides.null.null.isConcealed'),
         addHidePlacementArea: selector(state, 'Hides.null.null.placementArea'),
         addHidePlacementHeight: selector(state, 'Hides.null.null.placementHeight'),
-})
-        // deleteSession: sessionId => dispatch({type: actions.DELETE_UDC_SESSION, sessionId: sessionId})
+    })
 )

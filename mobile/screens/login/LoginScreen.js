@@ -81,7 +81,6 @@ export default class LoginScreen extends React.Component {
             }
         })
         .catch(err => alert('There was an issue connecting to the server. Please try again.'))
-        .done();
     };
 
     render() {

@@ -11,10 +11,15 @@ const createSessionApiRoute = route => `/:id/sessions/${route}`
 /**
  * Creates a new UDC session
  */
-router.post(createSessionApiRoute('udc/create-new-session'), function (req, res, next) {
+router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     let temperature = req.body.temperature;
     let humidity = req.body.humidity;
     let wind = req.body.wind;
+    let complete = req.body.complete;
+    let createdAt = req.body.createdAt;
+    let currSessionID = req.body.sessionId;
+
+
     let windDirection = req.body.windDirection;
 
     if (isParamEmpty(req, 'id')) {
@@ -22,7 +27,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
         return res.status(400).send(JSON.stringify({ message: errors.userId }));
     }
 
-    let hidesData = req.body.hides
+    let hidesData = req.body.hides;
     if (isParamEmpty(req, 'hides', true)) {
         return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
     }
@@ -32,22 +37,24 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
     humidity,
     wind,
     windDirection,
-    complete: false,
-    createdAt: new Date(),
-    hides: hidesData
+    complete: complete,
+    createdAt: createdAt,
+    hides: hidesData,
+      sessionId: currSessionID
   };
 
-  // if user is editing session then sessionId will be sent with request
-  // if sessionId not sent then this is a new session
-  const sessionId = req.body.id;
-  if (sessionId) {
+
+
+  // if user is editing session, isNew will be false
+  const isNewSession = req.body.isNew;
+  if (!isNewSession) {
     // only update the fields that the user edited
     let updateObj = {$set: {}};
     for (let param in req.body) {
       updateObj.$set[`sessions.$.data.${param}`] = sessionData[param]
     }
 
-    User.update({ 'sessions.data._id': sessionId }, updateObj,
+    User.update({ 'sessions.data.sessionId': currSessionID }, updateObj,
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
@@ -59,9 +66,9 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
   }
   else {
     const newSession = { sessionType: 'UDC', data: sessionData }
-    const userId = req.params.id;  
+    const userId = req.params.id;
 
-    User.findByIdAndUpdate(userId, 
+    User.findByIdAndUpdate(userId,
       { $push: { sessions: newSession}},
     ((err, updatedUser) => {
       if (err) {
@@ -71,7 +78,7 @@ router.post(createSessionApiRoute('udc/create-new-session'), function (req, res,
       console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
-  }  
+  }
 });
 
 /**
@@ -121,18 +128,23 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   }));
 })
 
-router.delete(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
+
+// Deletes a udc session
+router.post(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
 
+
   const userId = req.params.id;
   let sessionId = req.params.sessionId;
-  User.update(
-    { _id: userId }, 
-    { "$pull": { sessions: { 'data._id': sessionId }}}, 
-    { safe: true, multi:true }, 
+    console.log('id of session being deleted', sessionId);
+
+    User.update(
+    { _id: userId },
+    { "$pull": { sessions: { 'data.sessionId': sessionId }}},
+    { safe: true, multi:true },
     (err, result) => {
       if (err) {
         console.log(err);
@@ -160,7 +172,7 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({essage: 'There are no current UDC sessions'}));
+        return res.status(400).send(JSON.stringify({message: 'There are no current UDC sessions', sessions: []}));
     } else {
       return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }

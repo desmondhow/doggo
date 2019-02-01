@@ -9,6 +9,7 @@ import Logo from "./Logo";
 import SignUpForm from "./SignUpForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../components/auth";
+import {request} from "../../components/helpers";
 
 export default class SignupScreen extends React.Component {
     //Modifies the top header
@@ -83,7 +84,6 @@ export default class SignupScreen extends React.Component {
                 alert(res.message);
             }
         })
-        .done();
     };
 
     render() {

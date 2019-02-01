@@ -17,8 +17,6 @@ export default class App extends React.Component {
         signedIn: true,
         checkedSignIn: true
     };
-
-
     async componentDidMount() {
         //Check if user is already signed in
         await isSignedIn()
