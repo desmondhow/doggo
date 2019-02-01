@@ -14,8 +14,8 @@ import Constants from "./constants/Api";
 export default class App extends React.Component {
     state = {
         isReady: false,
-        signedIn: false,
-        checkedSignIn: false
+        signedIn: true,
+        checkedSignIn: true
     };
 
 
@@ -23,7 +23,7 @@ export default class App extends React.Component {
         //Check if user is already signed in
         await isSignedIn()
             .then(res => {
-                this.setState({signedIn: res, checkedSignIn: true})
+                this.setState({signedIn: true, checkedSignIn: true})
             })
             .catch((err) => alert("An error occurred:\n" + err));
 

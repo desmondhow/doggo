@@ -32,6 +32,8 @@
     "react-dom": "^16.7.0",
     "react-native": "^0.57.1",
     "react-native-device-info": "^0.25.0",
+    "react-native-collapsible": "^1.4.0",
+    "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^0.19.1",
     "react-native-material-dropdown": "^0.11.1",
     "react-native-modal-dropdown": "^0.6.2",

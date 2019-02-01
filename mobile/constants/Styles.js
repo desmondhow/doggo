@@ -28,6 +28,10 @@ export const buttonTextStyle = {
   fontFamily: 'montserrat'
 }
 
+export const oddTableRow = {
+  backgroundColor: "#e3e3e3"
+}
+
 export const formContainer = {
   marginLeft: 30,
   marginTop: 50
@@ -35,7 +39,8 @@ export const formContainer = {
 
 export const container = {
   flex: 1,
-  backgroundColor: 'white',
+  backgroundColor: "rgb(225,226,225)",
+  alignItems: "center"
 }
 
 export const fieldsContainer = {

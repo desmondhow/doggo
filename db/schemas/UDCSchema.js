@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { Schema, ObjectId } from 'mongoose';
 
 export default new Schema({
   /* 
@@ -42,5 +42,84 @@ export default new Schema({
         required: false
       }
     }
-  ],  
+  ],
+  dogsTrained: [
+    {
+      dogId: ObjectId,
+      trainerId: ObjectId,
+      handler: String,
+      recorder: String,
+      hides: [
+        {
+          hideId: ObjectId, //${concentration}-size
+          performance: {
+            radiusAlert: {
+              type: String,
+              required: true
+            },
+            radiusReward: {
+              type: String,
+              required: true
+            },
+            radiusSearch: {
+              type: String,
+              required: true
+            },
+            rewarder: {
+              type: String,
+              required: true
+            },
+            barks: {
+              type: Number,
+              required: true
+            },
+            handlerKnows: {
+              type: Boolean,
+              required: true
+            },
+            fringe: {
+              type: Boolean,
+              required: true
+            },
+            reset: {
+              type: Boolean,
+              required: true
+            },
+            falseAlert: {
+              type: Boolean,
+              required: true
+            },
+            lead: {
+              type: Boolean,
+              required: true
+            },
+            falseIndication: {
+              type: Boolean,
+              required: true
+            },
+            detailSearch: {
+              type: Boolean,
+              required: true
+            },
+            successful: {
+              type: Boolean,
+              required: true
+            },
+            failCodes: [
+              {
+                type: String,
+                required: false
+              }
+            ],
+            distractions: [
+              {
+                type: String,
+                required: false
+              }
+            ],
+          }
+        }
+      ]
+    }
+  ]  
 });

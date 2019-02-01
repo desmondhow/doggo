@@ -1,13 +1,15 @@
 import React from 'react';
 import {Platform} from 'react-native';
 import {createStackNavigator, createBottomTabNavigator, createDrawerNavigator} from 'react-navigation';
+import { Button } from 'react-native-elements'
 
 import TabBarIcon from '../components/TabBarIcon';
 
-import TrainingSessionsNavigator from './sessions/TrainingSessionsNavigator';
+import TrainingSessionsNavigator from './TrainingSessionsNavigator';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
-import ProfileScreen from '../screens/login/ProfileScreen';
+import ProfileScreen from '../screens/users/ProfileScreen';
+import { mainNavHeader } from './helpers';
 
 const LinksStack = createStackNavigator({
     Links: LinksScreen,
@@ -37,13 +39,19 @@ SettingsStack.navigationOptions = {
     ),
 };
 
-
 const ProfileStack = createStackNavigator({
-    Profile: ProfileScreen
+    Profile: { 
+      screen: ProfileScreen,
+      navigationOptions: ({navigation}) => ({ 
+        ...mainNavHeader(navigation)
+      })
+    }
 });
 
+
+
 ProfileStack.navigationOptions = {
-    tabBarLabel: 'Profile',
+    tabBarLabel: 'My Profile',
     tabBarIcon: ({focused}) => (
         <TabBarIcon
             focused={focused}
