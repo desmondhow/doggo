@@ -18,13 +18,34 @@ import {
   center,
   outlineButtonTextStyle
 } from "../../constants/Styles";
-import * as actions from "../../redux/actions/index.actions";
-import { connectReduxForm, request, renderTextInput, updateProfileState } from "../../components/helpers";
+import { connectReduxForm, request, renderTextInput } from "../../components/helpers";
 
 /**
  * Displays the Sign up form
  */
 class ProfileScreen extends Component {
+  componentDidMount() {
+    // fetch profile every second
+    this._loadProfile();
+    this.interval = setInterval(() => this._loadProfile(), 10 * 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
+  _loadProfile = () =>
+    API.loadProfileURL
+      .then(url => request(url, null, 'GET'))
+      .then(res => res.json())
+      .then(profile => {
+        this.setState({ trainers: profile.trainers, dogs: profile.dogs });
+      })
+      .catch(err => {
+        console.log(err);
+        throw err;
+      });
+
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({
@@ -407,8 +428,8 @@ export default connectReduxForm(
     addDogStartDate: selector(state, "add-dog-startDtae")
   }),
   dispatch => ({
-    loadProfile: () => dispatch({ type: actions.LOAD_USER_PROFILE }),
-    addTrainer: trainerInfo =>
-      dispatch({ type: actions.ADD_TRAINER, trainerInfo: trainerInfo })
+    // loadProfile: () => dispatch({ type: actions.LOAD_USER_PROFILE }),
+    // addTrainer: trainerInfo =>
+      // dispatch({ type: actions.ADD_TRAINER, trainerInfo: trainerInfo })
   })
 );

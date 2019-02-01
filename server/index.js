@@ -81,6 +81,11 @@ app.get('/', function (req, res) {
     res.send('Server is working!')
 });
 
+//Default page is index
+app.get('/api/ping', function (req, res) {
+    res.send({status: true})
+});
+
 app.listen(PORT, function () {
     console.log("Server running on http://localhost:" + PORT);
 });

@@ -12,7 +12,7 @@ import LoginForm from "./LoginForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../components/auth";
 import { request } from "../../components/helpers";
-  
+
 
 export default class LoginScreen extends React.Component {
     //Modifies the top header
@@ -64,7 +64,7 @@ export default class LoginScreen extends React.Component {
         if (this.state.password.length === 0) return alert('Please type your password');
         if (this.state.email.length === 0) return alert('Please type your email');
         request(
-          Constants.loginURL, 
+          Constants.loginURL,
           JSON.stringify({
             'email': this.state.email,
             'password': this.state.password
@@ -81,7 +81,6 @@ export default class LoginScreen extends React.Component {
             }
         })
         .catch(err => alert('There was an issue connecting to the server. Please try again.'))
-        .done();
     };
 
     render() {

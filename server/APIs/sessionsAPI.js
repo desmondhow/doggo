@@ -7,69 +7,54 @@ import { isParamEmpty, errors } from './helpers';
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
 
-const _parseHides = hidesData => {
-  let hides = []
-  Object.keys(hidesData).forEach(concentration => {
-    let concentrationSizes = hidesData[concentration]
-    Object.keys(concentrationSizes).forEach(size => {
-      let location = concentrationSizes[size].location;
-      let isConcealed = concentrationSizes[size].isConcealed;
-      let placementArea = concentrationSizes[size].placementArea;
-      let placementHeight = concentrationSizes[size].placementHeight
-
-      hides.push({
-        concentration: Number(concentration),
-        size,
-        location,
-        isConcealed,
-        placementArea,
-        placementHeight
-      });
-    });
-  });
-  return hides;
-}
 
 /**
  * Creates a new UDC session
  */
 router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
-  let temperature = req.body.temperature;
-  let humidity = req.body.humidity;
-  let wind = req.body.wind;
-  let windDirection = req.body.windDirection;
+    let temperature = req.body.temperature;
+    let humidity = req.body.humidity;
+    let wind = req.body.wind;
+    let complete = req.body.complete;
+    let createdAt = req.body.createdAt;
+    let currSessionID = req.body.sessionId;
 
-  if (isParamEmpty(req, 'id')) {
-    console.log(`UserId was not sent with request.`)
-    return res.status(400).send(JSON.stringify({ message: errors.userId }));
-  }
 
-  let hidesData = req.body.hides
-  if (isParamEmpty(req, 'hides', true)) {
-    return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
-  }
+    let windDirection = req.body.windDirection;
 
-  const sessionData = {
+    if (isParamEmpty(req, 'id')) {
+        console.log(`UserId was not sent with request.`)
+        return res.status(400).send(JSON.stringify({ message: errors.userId }));
+    }
+
+    let hidesData = req.body.hides;
+    if (isParamEmpty(req, 'hides', true)) {
+        return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
+    }
+
+  let sessionData = {
     temperature,
     humidity,
     wind,
     windDirection,
-    complete: false,
-    createdAt: new Date(),
-    hides: _parseHides(hidesData)
+    complete: complete,
+    createdAt: createdAt,
+    hides: hidesData,
+      sessionId: currSessionID
   };
 
-  // if user is editing session then sessionId will be sent with request
-  // if sessionId not sent then this is a new session
-  const sessionId = req.body.id;
-  if (sessionId) {
+
+
+  // if user is editing session, isNew will be false
+  const isNewSession = req.body.isNew;
+  if (!isNewSession) {
     // only update the fields that the user edited
     let updateObj = {$set: {}};
     for (let param in req.body) {
       updateObj.$set[`sessions.$.data.${param}`] = sessionData[param]
     }
 
-    User.update({ 'sessions.data._id': sessionId }, updateObj,
+    User.update({ 'sessions.data.sessionId': currSessionID }, updateObj,
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
@@ -81,9 +66,9 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
   }
   else {
     const newSession = { sessionType: 'UDC', data: sessionData }
-    const userId = req.params.id;  
+    const userId = req.params.id;
 
-    User.findByIdAndUpdate(userId, 
+    User.findByIdAndUpdate(userId,
       { $push: { sessions: newSession}},
     ((err, updatedUser) => {
       if (err) {
@@ -93,7 +78,7 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
       console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
-  }  
+  }
 });
 
 /**
@@ -120,7 +105,7 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
       trainerId: sessionInfo[dogId].trainerId,
       handler: sessionInfo[dogId].handler,
       recorder: sessionInfo[dogId].recorder,
-      hides: 
+      hides:
         Object.keys(sessionInfo[dogId].performance).map(hideId => ({
           hideId,
           performance: sessionInfo[dogId].performance[hideId]
@@ -130,8 +115,8 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
 
   const sessionId = req.body.sessionId;
   User.update(
-    { 'sessions.data._id': sessionId }, 
-    { $set: { 'sessions.$.data.dogsTrained': dogsTrained }}, 
+    { 'sessions.data._id': sessionId },
+    { $set: { 'sessions.$.data.dogsTrained': dogsTrained }},
     { upsert: true },
   ((err, updatedUser) => {
     if (err) {
@@ -143,18 +128,23 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   }));
 })
 
-router.delete(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
+
+// Deletes a udc session
+router.post(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
 
+
   const userId = req.params.id;
   let sessionId = req.params.sessionId;
-  User.update(
-    { _id: userId }, 
-    { "$pull": { sessions: { 'data._id': sessionId }}}, 
-    { safe: true, multi:true }, 
+    console.log('id of session being deleted', sessionId);
+
+    User.update(
+    { _id: userId },
+    { "$pull": { sessions: { 'data.sessionId': sessionId }}},
+    { safe: true, multi:true },
     (err, result) => {
       if (err) {
         console.log(err);
@@ -182,7 +172,7 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({essage: 'There are no current UDC sessions'}));
+        return res.status(400).send(JSON.stringify({message: 'There are no current UDC sessions', sessions: []}));
     } else {
       return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }

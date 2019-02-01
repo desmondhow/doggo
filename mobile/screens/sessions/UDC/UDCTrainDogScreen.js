@@ -12,7 +12,6 @@ import { container, formContainer, center } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, request } from '../../../components/helpers';
 import { BuildingSearch } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
-import * as actions from '../../../redux/actions/index.actions';
 import Api from '../../../constants/Api';
 
 export class UDCTrainDogScreen extends React.Component {

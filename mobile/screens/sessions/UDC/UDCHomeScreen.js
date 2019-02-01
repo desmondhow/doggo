@@ -1,16 +1,14 @@
 import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import {StyleSheet, View, ScrollView, Image, NetInfo} from "react-native";
 import {
-  Table,
-  TableWrapper,
-  Row,
-  Cell,
-  Col
+    Table,
+    TableWrapper,
+    Cell,
+    Col
 } from "react-native-table-component";
 import { Text, Button } from "react-native-elements";
 import { NavigationActions } from 'react-navigation'
 import { withMappedNavigationProps } from "react-navigation-props-mapper";
-
 import {
   container,
   buttonStyle,
@@ -18,159 +16,113 @@ import {
   outlineButtonTextStyle,
   oddTableRow
 } from "../../../constants/Styles";
+import {connect} from "react-redux";
+import { getAllUDC} from "../../../redux/actions/udc.actions";
+const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
 import API from "../../../constants/Api";
 import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
-export default class UDCHomeScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currSessionsData: [],
-      currSessionIds: [],
-      alertedCantFetch: false
-    };
-    this._fetchCurrentUDCSessions = this._fetchCurrentUDCSessions.bind(this);
-  }
+ class UDCHomeScreen extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
-  componentDidMount() {
-    // Refresh every second
-    this._fetchCurrentUDCSessions()
-    this.interval = setInterval(
-      () => this._fetchCurrentUDCSessions(),
-      1 * 1000
+    componentDidMount() {
+        //Get all UDCs whenever user opens this screen
+        this.props.dispatch(getAllUDC());
+        //Keep fetching for data every minute.
+        this.interval = setInterval(() => this.getAllUDCs, 10* 1000);
+    }
+
+    getAllUDCs(){
+        this.props.dispatch(getAllUDC());
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+
+    _continueTrainingSession(i) {
+        const { navigate } = this.props.navigation;
+        const sessionData  =  this.props.currSessionsData[i];
+        navigate('UDCBuildingSearch', { sessionInfo: sessionData });
+    }
+
+    _editTrainingSession(i) {
+        const {navigate} = this.props.navigation;
+        const sessionData  =  this.props.currSessionsData[i];
+        navigate('UDCNewSession', {isEditing: true, sessionInfo: sessionData})
+    }
+
+    _renderTableButtons = (continueButtons) => (
+        <TableWrapper style={styles.table}>
+            <Cell data="" style={styles.emptyTableHeader}/>
+            <Col
+                data={continueButtons}
+                heightArr={new Array(continueButtons.length).fill(
+                    row.height,
+                    0
+                )}
+            />
+        </TableWrapper>
     );
-  }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
+    _renderSessionButtons = i => (
+        [
+            <Button
+                transparent
+                title="Train"
+                textStyle={{...outlineButtonTextStyle, fontSize: 20}}
+                buttonStyle={{...styles.continueTrainingButton, marginRight: -35}}
+                onPress={() => this._continueTrainingSession(i)}
+                fontSize={17}
+            />,
+            <Button
+                transparent
+                title="Edit"
+                textStyle={{...outlineButtonTextStyle, fontSize: 20}}
+                buttonStyle={styles.continueTrainingButton}
+                onPress={() => this._editTrainingSession(i)}
+                fontSize={15}
+            />
+        ]
+    );
 
-  async _fetchCurrentUDCSessions() {
-    API.UDCCurrentSessionsURL
-    .then(url => 
-      request(url, null, 'GET')
-      .then(res => res.json())
-      .then(res => {
-        this.setState({
-          currSessionsData: [],
-          currSessionIds: []
-        });
-        
-        for (let i = 0; i < res.sessions.length; i++) {
-          this.setState(prevState => ({
-            currSessionsData: [
-              ...prevState.currSessionsData,
-              res.sessions[i].data
-            ],
-            currSessionIds: [...prevState.currSessionIds, res.sessions[i]._id]
-          }));
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        if (!this.state.alertedCantFetch) {
-          this.setState({ alertedCantFetch: true });
-        }
-      })
-      .done()  
-    )
-  }
+    render() {
 
-  _continueTrainingSession(i) {
-    const { navigate } = this.props.navigation;
-    const sessionData = this.state.currSessionsData[i];
 
-    navigate('UDCBuildingSearch', { sessionInfo: sessionData });
+        const {navigate} = this.props.navigation;
 
-    // fetch(Constants.getUDCSession + "/" + this.state.currSessionIds[i])
-    //   .then(res => res.json())
-    //   .then(res => {
-    //     if (res.status) {
-    //       if (res.data.length === 0) {
-    //         alert("Could not load UDC Session");
-    //       } else {
-    //         alert(JSON.stringify(res.data));
-    //         // TODO: change name of screen
-    //         // navigate('UDCTrainingScreen', { data: res.data });
-    //         navigate('UDCBuildingSearch', {sessionInfo: res.data});
-    //       }
-    //     } else {
-    //       alert(res.message);
-    //     }
-    //   })
-    //   .done();
-  }
+        const currSessionRows = [];
+        this.props.currSessionsData.map((session, i) => {
+            let creationDate = new Date(Date.parse(session.createdAt));
+            let todaysDate = new Date();
 
-  _editTrainingSession(i) {
-    const { navigate } = this.props.navigation;
-    const sessionData = this.state.currSessionsData[i];
+            let createdToday = true;
+            let copyCreationDate = creationDate.toString();
+            if (
+                creationDate.setHours(0, 0, 0, 0) !=
+                todaysDate.setHours(0, 0, 0, 0)
+            ) {
+                createdToday = false;
+            }
 
-    navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
-  }
+            // show date if not created today
+            let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
+                ? ""
+                : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+                1})`
+                }`;
 
-  _renderTableButtons = (continueButtons) => (
-    <TableWrapper style={styles.table}>
-      <Cell data="" style={styles.emptyTableHeader} />
-      <Col
-        data={continueButtons}
-        heightArr={new Array(continueButtons.length).fill(
-          row.height,
-          0
-        )}
-      />
-    </TableWrapper>
-  )
 
-  _renderSessionButtons = i => (
-    [
-      <Button
-        transparent 
-        title="Train"
-        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
-        buttonStyle={{...styles.continueTrainingButton, marginRight: -35}}
-        onPress={() => this._continueTrainingSession(i)}
-        fontSize={17}
-      />,
-      <Button
-        transparent
-        title="Edit"
-        textStyle={{ ...outlineButtonTextStyle, fontSize: 20 }}
-        buttonStyle={styles.continueTrainingButton}
-        onPress={() => this._editTrainingSession(i)}
-        fontSize={15}
-      />
-    ]
-  );
-
-  render() {
-    const state = this.state;
-    const { navigate } = this.props.navigation;
-
-    const currSessionRows = [];
-    state.currSessionsData.map((session, i) => {
-      let creationDate = new Date(Date.parse(session.createdAt));
-      let todaysDate = new Date();
-
-      let createdToday = true;
-      let copyCreationDate = creationDate.toString();
-      if (
-        creationDate.setHours(0, 0, 0, 0) !=
-        todaysDate.setHours(0, 0, 0, 0)
-      ) {
-        createdToday = false;
-      }
-
-      // show date if not created today
-      let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
-        ? ""
-        : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
-            1})`
-      }`;
-
-      const numHides = session.hides.length
-      const dogs = 'FILL IN W DATA'
-      const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+            let numHides = session.hides.length
+            if (numHides === undefined) {
+                numHides = Object.keys( session.hides).length;
+            }
+            const dogs = 'FILL IN W DATA'
+            const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>
@@ -290,9 +242,21 @@ export default class UDCHomeScreen extends React.Component {
   }
 }
 
+mapStateToProps = (state) => {
+    return {
+        currSessionsData: state.udc.currSessionsData,
+        actionQueue: state.connection.actionQueue,
+        isConnected: state.connection.isConnected,
+        isServerOnline: state.connection.isServerOnline
+    };
+};
+export default connect(mapStateToProps)(UDCHomeScreen)
+
+
+
 const row = {
-  height: 50,
-  flexDirection: "row"
+    height: 50,
+    flexDirection: "row"
 };
 
 const styles = StyleSheet.create({
