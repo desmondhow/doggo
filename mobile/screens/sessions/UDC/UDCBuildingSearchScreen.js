@@ -8,7 +8,7 @@ import {
 import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
 import Accordion from 'react-native-collapsible/Accordion';
 import Collapsible from 'react-native-collapsible/Collapsible';
-import { Field } from 'redux-form';
+import { Field, formValueSelector } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput, request } from '../../../components/helpers';
@@ -38,7 +38,8 @@ export class UDCBuildingSearchScreen extends React.Component {
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
-        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 }
+        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
+        interval: null,
       };
     }
 
@@ -245,7 +246,18 @@ export class UDCBuildingSearchScreen extends React.Component {
     );
   };
 
-  setActiveSection = section => this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : section }));
+  setActiveSection = section => {
+    this.setState(prevState => ({ activeSection: prevState.activeSection ? '' : section }));
+    //not sure if this works
+    if (this.state.interval) {
+      clearInterval(this.state.interval);
+      this.setState({ interval: null })
+    }
+    let value = this.props.addStopwatchTime(this.state.dog._id, this.state.activeSection._id);
+    if (value) {
+      this.setState({ stopwatchTime: value })
+    }
+  }
   
   _renderTextInput(inputProps) {
     const textInputStyle = { width: '60%', marginTop: 10 }
@@ -269,13 +281,18 @@ export class UDCBuildingSearchScreen extends React.Component {
     this.setState({ stopwatchTime: time })
   }
 
+  _clearStopwatch = onChange => {
+    this.setState({ stopwatchTime: { seconds: 0, minutes: 0, hours: 0 } })
+  }
+
   _toggleStopwatch = onChange => {
-    if (this.interval) {
-      clearInterval(this.interval);
-      this.interval = null;
+    if (this.state.interval) {
+      clearInterval(this.state.interval);
+      this.setState({ interval: null })
     }
     else {
-      this.interval = setInterval(() => this._addStopwatchTime(onChange), 1000)
+      let int = setInterval(() => this._addStopwatchTime(onChange), 1000)
+      this.setState({ interval: int })
     }
   }
 
@@ -287,19 +304,28 @@ export class UDCBuildingSearchScreen extends React.Component {
         const { input } = inputProps;
 
         const time = this.state.stopwatchTime;
-        const hours = time.hours === 0 ? '00' : time.hours;
-        const minutes = time.minutes === 0 ? '00' : time.minutes;
-        const seconds = time.seconds === 0 ? '00' : time.seconds;
+        const hours = time.hours === 0 ? '00' : time.hours < 10 ? '0'+time.hours : time.hours;
+        const minutes = time.minutes === 0 ? '00' : time.minutes < 10 ? '0'+time.minutes : time.minutes;
+        const seconds = time.seconds === 0 ? '00' : time.seconds < 10 ? '0'+time.seconds : time.seconds;
 
         return (
           <View style={{flexDirection: 'row'}}>
             <Button 
-              title={!this.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
+              title={!this.state.interval ? 'Start Stopwatch' : 'Stop Stopwatch'}
               onPress={() => this._toggleStopwatch(input.onChange)}
               textStyle={buttonTextStyle}
               buttonStyle={buttonStyle}
             />
             <Text style={{marginTop: 15}}>{`${hours}:${minutes}:${seconds}`}</Text>
+            {
+              !this.state.interval &&
+              <Button 
+                title={'Clear'}
+                onPress={() => this._clearStopwatch(input.onChange)}
+                textStyle={buttonTextStyle}
+                buttonStyle={buttonStyle}
+              />
+            }
           </View>
         )
       }}
@@ -446,10 +472,11 @@ const styles = StyleSheet.create({
   }
 });
 
+const selector = formValueSelector('udc')
 export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
     state => ({
-      
+      addStopwatchTime: (dogId, hideId) => selector(state, 'Hides.'+dogId+'.'+hideId+'.time'),
     })
   )

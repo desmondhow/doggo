@@ -32,7 +32,7 @@ class UDCNewSessionScreen extends React.Component {
 
     let previousHides = {};
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    console.log(`sessionInfo: ${sessionInfo}`);
+    console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
     
     if (sessionInfo) {
       sessionInfo.hides.forEach(hide => {
@@ -55,7 +55,7 @@ class UDCNewSessionScreen extends React.Component {
         temperature: sessionInfo.temperature,
         humidity: sessionInfo.humidity,
         wind: sessionInfo.wind,
-        'Wind Direction': sessionInfo.windDirection
+        windDirection: sessionInfo.windDirection
       }
     }
   }
@@ -66,7 +66,7 @@ class UDCNewSessionScreen extends React.Component {
       temperature: sessionInfo.temperature,
       humidity: sessionInfo.humidity,
       wind: sessionInfo.wind,
-      windDirection: sessionInfo['Wind Direction'],
+      windDirection: sessionInfo.windDirection,
       hides: this.state.addedHides,
     };
 
