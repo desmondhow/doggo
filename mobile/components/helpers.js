@@ -5,38 +5,52 @@ import { Dropdown } from 'react-native-material-dropdown';
 import { Field } from 'redux-form';
 import { FormInput } from 'react-native-elements';
 
-export const connectReduxForm = (formName, formClass, mapStateToProps) => (
-  connect(mapStateToProps)(
-    reduxForm({
+import API from "../constants/Api";
+
+export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispatchToProps) => (
+  connect(mapStateToProps, mapDispatchToProps)(
+    reduxForm({ 
       form: formName
     })(formClass)
   )
 );
 
+// takes in a reference to 'this' instance of current screen
+export const updateProfileState = (that) => (
+  new Promise((res, rej) => (
+    API.loadProfileURL
+    .then(url => request(url, null, 'GET'))
+    .then(res => res.json())
+    .then(profile => res(that.setState({ trainers: profile.trainers, dogs: profile.dogs })))
+    .catch(err => { console.log(err); rej(err); })
+  ))
+);
+  
+
 export const renderDropdown = (
-  value,
-  onChange,
-  dropdownOptions,
-  containerStyle={},
+  value, 
+  onChange, 
+  dropdownOptions, 
+  containerStyle={}, 
   fontSize=16,
   placeholder=null,
 ) => (
-  <Dropdown
+  <Dropdown 
     overlayStyle={{marginTop: 95}}
     containerStyle={containerStyle}
     fontSize={fontSize}
     value={value}
-    data={dropdownOptions.map(option => ({ value: option }))}
+    data={dropdownOptions.map(option => ({ value: option }))} 
     onChangeText={onChange}
     placeholder={placeholder}
   />
 )
 
 export const renderReduxDropdown = (
-  name,
-  dropdownOptions,
-  containerStyle = {},
-  customOwnChange = null,
+  name, 
+  dropdownOptions, 
+  containerStyle = {}, 
+  customOwnChange = null, 
   customValue = null,
   fontSize=16,
   placeholder = ''
@@ -45,12 +59,12 @@ export const renderReduxDropdown = (
     const { input: { value, onChange } } = inputProps;
     return (
       renderDropdown(
-        !!customValue ? customValue : value,
-        !!customOwnChange ?
-          val => {onChange(val); customOwnChange(val)} :
-          onChange,
-        dropdownOptions,
-        containerStyle,
+        !!customValue ? customValue : value, 
+        !!customOwnChange ? 
+          val => {onChange(val); customOwnChange(val)} : 
+          onChange, 
+        dropdownOptions, 
+        containerStyle, 
         fontSize,
         placeholder)
     )
