@@ -431,7 +431,7 @@ export default connectReduxForm(
     addHideLocation: selector(state, 'Hides.null.null.location'),
     addHideIsConcealed: selector(state, 'Hides.null.null.isConcealed'),
     addHidePlacementArea: selector(state, 'Hides.null.null.placementArea'),
-    addHidePlacementHeight: selector(state, 'Hides.null.null.placementHeight'),
+    addHidePlacementHeight: selector(state, 'Hides.null.null.placementHeight')
   }), 
   dispatch => ({
     // getInitialState: () => dispatch({ type: actions.GET_UDC_NEW_SESSION_INITIAL_STATE }),
