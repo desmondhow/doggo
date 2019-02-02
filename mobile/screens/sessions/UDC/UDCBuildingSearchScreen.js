@@ -15,7 +15,6 @@ import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput,
 import { UDCInfo } from '../../../constants/SessionsConstants';
 import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
-import * as actions from '../../../redux/actions/index.actions';
 import CheckboxContainer from '../../../components/CheckboxContainer';
 
 export class UDCBuildingSearchScreen extends React.Component {
@@ -65,7 +64,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
           Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
             const hideInfo = sessionInfo[dogId]['performance'][hideId];
-            if (typeof hideInfo[field] == 'object') {
+            if (typeof hideInfo[field] === 'object') {
               if (!!hideInfo[field]['text']) {
                 sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
               }
@@ -141,7 +140,8 @@ export class UDCBuildingSearchScreen extends React.Component {
     const scrollViewContainerStyle = { height: 300 }
     const yesNoButtons = ['No', 'Yes']
     
-    const dogId = this.state.dog._id;
+    const dogId = this.state.dog.
+    ;
     const BuildingSearchInfo = UDCInfo.BuildingSearch;
     return (
       <View style={{

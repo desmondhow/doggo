@@ -83,7 +83,7 @@ export default class SignupScreen extends React.Component {
             else {
                 alert(res.message);
             }
-        })
+        }).catch((err) => console.log(err))
     };
 
     render() {

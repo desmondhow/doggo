@@ -17,7 +17,6 @@ import {
   center,
   outlineButtonTextStyle
 } from "../../constants/Styles";
-import * as actions from "../../redux/actions/index.actions";
 import {
   connectReduxForm,
   request,
