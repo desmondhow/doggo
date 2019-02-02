@@ -21,12 +21,18 @@ export default class App extends React.Component {
         //Check if user is already signed in
         await isSignedIn()
             .then(res => {
-                this.setState({signedIn: true, checkedSignIn: true})
+                if (res !== false) {
+                    this.setState({signedIn: true, checkedSignIn: true})
+                } else {
+                    this.setState({signedIn: false, checkedSignIn: true});
+                }
             })
-            .catch((err) => alert("An error occurred:\n" + err));
+            .catch((err) =>{
+                this.setState({signedIn: false, checkedSignIn: true});
+                alert("An error occurred:\n" + err);
+            });
 
         //Ping Our Server and check if the server is  working
-        console.log(Constants.ping);
         store.dispatch(pingServer({url: Constants.ping}));
         //Add event listener for internet connection
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);

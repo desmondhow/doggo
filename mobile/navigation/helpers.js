@@ -20,9 +20,11 @@ export const mainNavHeader = navigation => ({
             title='Logout'
             color='black'
             onPress={() => {
-                onSignOut();
-                store.dispatch({type: 'RESET_STATE'});
-                navigation.navigate('SignedOut')
+                onSignOut().then(() => {
+                    store.dispatch({type: 'RESET_STATE'});
+                    navigation.navigate('SignedOut');
+                });
+
             }}
         />
-})
+});

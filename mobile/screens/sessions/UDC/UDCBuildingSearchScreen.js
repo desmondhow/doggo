@@ -6,7 +6,6 @@ import {
   SectionList
 } from 'react-native';
 import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
-import Accordion from 'react-native-collapsible/Accordion';
 import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field, formValueSelector } from 'redux-form';
 
@@ -64,7 +63,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
           Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
             const hideInfo = sessionInfo[dogId]['performance'][hideId];
-            if (typeof hideInfo[field] == 'object') {
+            if (typeof hideInfo[field] === 'object') {
               if (!!hideInfo[field]['text']) {
                 sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
               }
@@ -138,7 +137,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderContent = sectionId => {
     const buttonGroupContainerStyle = { height: 50 }
     const scrollViewContainerStyle = { height: 300 }
-    const yesNoButtons = ['No', 'Yes']
+    const yesNoButtons = ['No', 'Yes'];
     
     const dogId = this.state.dog._id;
     const BuildingSearchInfo = UDCInfo.BuildingSearch;
