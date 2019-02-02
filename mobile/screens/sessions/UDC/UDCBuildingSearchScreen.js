@@ -64,7 +64,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
           Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
             const hideInfo = sessionInfo[dogId]['performance'][hideId];
-            if (typeof hideInfo[field] === 'object') {
+            if (typeof hideInfo[field] == 'object') {
               if (!!hideInfo[field]['text']) {
                 sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
               }
@@ -140,8 +140,7 @@ export class UDCBuildingSearchScreen extends React.Component {
     const scrollViewContainerStyle = { height: 300 }
     const yesNoButtons = ['No', 'Yes']
     
-    const dogId = this.state.dog.
-    ;
+    const dogId = this.state.dog._id;
     const BuildingSearchInfo = UDCInfo.BuildingSearch;
     return (
       <View style={{
