@@ -32,7 +32,7 @@ export class UDCBuildingSearchScreen extends React.Component {
       );
       this.state = {
         activeSection: '',
-        dog: { name: '', _id: -1, },
+        dog: this.props.dog,
         dogs: [],
         trainers: [],
         hides: hideSections,
@@ -346,49 +346,6 @@ export class UDCBuildingSearchScreen extends React.Component {
         width: '70%',
         height: '89%'
       }}>
-        <View style={{
-          marginTop: 30,
-          flexDirection: 'row'
-          }}>
-          <View style={labelFieldContainerStyle}>
-            <Text style={labelStyle}>K9 Name</Text>
-            {renderDropdown(
-              this.state.dog.name, 
-              (_, i) => this.setState({ dog: this.state.dogs[i]}),
-              this.state.dogs.map(dog => dog.name),
-              dropdownStyle,
-              dropdownFontSize,
-            )}
-          </View>
-          <View style={labelFieldContainerStyle}>
-            <Text style={labelStyle}>Trainer</Text>
-            <Field name={`${this.state.dog._id}.trainer`} component={({input}) => (
-              renderDropdown(
-                input.value.name,
-                (_, i) => input.onChange(this.state.trainers[i]),
-                this.state.trainers.map(trainer => trainer.name),
-                dropdownStyle,
-                dropdownFontSize,
-              )
-            )}/>
-          </View>
-        </View>
-        <View style={{ flexDirection: 'row' }}>
-          <View style={labelFieldContainerStyle}>
-              <Text style={labelStyle}>Handler</Text>
-              <Field 
-                name={`${this.state.dog._id}.handler`} 
-                component={this._renderTextInput}
-              />  
-          </View>
-          <View style={labelFieldContainerStyle}>
-              <Text style={labelStyle}>Recorder</Text>
-              <Field 
-                name={`${this.state.dog._id}.recorder`} 
-                component={this._renderTextInput}
-              />  
-          </View>
-        </View>
         <View style={{height: '75%', marginTop: 30, alignItems: 'center'}}> 
           <View style={{
             flexDirection: 'row',
@@ -477,6 +434,7 @@ export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
     state => ({
+      dog: state.udc.dog,
       addStopwatchTime: (dogId, hideId) => selector(state, 'Hides.'+dogId+'.'+hideId+'.time'),
     })
   )

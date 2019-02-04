@@ -12,35 +12,35 @@ import { container, formContainer, center } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, request } from '../../../components/helpers';
 import { BuildingSearch } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
-import Api from '../../../constants/Api';
+import API, { loadUserProfile } from '../../../constants/Api';
 
 export class UDCTrainDogScreen extends React.Component {
   constructor(props) {
     super(props);
     this._renderPage = this._renderPage.bind(this);
+
+    this.state = {
+      dog: { name: '', _id: -1, },
+      dogs: [],
+      trainers: [],
+    };
   }
 
   componentDidMount() {
-    this._loadProfile();
+    loadUserProfile()
+    .then(profile => this.setState({ dogs: profile.dogs, trainers: profile.trainers }))
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
   }
 
-  _loadProfile = () => {
-    Api.profileApiURL
-    .then(url => (
-      request(url, null, 'GET')
-    ))
-  }
-
-
-
-  _onSubmit = (dogInfo) => {
-    temp = {
-        name: dogInfo.dog,
-        id: 0
-    }
-    this.props.saveDog(temp);
+  _onSubmit = (initialInfo) => {
+    this.props.saveDog(this.state.dog);
+    const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
+    const sessionData = [...sessionInfo, ...initialInfo];
     // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-    this.props.navigation.navigate('UDCBuildingSearch');
+    this.props.navigation.navigate('UDCBuildingSearch', {sessionInfo: sessionData});
   }
 
   _renderSubmitBtn = () => (
@@ -66,23 +66,49 @@ export class UDCTrainDogScreen extends React.Component {
 
   _renderPage = () => (
     <View style={center}>
-      <View>
-        <Text>K9 Name</Text>
-        {/* UDC[BuildingSearch.TempSessions[0].sessionId].dogs.dogId */}
-        {/* this might have to be its own page: need to find a way to save this K9 name to the state so that it can pass to the redux fields or whatever */}
-        <Field name={`dog`} component={(inputProps) => {
-            const { input: { value, onChange } } = inputProps;
-            return (
-            <Dropdown 
-                overlayStyle={{marginTop: 95}}
-                containerStyle={{ width: 200, height: 100 }}
-                value={value}
-                data={BuildingSearch.TempDogs} 
-                onChangeText={onChange}
-            />
-            )
-        }}/>
-      </View>
+      <View style={{
+          marginTop: 30,
+          flexDirection: 'row'
+          }}>
+          <View style={labelFieldContainerStyle}>
+            <Text style={labelStyle}>K9 Name</Text>
+            {renderDropdown(
+              this.state.dog.name, 
+              (_, i) => this.setState({ dog: this.state.dogs[i]}),
+              this.state.dogs.map(dog => dog.name),
+              dropdownStyle,
+              dropdownFontSize,
+            )}
+          </View>
+          <View style={labelFieldContainerStyle}>
+            <Text style={labelStyle}>Trainer</Text>
+            <Field name={`${this.state.dog._id}.trainer`} component={({input}) => (
+              renderDropdown(
+                input.value.name,
+                (_, i) => input.onChange(this.state.trainers[i]),
+                this.state.trainers.map(trainer => trainer.name),
+                dropdownStyle,
+                dropdownFontSize,
+              )
+            )}/>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={labelFieldContainerStyle}>
+              <Text style={labelStyle}>Handler</Text>
+              <Field 
+                name={`${this.state.dog._id}.handler`} 
+                component={this._renderTextInput}
+              />  
+          </View>
+          <View style={labelFieldContainerStyle}>
+              <Text style={labelStyle}>Recorder</Text>
+              <Field 
+                name={`${this.state.dog._id}.recorder`} 
+                component={this._renderTextInput}
+              />  
+          </View>
+        </View>
       {this._renderSubmitBtn()}
     </View>
   )
