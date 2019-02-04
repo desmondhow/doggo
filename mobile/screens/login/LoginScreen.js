@@ -11,7 +11,8 @@ import Logo from "./Logo";
 import LoginForm from "./LoginForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../components/auth";
-  
+import { request } from "../../components/helpers";
+
 
 export default class LoginScreen extends React.Component {
     //Modifies the top header
@@ -62,28 +63,24 @@ export default class LoginScreen extends React.Component {
     handleLogin = () => {
         if (this.state.password.length === 0) return alert('Please type your password');
         if (this.state.email.length === 0) return alert('Please type your email');
-        fetch(Constants.getLoginApiURL, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'email': this.state.email,
-                'password': this.state.password
-            })
+        request(
+          Constants.loginURL,
+          JSON.stringify({
+            'email': this.state.email,
+            'password': this.state.password
+          })
+        )
+        .then((res) => res.json())
+        .then((res) => {
+            if (res.status === 200) {
+                const message = res.message;
+                onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
+            }
+            else {
+                alert(res.message);
+            }
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.status === 200) {
-                    const message = res.message;
-                    onSignIn(message).then(() => this.props.navigation.navigate('SignedIn'));
-                }
-                else {
-                    alert(res.message);
-                }
-            })
-            .done();
+        .catch(err => alert('There was an issue connecting to the server. Please try again.'))
     };
 
     render() {

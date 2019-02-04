@@ -1,6 +1,7 @@
 import {AsyncStorage} from "react-native";
+import {RESET_STATE} from "@redux-offline/redux-offline/src/constants";
 
-export const USER_KEY = "auth_v2";
+export const USER_KEY = "auth_v3.1.1";
 
 export async function onSignIn(user_id) {
     try {
@@ -20,11 +21,11 @@ export async function onSignOut() {
 }
 
 export async function getUserID() {
-    try {
-        return await AsyncStorage.getItem(USER_KEY);
-    } catch (error) {
-        console.log(error.message);
-    }
+  return new Promise((res, rej) => {
+    AsyncStorage.getItem(USER_KEY)
+    .then(id => { res(id.split('"').join(''))}) 
+    .catch(err => rej(err))
+  })
 }
 
 export async function isSignedIn() {

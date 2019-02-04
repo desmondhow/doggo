@@ -1,30 +1,32 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require('../../server/node_modules/mongoose');
+const bcrypt = require('../../server/node_modules/bcrypt');
+import UDCSchema from './UDCSchema';
 
-const UserSchema = new mongoose.Schema({
+export const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
         required: true,
         trim: true
     },
-    first_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
-    last_name: {
-        type: String,
-        unique: false,
-        required: true,
-    },
     password: {
         type: String,
         required: true,
-    }
+    },
+    sessions: [{
+      sessionType: String,
+      data: UDCSchema
+    }],
+    trainers: [{
+      name: String
+    }],
+    dogs: [{
+      name: String,
+      startDate: Date
+    }]
 });
 
 /**

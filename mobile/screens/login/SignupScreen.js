@@ -9,6 +9,7 @@ import Logo from "./Logo";
 import SignUpForm from "./SignUpForm";
 import Constants from "../../constants/Api";
 import {onSignIn} from "../../components/auth";
+import {request} from "../../components/helpers";
 
 export default class SignupScreen extends React.Component {
     //Modifies the top header
@@ -22,38 +23,14 @@ export default class SignupScreen extends React.Component {
         headerTintColor: 'white',
     });
 
-
     constructor() {
         super();
         this.state = {
-            first_name: '',
-            last_name: '',
             email: '',
             password: '',
             password_conf: ''
         };
     }
-
-    /**
-     * Sets the value for the name
-     * @param name
-     */
-    handleName = (name) => {
-        this.setState({
-            first_name: name,
-        })
-    };
-
-    /**
-     * Sets the value for the last name
-     * @param name
-     */
-    handleLastName = (name) => {
-        this.setState({
-            last_name: name,
-        })
-    };
-
 
     /**
      * Sets the value for the email
@@ -90,31 +67,24 @@ export default class SignupScreen extends React.Component {
      * Send Register credentials to the server (POST req)
      */
     handleRegister = () => {
-        fetch(Constants.getRegisterApiURL, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                'first_name': this.state.first_name,
-                'last_name': this.state.last_name,
-                'email': this.state.email,
-                'password': this.state.password,
-                'password_conf': this.state.password_conf,
-
-            })
+        request(
+          Constants.registerURL,
+          JSON.stringify({
+            'email': this.state.email,
+            'password': this.state.password,
+            'password_conf': this.state.password_conf,
+          })
+        )
+        .then((res) => res.json())
+        .then((res) => {
+            if (res.status === 200) {
+              onSignIn(res.message).then(() => this.props.navigation.navigate('SignedIn'));
+            }
+            else {
+                alert(res.message);
+            }
         })
-            .then((res) => res.json())
-            .then((res) => {
-                if (res.status === 200) {
-                    onSignIn(res.message).then(() => this.props.navigation.navigate('SignedIn'));
-                }
-                else {
-                    alert(res.message);
-                }
-            })
-            .done();
+            .catch(err => alert('There was an issue connecting to the server. Please try again.'))
     };
 
     render() {
@@ -122,8 +92,6 @@ export default class SignupScreen extends React.Component {
             <View style={(styles.container)}>
                 <Logo/>
                 <SignUpForm navigation={this.props.navigation}
-                            onSelectName={this.handleName}
-                            onSelectLastName={this.handleLastName}
                             onSelectEmail={this.handleEmail}
                             onSelectPassword={this.handlePassword}
                             onSelectPasswordConfirmation={this.handlePasswordConfirmation}
