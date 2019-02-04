@@ -84,6 +84,7 @@ export default class SignupScreen extends React.Component {
                 alert(res.message);
             }
         })
+            .catch(err => alert('There was an issue connecting to the server. Please try again.'))
     };
 
     render() {

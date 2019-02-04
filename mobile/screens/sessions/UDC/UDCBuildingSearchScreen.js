@@ -6,7 +6,6 @@ import {
   SectionList
 } from 'react-native';
 import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
-import Accordion from 'react-native-collapsible/Accordion';
 import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field, formValueSelector } from 'redux-form';
 
@@ -15,7 +14,6 @@ import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput,
 import { UDCInfo } from '../../../constants/SessionsConstants';
 import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
-import * as actions from '../../../redux/actions/index.actions';
 import CheckboxContainer from '../../../components/CheckboxContainer';
 
 export class UDCBuildingSearchScreen extends React.Component {
@@ -65,7 +63,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
           Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
             const hideInfo = sessionInfo[dogId]['performance'][hideId];
-            if (typeof hideInfo[field] == 'object') {
+            if (typeof hideInfo[field] === 'object') {
               if (!!hideInfo[field]['text']) {
                 sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
               }
@@ -139,7 +137,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderContent = sectionId => {
     const buttonGroupContainerStyle = { height: 50 }
     const scrollViewContainerStyle = { height: 300 }
-    const yesNoButtons = ['No', 'Yes']
+    const yesNoButtons = ['No', 'Yes'];
     
     const dogId = this.state.dog._id;
     const BuildingSearchInfo = UDCInfo.BuildingSearch;

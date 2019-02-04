@@ -13,6 +13,7 @@ import { connectReduxForm, renderDropdown, request } from '../../../components/h
 import { BuildingSearch } from '../../../constants/SessionsConstants';
 import Colors from '../../../constants/Colors';
 import API, { loadUserProfile } from '../../../constants/Api';
+import {SAVE_UDC_DOG} from "../../../redux/actions/udc.actions";
 
 export class UDCTrainDogScreen extends React.Component {
   constructor(props) {
@@ -159,6 +160,6 @@ export default connectReduxForm(
     null,
     dispatch => ({
         saveDog: dogInfo =>
-          dispatch({ type: actions.SAVE_UDC_DOG, dog: dogInfo })
+          dispatch({ type: SAVE_UDC_DOG, dog: dogInfo })
       })
   )
