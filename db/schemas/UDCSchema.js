@@ -51,6 +51,14 @@ export default new Schema({
             trainerId: ObjectId,
             handler: String,
             recorder: String,
+            handlerKnows: {
+                type: Boolean,
+                required: true
+            },
+            onLead: {
+                type: Boolean,
+                required: true
+            },
             hides: [
                 {
                     hideId: ObjectId, //${concentration}-size
@@ -75,8 +83,8 @@ export default new Schema({
                             type: Number,
                             required: true
                         },
-                        handlerKnows: {
-                            type: Boolean,
+                        duration: {
+                            type: Date,
                             required: true
                         },
                         fringe: {
@@ -88,10 +96,6 @@ export default new Schema({
                             required: true
                         },
                         falseAlert: {
-                            type: Boolean,
-                            required: true
-                        },
-                        lead: {
                             type: Boolean,
                             required: true
                         },
