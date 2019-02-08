@@ -32,7 +32,7 @@ import { request } from "../../../components/helpers";
         //Get all UDCs whenever user opens this screen
         this.props.dispatch(getAllUDC());
         //Keep fetching for data every minute.
-        this.interval = setInterval(() => this.getAllUDCs, 10* 1000);
+        this.interval = setInterval(() => this.getAllUDCs, 5000);
     }
 
     getAllUDCs(){
