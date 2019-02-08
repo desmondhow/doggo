@@ -32,8 +32,6 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
         return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
     }
 
-    const json = JSON.parse(req.body);
-    console.log(json);
   let sessionData = {
     temperature,
     humidity,

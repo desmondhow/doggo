@@ -107,10 +107,6 @@ export default new Schema({
               type: Number,
               required: false,
             },
-            duration: {
-              type: Date,
-              required: false,
-            },
             fringe: {
               type: Boolean,
               required: false,

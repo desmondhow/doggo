@@ -9,7 +9,7 @@ USERS_ROUTE = 'users';
 SESSIONS_ROUTE = 'sessions';
 
 const formatAPILink = url =>  { 
-  return LOCAL_API_URL + url;
+  return HEROKU_API_URL + url;
 }
 const formatUsersRoute = route => (
     new Promise((res, rej) => (
