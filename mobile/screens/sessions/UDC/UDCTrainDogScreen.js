@@ -12,7 +12,7 @@ import { Field, formValueSelector } from 'redux-form';
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle, formContainer } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
 import { BuildingSearch, UDCInfo } from '../../../constants/SessionsConstants';
-import API, { loadUserProfile } from '../../../constants/Api';
+import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import {SAVE_UDC_DOG} from "../../../redux/actions/udc.actions";
 
@@ -54,7 +54,6 @@ export class UDCTrainDogScreen extends React.Component {
       }
     }
     this.props.saveDog(this.state.dog);
-    // this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     const sessionData = {...sessionInfo, ...tempInfo};
     // const sessionData = {...sessionInfo, ...initialInfo};
@@ -217,7 +216,6 @@ const styles = StyleSheet.create({
   }
 });
 
-const selector = formValueSelector('udc');
 export default connectReduxForm(
     'udc',
     UDCTrainDogScreen,
@@ -227,6 +225,6 @@ export default connectReduxForm(
     }),
     dispatch => ({
         saveDog: dogInfo =>
-            dispatch({type: SAVE_UDC_DOG, dog: dogInfo})
+            dispatch({ type: SAVE_UDC_DOG, dog: dogInfo })
     })
 )

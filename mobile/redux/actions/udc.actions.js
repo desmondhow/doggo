@@ -18,7 +18,7 @@ export const GET_ALL_UDC = 'GET_ALL_UDC';
 export const DELETE_UDC_SESSION = 'DELETE_UDC_SESSION';
 export const UPDATE_UDC_SESSION = 'UPDATE_UDC_SESSION';
 export const RESET_STATE = 'RESET_STATE';
-export const SAVE_UDC_TRAINING = 'SAVE_UDC_TRAINING';
+export const SAVE_UDC_DOG = 'SAVE_UDC_DOG';
 
 
 /**
@@ -30,22 +30,23 @@ export const getAllUDC = () => {
         if (isOnline()) {
             API.UDCCurrentSessionsURL
                 .then(url => {
-                        request(url, null, 'GET')
-                            .then(res => res.json())
-                            .then(res => {
-                                let sessionData = [];
-                                res.sessions.map((key, i) => {
-                                    sessionData.push(key.data)
-                                });
-                                dispatch({type: GET_ALL_UDC, sessions: sessionData})
-                            })
-                            .catch(err => {
-                                console.log('error get all udc', err);
-                                dispatch({type: SERVER_STATE, isServerOnline: false});
-                            })
-                            .done()
-                    })
-                .catch(err => {})
+                    request(url, null, 'GET')
+                        .then(res => res.json())
+                        .then(res => {
+                            let sessionData = [];
+                            res.sessions.map((key, i) => {
+                                sessionData.push(key.data)
+                            });
+                            dispatch({type: GET_ALL_UDC, sessions: sessionData})
+                        })
+                        .catch(err => {
+                            console.log('error get all udc', err);
+                            dispatch({type: SERVER_STATE, isServerOnline: false});
+                        })
+                        .done()
+                })
+                .catch(err => {
+                })
         } else {
             console.log('No connection');
         }
@@ -84,7 +85,8 @@ export const saveUDCSession = ({sessionInfo}) => {
                             data: sessionInfo
                         });
                     });
-            }).catch(err => {})
+            }).catch(err => {
+            })
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_NEW_UDC_LATER, data: sessionInfo});
         }
@@ -129,7 +131,8 @@ export const deleteUDCSession = ({sessionId}) => {
                             data: sessionId
                         });
                     });
-            }).catch(err => {})
+            }).catch(err => {
+            })
 
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.DELETE_UDC_LATER, data: sessionId});
@@ -170,10 +173,10 @@ export const deleteUDCSessionLater = ({sessionId}) => {
 export const saveUDCTraining = ({sessionInfo}) => {
     return (dispatch, getState) => {
 
-        sessionInfo = parseTrainingData(sessionInfo);
+        sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained);
         console.log('session info after edit', sessionInfo);
         //We save it locally first
-        // dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
+        dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
         if (isOnline()) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
@@ -189,7 +192,8 @@ export const saveUDCTraining = ({sessionInfo}) => {
                             data: sessionInfo
                         });
                     });
-            }).catch(err => {})
+            }).catch(err => {
+            })
 
 
         } else {
@@ -221,29 +225,29 @@ export const saveUDCTrainingLater = ({sessionInfo}) => {
 
 
 const parseHides = hidesData => {
-  let hides = [];
-  Object.keys(hidesData).forEach(roomNumber => {
-    const h = hidesData[roomNumber];
-    let concentration = h.concentration;
-    let size = h.size;
-    let location = h.location;
-    let isConcealed = h.isConcealed;
-    let placementArea = h.placementArea;
-    let placementHeight = h.placementHeight;
-    let hideType = h.hideType;
+    let hides = [];
+    Object.keys(hidesData).forEach(roomNumber => {
+        const h = hidesData[roomNumber];
+        let concentration = h.concentration;
+        let size = h.size;
+        let location = h.location;
+        let isConcealed = h.isConcealed;
+        let placementArea = h.placementArea;
+        let placementHeight = h.placementHeight;
+        let hideType = h.hideType;
 
-    hides.push({
-      roomNumber,
-      concentration: Number(concentration),
-      size,
-      location,
-      isConcealed,
-      placementArea,
-      placementHeight,
-      hideType
+        hides.push({
+            roomNumber,
+            concentration: Number(concentration),
+            size,
+            location,
+            isConcealed,
+            placementArea,
+            placementHeight,
+            hideType
+        });
     });
-  });
-  return hides;
+    return hides;
 };
 
 

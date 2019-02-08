@@ -4,13 +4,14 @@ import {
     DELETE_UDC_SESSION,
     GET_ALL_UDC,
     RESET_STATE,
-    UPDATE_UDC_SESSION
+    UPDATE_UDC_SESSION, SAVE_UDC_DOG
 } from "../actions/udc.actions";
 
 
 // Initial state
 export const initialUDCState = {
     currSessionsData: [],
+    dog: null
 };
 
 export default (state = initialUDCState, action) => {
@@ -77,12 +78,17 @@ export default (state = initialUDCState, action) => {
             };
 
         }
+        case SAVE_UDC_DOG: {
+            return { ...state, dog: action.dog };
+        }
+
         case RESET_STATE: {
 
             console.log('Resetting state');
             return {
                 ...state,
-                currSessionsData: []
+                currSessionsData: [],
+                dog: null
             };
         }
         default:
