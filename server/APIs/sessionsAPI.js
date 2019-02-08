@@ -116,7 +116,7 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   const sessionId = req.body.sessionId;
   User.update(
     { 'sessions.data._id': sessionId },
-    { $set: { 'sessions.$.data.dogsTrained': dogsTrained }},
+    { $push: { 'sessions.$.data.dogsTrained': dogsTrained }},
     { upsert: true },
   ((err, updatedUser) => {
     if (err) {
