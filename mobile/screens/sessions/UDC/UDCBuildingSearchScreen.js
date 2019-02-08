@@ -80,7 +80,6 @@ export class UDCBuildingSearchScreen extends React.Component {
               const performanceInfo = hideInfo["performance"][hideId];
               // need to figure out how to format fields since we have each field in the udc schema
               // as its separate thing, also need to figure out how to send duration
-              console.log(`FIELD: ${field}`);
               if (field === "fields") {
                 performanceInfo[field].forEach(f => {
                   f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
@@ -88,17 +87,12 @@ export class UDCBuildingSearchScreen extends React.Component {
                   hideInfo["performance"][hideId][f] = true;
                 });
                 delete performanceInfo[field];
-              } else if (field === "duration") {
-                hideInfo["performance"][hideId]["time"] = `${
+              } 
+              else if (field === "duration") {
+                hideInfo["performance"][hideId]["duration"] = `${
                   field.minutes
                 }:${field.seconds}`;
               } 
-              else if (typeof hideInfo[field] === "object") {
-                if (!!performanceInfo[field]["text"]) {
-                  hideInfo["performance"][hideId][field] =
-                  performanceInfo[field]["text"];
-                }
-              }
               else if (typeof performanceInfo[field] === "object") {
                 if (!!performanceInfo[field]["text"]) {
                   hideInfo["performance"][hideId][field] =
@@ -109,7 +103,6 @@ export class UDCBuildingSearchScreen extends React.Component {
           );
         });
       });
-      console.log(JSON.stringify(sessionInfo));
       return request(
         url,
         JSON.stringify({

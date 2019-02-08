@@ -152,7 +152,11 @@ export default new Schema({
                 type: String,
                 required: false
               }
-            ]
+            ],
+            duration: {
+              type: String,
+              required: false
+            }
           }
         }
       ]
