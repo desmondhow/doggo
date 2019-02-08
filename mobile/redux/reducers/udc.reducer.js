@@ -20,6 +20,7 @@ export default (state = initialUDCState, action) => {
         case UPDATE_UDC_SESSION: {
             const sessionInfo = action.sessionInfo;
             const sessionId = sessionInfo.sessionId;
+            //Todo: Should we check if dog has already being trained in this session
             //Update element
             return {
                 ...state,

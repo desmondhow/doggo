@@ -170,10 +170,10 @@ export const deleteUDCSessionLater = ({sessionId}) => {
  * @param sessionInfo
  * @returns {Function}
  */
-export const saveUDCTraining = ({sessionInfo}) => {
+export const saveUDCTraining = ({sessionInfo, handlers}) => {
     return (dispatch, getState) => {
 
-        sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained);
+        sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained, handlers);
         console.log('session info after edit', sessionInfo);
         //We save it locally first
         dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
@@ -251,14 +251,15 @@ const parseHides = hidesData => {
 };
 
 
-const parseTrainingData = trainingData => {
+const parseTrainingData = (trainingData, handlers) => {
 
     // only send the part of the object that we care about
     Object.keys(trainingData).forEach(dogId => {
         const hideInfo = trainingData[dogId];
         if (!!hideInfo['handler']) {
-            hideInfo['handler'] = this.state.handlers.find(handler =>
+            const handler = handlers.find(handler =>
                 handler.name === hideInfo['handler']);
+            hideInfo['handlerId'] = handler._id;
         }
 
         Object.keys(hideInfo["performance"]).forEach(hideId => {
@@ -266,10 +267,14 @@ const parseTrainingData = trainingData => {
                     const performanceInfo = hideInfo["performance"][hideId];
                     // need to figure out how to format fields since we have each field in the udc schema
                     // as its separate thing, also need to figure out how to send duration
+                    console.log(`FIELD: ${field}`);
                     if (field === "fields") {
                         performanceInfo[field].forEach(f => {
+                            f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
+                            console.log(f);
                             hideInfo["performance"][hideId][f] = true;
                         });
+                        delete performanceInfo[field];
                     } else if (field === "duration") {
                         hideInfo["performance"][hideId]["time"] = `${
                             field.minutes
