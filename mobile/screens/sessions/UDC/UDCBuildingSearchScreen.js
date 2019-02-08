@@ -5,7 +5,8 @@ import {
   ScrollView,
   SectionList
 } from 'react-native';
-import { Text, Icon, Button, ButtonGroup, FormInput } from 'react-native-elements';
+import { Text, Button, ButtonGroup, FormInput } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field, formValueSelector } from 'redux-form';
 
@@ -22,12 +23,12 @@ export class UDCBuildingSearchScreen extends React.Component {
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     if (sessionInfo) {
       const hideSections = [];
-      sessionInfo.hides.forEach(hide => 
+      sessionInfo.hides.forEach(hide => {
         hideSections.push({
           title: this._renderSectionTitle(hide),
           data: [hide]
         })
-      );
+      });
       this.state = {
         activeSection: '',
         dog: this.props.dog,
@@ -71,6 +72,9 @@ export class UDCBuildingSearchScreen extends React.Component {
 
                 }
               )
+            } else if (field === 'duration') {
+              // duration looks as
+              // duration { minutes: x, seconds: x }
             } else if (typeof hideInfo[field] === 'object') {
               if (!!hideInfo[field]['text']) {
                 sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
@@ -110,9 +114,8 @@ export class UDCBuildingSearchScreen extends React.Component {
   )
 
   _renderSectionTitle = section => (
-    `${section.location ? `${section.location}` : ''}` + 
-    `${section.placementArea ? `, ${section.placementArea}` : ''}` + 
-    `${section.placementHeight ? `, ${section.placementHeight} ` : ''}`
+    `${section.hideType ? `${section.hideType}` === 'Hot' || `${section.hideType}` === 'Blank' ? `${section.hideType} Hide in` : `${section.hideType}` : ''}` +
+    `${section.roomNumber ? ` Room #${section.roomNumber}` : ''}`
   );
 
   _renderLabeledButtonGroup = (
@@ -134,6 +137,7 @@ export class UDCBuildingSearchScreen extends React.Component {
               buttons={buttons}
               containerStyle={containerStyle}
               selectedBackgroundColor={'#9EDEF5'}
+              buttonStyle={{borderColor:'grey', borderWidth: 1}}
             />
           );
         }}
@@ -158,19 +162,19 @@ export class UDCBuildingSearchScreen extends React.Component {
             'Alert', 
             `${dogId}.performance.${sectionId}.radiusAlert`, 
             BuildingSearchInfo.HandlerRadius,
-            {flexDirection:'column', justifyContent:'flex-start', height: 250}
+            {flexDirection:'column', justifyContent:'flex-between', height: 250, width: 125}
           )}
           {this._renderLabeledButtonGroup(
             'Reward', 
             `${dogId}.performance.${sectionId}.radiusReward`, 
             BuildingSearchInfo.HandlerRadius,
-            {flexDirection:'column', justifyContent:'flex-start', height: 250}
+            {flexDirection:'column', justifyContent:'flex-between', height: 250, width: 125}
           )}
           {this._renderLabeledButtonGroup(
             'Search', 
             `${dogId}.performance.${sectionId}.radiusSearch`, 
             BuildingSearchInfo.HandlerRadius,
-            {flexDirection:'column', justifyContent:'flex-start', height: 250}
+            {flexDirection:'column', justifyContent:'flex-between', height: 250, width: 125}
           )}
           <View>
             <View style={{flexDirection:'row', justifyContent:'space-between'}}>
@@ -316,8 +320,9 @@ export class UDCBuildingSearchScreen extends React.Component {
         marginTop: 30,
         backgroundColor: 'white',
         alignItems: 'center',
-        width: '80%',
-        height: '89%'
+        width: '90%',
+        height: '89%',
+        paddingHorizontal: 10,
       }}>
         <View style={{height: '75%', marginTop: 30, alignItems: 'center'}}> 
           <View style={{
@@ -332,13 +337,28 @@ export class UDCBuildingSearchScreen extends React.Component {
             keyExtractor={a => a}
             style={{ marginTop: 15 }}
             renderSectionHeader={({ section }) =>
-              <Text style={{
-                ...outlineButtonStyle,
-                fontSize:20,
-                borderColor: 'black',
-                borderRadius: 5,
-                borderWidth: 2
-              }}>{section.title}</Text>}
+              <View style={{
+                backgroundColor: '#EEEEEE',
+                flexDirection:'row',
+                justifyContent:'space-between'}}>
+                <Text h3 style={{paddingLeft: 10}}>{section.title}</Text>
+                {
+                  !!section.notes &&
+                  <Button
+                    icon={
+                      <Icon
+                        name='info-circle'
+                        size={15}
+                        color="white"
+                        onPress={() => alert("notes")}
+                      />
+                    }
+                    type="clear"
+                    title="i"
+                  />
+                }
+              </View>
+              }
             renderItem={({ item, section }) => (
               <View key={item}>
                 {this._renderContent(item._id)}

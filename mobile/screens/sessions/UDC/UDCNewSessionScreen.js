@@ -74,7 +74,7 @@ class UDCNewSessionScreen extends React.Component {
         temperature: sessionInfo.temperature,
         humidity: sessionInfo.humidity,
         wind: sessionInfo.wind,
-        "Wind Direction": sessionInfo.windDirection
+        windDirection: sessionInfo.windDirection
       };
     } else {
       //We are creating a new session
@@ -90,7 +90,7 @@ class UDCNewSessionScreen extends React.Component {
         temperature: null,
         humidity: null,
         wind: null,
-        "Wind Direction": null
+        windDirection: null
       };
     }
   }
@@ -101,7 +101,7 @@ class UDCNewSessionScreen extends React.Component {
       temperature: this.state.temperature,
       humidity: this.state.humidity,
       wind: this.state.wind,
-      windDirection: this.state["Wind Direction"],
+      windDirection: this.state.windDirection,
       complete: false,
       sessionId: this.state.sessionId,
       createdAt: this.state.createdAt,
