@@ -28,8 +28,6 @@ mongoose.connect(dbUri, function(err, db) {
 });
 const db = mongoose.connection;
 
-
-
 // Rread cookies with our secret
 app.use(cookieParser('JlNyXZDRfW8bKhZT9oR5XYZ'));
 app.use(bodyParser.urlencoded({extended: true}));
