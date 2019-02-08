@@ -97,11 +97,11 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   const sessionInfo = req.body.sessionInfo;
 
   const dogsTrained = [];
-  console.log(`session: ${JSON.stringify(sessionInfo)}`);
+  console.log(`session: ${JSON.stringify(sessionInfo)}\n\n\n`);
   Object.keys(sessionInfo).forEach(dogId => {
     dogsTrained.push({
       dogId,
-      handlerId: sessionInfo[dogId].handler._id,
+      handlerId: sessionInfo[dogId].handlerId,
       trainer: sessionInfo[dogId].trainer,
       recorder: sessionInfo[dogId].recorder,
       hides:
@@ -111,6 +111,7 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
         }))
     })
   });
+  console.log(`dogsTrained: ${JSON.stringify(dogsTrained)}\n\n\n`);
 
   const sessionId = req.body.sessionId;
   User.update(

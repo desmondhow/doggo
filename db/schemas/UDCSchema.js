@@ -53,23 +53,35 @@ export default new Schema({
       },
       notes: {
         type: String,
-        required: true
+        required: false
       }
     }
   ],
   dogsTrained: [
     {
-      dogId: ObjectId,
-      handlerId: ObjectId,
-      trainer: ObjectId,
+      dogId: {
+        type: ObjectId,
+        required: true
+      },
+      handlerId: { 
+        type: ObjectId,
+        required: false,
+      },
+      trainer: { 
+        type: String,
+        required: false 
+      },
       recorder: String,
       handlerKnows: {
         type: Boolean,
-        required: false
+        required: false,
+        default: false
       },
       onLead: {
         type: Boolean,
-        required: false
+        required: false,
+        default: false
+
       },
       hides: [
         {
@@ -78,32 +90,26 @@ export default new Schema({
             radiusAlert: {
               type: String,
               required: false,
-              default: false
             },
             radiusReward: {
               type: String,
               required: false,
-              default: false
             },
             radiusSearch: {
               type: String,
               required: false,
-              default: false
             },
             rewarder: {
               type: String,
               required: false,
-              default: false
             },
             barks: {
               type: Number,
               required: false,
-              default: false
             },
             duration: {
               type: Date,
               required: false,
-              default: false
             },
             fringe: {
               type: Boolean,
