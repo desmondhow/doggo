@@ -180,7 +180,10 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
         if (isOnline()) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
-                request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo.dogsTrained}), 'POST')
+                request(url, JSON.stringify({
+                    sessionId: sessionInfo.sessionId,
+                    sessionInfo: sessionInfo.dogsTrained
+                }), 'POST')
                     .then(res => {
                     })
                     .catch(err => {
@@ -206,7 +209,10 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
 export const saveUDCTrainingLater = ({sessionInfo}) => {
     return (dispatch) => {
         API.UDCTrainURL.then(url =>
-            request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo.dogsTrained}), 'POST')
+            request(url, JSON.stringify({
+                sessionId: sessionInfo.sessionId,
+                sessionInfo: sessionInfo.dogsTrained
+            }), 'POST')
                 .then(res => {
                 })
                 .catch(err => {
@@ -253,7 +259,6 @@ const parseHides = hidesData => {
 
 const parseTrainingData = (trainingData, handlers) => {
 
-    // only send the part of the object that we care about
     Object.keys(trainingData).forEach(dogId => {
         const hideInfo = trainingData[dogId];
         if (!!hideInfo['handler']) {
@@ -267,7 +272,6 @@ const parseTrainingData = (trainingData, handlers) => {
                     const performanceInfo = hideInfo["performance"][hideId];
                     // need to figure out how to format fields since we have each field in the udc schema
                     // as its separate thing, also need to figure out how to send duration
-                    console.log(`FIELD: ${field}`);
                     if (field === "fields") {
                         performanceInfo[field].forEach(f => {
                             f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
@@ -275,16 +279,11 @@ const parseTrainingData = (trainingData, handlers) => {
                             hideInfo["performance"][hideId][f] = true;
                         });
                         delete performanceInfo[field];
-                    } else if (field === "duration") {
-                        hideInfo["performance"][hideId]["time"] = `${
+                    }
+                    else if (field === "duration") {
+                        hideInfo["performance"][hideId]["duration"] = `${
                             field.minutes
                             }:${field.seconds}`;
-                    }
-                    else if (typeof hideInfo[field] === "object") {
-                        if (!!performanceInfo[field]["text"]) {
-                            hideInfo["performance"][hideId][field] =
-                                performanceInfo[field]["text"];
-                        }
                     }
                     else if (typeof performanceInfo[field] === "object") {
                         if (!!performanceInfo[field]["text"]) {
