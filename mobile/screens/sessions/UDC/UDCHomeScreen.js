@@ -91,8 +91,6 @@ import { request } from "../../../components/helpers";
     );
 
     render() {
-
-
         const {navigate} = this.props.navigation;
 
         const currSessionRows = [];
@@ -121,7 +119,7 @@ import { request } from "../../../components/helpers";
             if (numHides === undefined) {
                 numHides = Object.keys( session.hides).length;
             }
-            const dogs = 'FILL IN W DATA'
+            const dogs = session.dogsTrained.length
             const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
@@ -132,7 +130,7 @@ import { request } from "../../../components/helpers";
             return (
               <Cell
                 key={i + j}
-                data={j == 1 ? `\t\t  ${cellData}` : cellData}
+                data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
                 style={[{
                   borderColor: 'transparent',
                   width: width,
@@ -150,7 +148,7 @@ import { request } from "../../../components/helpers";
       );
     });
 
-    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\tDogs", '', ''];
+    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\t# Dogs", '', ''];
     return (
       <View style={container}>
         <View style={styles.sessionsContainer}>

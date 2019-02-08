@@ -37,7 +37,6 @@ export class UDCBuildingSearchScreen extends React.Component {
           data: [hide]
         });
       });
-      console.log(this.props.dog);
       this.state = {
         activeSection: "",
         dog: this.props.dog,
@@ -173,7 +172,6 @@ export class UDCBuildingSearchScreen extends React.Component {
 
   _renderContent = sectionId => {
     const scrollViewContainerStyle = { height: 300 };
-    const yesNoButtons = ["No", "Yes"];
 
     const dogId = this.props.dog._id;
     const BuildingSearchInfo = UDCInfo.BuildingSearch;
@@ -410,6 +408,13 @@ export class UDCBuildingSearchScreen extends React.Component {
           >
             <Text h3>Searches</Text>
             {this._renderStopwatch()}
+            <Text style={{
+              color: 'red',
+              fontWeight: 'bold',
+              marginBottom: 100,
+              marginLeft: 120,
+              fontSize: 20
+              }}>{this.state.dog.name}</Text>
           </View>
           <SectionList
             sections={this.state.hides}
