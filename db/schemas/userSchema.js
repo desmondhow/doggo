@@ -1,8 +1,8 @@
 /**
  * Schema used for user registration/ login
  */
-import mongoose from '../../server/node_modules/mongoose';
-import bcrypt from '../../server/node_modules/bcrypt';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import UDCSchema from './UDCSchema';
 
 export const UserSchema = new mongoose.Schema({
