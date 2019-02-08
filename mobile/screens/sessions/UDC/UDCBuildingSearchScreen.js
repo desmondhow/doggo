@@ -43,7 +43,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         activeSection: "",
         dog: this.props.dog,
         dogs: [],
-        trainers: [],
+        handlers: [],
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
@@ -56,7 +56,7 @@ export class UDCBuildingSearchScreen extends React.Component {
     componentDidMount() {
         this.setState(
             {
-                trainers: this.props.trainers,
+                handlers: this.props.handlers,
                 dogs: this.props.dogs
             },
         );
@@ -78,53 +78,6 @@ export class UDCBuildingSearchScreen extends React.Component {
           this.props.navigation.navigate('UDC')
       }
 
-    console.log(JSON.stringify(sessionInfo));
-    API.UDCTrainURL.then(url => {
-      // only send the part of the object that we care about
-      Object.keys(sessionInfo).forEach(dogId => {
-        if (!!sessionInfo[dogId]["trainer"] && !!sessionInfo[dogId]["trainer"]["_id"]) {
-          sessionInfo[dogId]["trainerId"] =
-            sessionInfo[dogId]["trainer"]["_id"];
-        }
-        Object.keys(sessionInfo[dogId]["performance"]).forEach(hideId => {
-          Object.keys(sessionInfo[dogId]["performance"][hideId]).forEach(
-            field => {
-              const hideInfo = sessionInfo[dogId]["performance"][hideId];
-              // need to figure out how to format fields since we have each field in the udc schema
-              // as its separate thing, also need to figure out how to send duration
-              if (field === "fields") {
-                hideInfo[field].forEach(f => {
-                  sessionInfo[dogId]["performance"][hideId][f] = true;
-                });
-              } else if (field === "duration") {
-                sessionInfo[dogId]["performance"][hideId]["time"] = `${
-                  field.minutes
-                }:${field.seconds}`;
-              } else if (typeof hideInfo[field] === "object") {
-                if (!!hideInfo[field]["text"]) {
-                  sessionInfo[dogId]["performance"][hideId][field] =
-                    hideInfo[field]["text"];
-                }
-              }
-            }
-          );
-        });
-      });
-      console.log(JSON.stringify(sessionInfo));
-      return request(
-        url,
-        JSON.stringify({
-          sessionId: this.state.sessionId,
-          sessionInfo: sessionInfo
-        }),
-        "POST"
-      );
-    })
-      .then(this.props.navigation.navigate("UDC"))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
   };
 
   _renderSubmitBtn = () => (
@@ -513,8 +466,7 @@ export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
     state => ({
-        addStopwatchTime: (dogId, hideId) => selector(state, 'Hides.' + dogId + '.' + hideId + '.time'),
         dogs: state.general.dogs,
-        trainers: state.general.trainers,
+        handlers: state.general.handlers,
     })
 )

@@ -171,13 +171,13 @@ export const saveUDCTraining = ({sessionInfo}) => {
     return (dispatch, getState) => {
 
         sessionInfo = parseTrainingData(sessionInfo);
-        console.log('sessionm info after edit', sessionInfo);
+        console.log('session info after edit', sessionInfo);
         //We save it locally first
-        dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
+        // dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
         if (isOnline()) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
-                request(url, JSON.stringify({sessionId: this.state.sessionId, sessionInfo: sessionInfo}), 'POST')
+                request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo}), 'POST')
                     .then(res => {
                     })
                     .catch(err => {
@@ -250,20 +250,35 @@ const parseHides = hidesData => {
 const parseTrainingData = sessionInfo => {
 
     Object.keys(sessionInfo).forEach(dogId => {
-        if (!!sessionInfo[dogId]['trainer']['_id']) {
-            sessionInfo[dogId]['trainerId'] = sessionInfo[dogId]['trainer']['_id'];
+        if (!!sessionInfo[dogId]["trainer"] && !!sessionInfo[dogId]["trainer"]["_id"]) {
+            sessionInfo[dogId]["trainerId"] =
+                sessionInfo[dogId]["trainer"]["_id"];
         }
-        Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
-            Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
-                const hideInfo = sessionInfo[dogId]['performance'][hideId];
-                if (typeof hideInfo[field] === 'object') {
-                    if (!!hideInfo[field]['text']) {
-                        sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
+        Object.keys(sessionInfo[dogId]["performance"]).forEach(hideId => {
+            Object.keys(sessionInfo[dogId]["performance"][hideId]).forEach(
+                field => {
+                    const hideInfo = sessionInfo[dogId]["performance"][hideId];
+                    // need to figure out how to format fields since we have each field in the udc schema
+                    // as its separate thing, also need to figure out how to send duration
+                    if (field === "fields") {
+                        hideInfo[field].forEach(f => {
+                            sessionInfo[dogId]["performance"][hideId][f] = true;
+                        });
+                    } else if (field === "duration") {
+                        sessionInfo[dogId]["performance"][hideId]["time"] = `${
+                            field.minutes
+                            }:${field.seconds}`;
+                    } else if (typeof hideInfo[field] === "object") {
+                        if (!!hideInfo[field]["text"]) {
+                            sessionInfo[dogId]["performance"][hideId][field] =
+                                hideInfo[field]["text"];
+                        }
                     }
                 }
-            })
+            );
         });
     });
+
     return sessionInfo;
 
 };

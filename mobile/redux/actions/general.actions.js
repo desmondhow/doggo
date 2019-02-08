@@ -28,7 +28,7 @@ export const getProfileData = () => {
                         request(url, null, 'GET')
                             .then(res => res.json())
                             .then(profile => {
-                                dispatch({type: GET_PROFILE,  trainers: profile.trainers, dogs: profile.dogs })
+                                dispatch({type: GET_PROFILE,  handlers: profile.handlers, dogs: profile.dogs })
                             })
                             .catch(err => {
                                 console.log('error getting profile', err);

@@ -2,8 +2,6 @@ import Constants from "../../constants/Api";
 import {
     SAVE_UDC_SESSION,
     DELETE_UDC_SESSION,
-    SAVE_UDC_DOG,
-    SAVE_UDC_DOG_TRAINING,
     GET_ALL_UDC,
     RESET_STATE,
     UPDATE_UDC_SESSION

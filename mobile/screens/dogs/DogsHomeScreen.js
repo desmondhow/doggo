@@ -337,6 +337,6 @@ export default connectReduxForm(
         addDogName: selector(state, "add-dog-name"),
         addDogStartDate: selector(state, "add-dog-startDtae"),
         dogs: state.general.dogs,
-        trainers: state.general.trainers,
+        trainers: state.general.handlers,
     }),
 );

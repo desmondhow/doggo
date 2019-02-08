@@ -31,7 +31,7 @@ export class UDCTrainDogScreen extends React.Component {
     componentDidMount() {
         this.setState(
             {
-                trainers: this.props.trainers,
+                handlers: this.props.handlers,
                 dogs: this.props.dogs
             },
         );
@@ -222,11 +222,11 @@ export default connectReduxForm(
     UDCTrainDogScreen,
     state => ({
         dogs: state.general.dogs,
-        trainers: state.general.trainers,
+        handlers: state.general.handlers,
     }),
     dispatch => ({
         //Todo: Make this work
-        // saveDog: dogInfo =>
-        //     dispatch({type: SAVE_UDC_DOG, dog: dogInfo})
+        saveDog: dogInfo =>
+            dispatch({type: SAVE_UDC_DOG, dog: dogInfo})
     })
 )

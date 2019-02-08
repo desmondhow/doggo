@@ -7,18 +7,18 @@ import {
 // Initial state
 export const initialUDCState = {
     dogs: [],
-    trainers:[]
+    handlers:[]
 };
 
 export default (state = initialUDCState, action) => {
     switch (action.type) {
         case GET_PROFILE: {
             //Overrides local data with the data obtained from server
-            const trainers = action.trainers;
+            const handlers = action.handlers;
             const dogs = action.dogs;
             return {
                 ...state,
-                trainers: trainers,
+                handlers: handlers,
                 dogs: dogs
             };
 
@@ -26,7 +26,7 @@ export default (state = initialUDCState, action) => {
         case RESET_STATE: {
             return {
                 ...state,
-                trainers: [],
+                handlers: [],
                 dogs: []
             };
         }
