@@ -466,6 +466,7 @@ export default connectReduxForm(
     'udc',
     UDCBuildingSearchScreen,
     state => ({
+        dog: state.udc.dog,
         dogs: state.general.dogs,
         handlers: state.general.handlers,
     })

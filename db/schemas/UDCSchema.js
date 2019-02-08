@@ -59,85 +59,97 @@ export default new Schema({
   ],
   dogsTrained: [
     {
-        dogId: ObjectId,
-        trainerId: ObjectId,
-        handler: String,
-        recorder: String,
-        handlerKnows: {
-            type: Boolean,
-            required: true
-        },
-        onLead: {
-            type: Boolean,
-            required: true
-        },
-        hides: [
-            {
-                hideId: ObjectId,
-                performance: {
-                    radiusAlert: {
-                        type: String,
-                        required: false, default: false
-                    },
-                    radiusReward: {
-                        type: String,
-                        required: false, default: false
-                    },
-                    radiusSearch: {
-                        type: String,
-                        required: false, default: false
-                    },
-                    rewarder: {
-                        type: String,
-                        required: false, default: false
-                    },
-                    barks: {
-                        type: Number,
-                        required: false, default: false
-                    },
-                    duration: {
-                        type: Date,
-                        required: false, default: false
-                    },
-                    fringe: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    reset: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    falseAlert: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    falseIndication: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    detailSearch: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    successful: {
-                        type: Boolean,
-                        required: false, default: false
-                    },
-                    failCodes: [
-                        {
-                            type: String,
-                            required: false
-                        }
-                    ],
-                    distractions: [
-                        {
-                            type: String,
-                            required: false
-                        }
-                    ]
-                }
-            }
-        ]
+      dogId: ObjectId,
+      handlerId: ObjectId,
+      trainer: ObjectId,
+      recorder: String,
+      handlerKnows: {
+        type: Boolean,
+        required: false
+      },
+      onLead: {
+        type: Boolean,
+        required: false
+      },
+      hides: [
+        {
+          hideId: ObjectId,
+          performance: {
+            radiusAlert: {
+              type: String,
+              required: false,
+              default: false
+            },
+            radiusReward: {
+              type: String,
+              required: false,
+              default: false
+            },
+            radiusSearch: {
+              type: String,
+              required: false,
+              default: false
+            },
+            rewarder: {
+              type: String,
+              required: false,
+              default: false
+            },
+            barks: {
+              type: Number,
+              required: false,
+              default: false
+            },
+            duration: {
+              type: Date,
+              required: false,
+              default: false
+            },
+            fringe: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            reset: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            falseAlert: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            falseIndication: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            detailSearch: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            successful: {
+              type: Boolean,
+              required: false,
+              default: false
+            },
+            failCodes: [
+              {
+                type: String,
+                required: false
+              }
+            ],
+            distractions: [
+              {
+                type: String,
+                required: false
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 });

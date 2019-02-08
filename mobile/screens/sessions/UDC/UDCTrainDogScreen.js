@@ -39,29 +39,29 @@ export class UDCTrainDogScreen extends React.Component {
     }
 
 
-    _onSubmit = (initialInfo) => {
-        // need to remove all this temp shit once we have actual dogs in db
-        temp = {
-            name: 'TempDog',
-            _id: 0
-        }
-        tempInfo = {
-            0: {
-                'trainer': {
-                    name: 'TempTrainer',
-                    _id: 0
-                }
-            }
-        }
-        this.props.saveDog(temp);
-        // this.props.saveDog(this.state.dog);
-        const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-        const sessionData = {...sessionInfo, ...tempInfo};
-        // const sessionData = {...sessionInfo, ...initialInfo};
-        console.log(JSON.stringify(sessionData));
-        // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-        this.props.navigation.navigate('UDCBuildingSearch', {sessionInfo: sessionData});
+  _onSubmit = (initialInfo) => {
+    // need to remove all this temp shit once we have actual dogs in db
+    temp = {
+      name: 'TempDog',
+      _id: 0
     }
+    tempInfo = {
+      0: {
+        'trainer': {
+          name: 'TempTrainer',
+          _id: 0
+        }
+      }
+    }
+    this.props.saveDog(this.state.dog);
+    // this.props.saveDog(this.state.dog);
+    const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
+    const sessionData = {...sessionInfo, ...tempInfo};
+    // const sessionData = {...sessionInfo, ...initialInfo};
+    console.log(JSON.stringify(sessionData));
+    // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
+    this.props.navigation.navigate('UDCBuildingSearch', { sessionInfo: sessionData });
+  }
 
 
 
@@ -70,20 +70,20 @@ export class UDCTrainDogScreen extends React.Component {
       raised
       rounded
       title='Start Training'
-      onPress={this.props.handleSubmit(this._onSubmit)}
+      onPress={this.props.handleSubmit(this._onSubmit)} 
       fontSize={26}
       buttonStyle={{
         ...center,
         ...buttonStyle,
-        marginTop: 20,
+        marginTop: 20, 
       }}
       titleStyle={{
-        fontSize: 20,
+        fontSize: 20, 
         fontWeight: 'bold'
       }}
     />
   )
-
+  
   _renderPage = () => {
     const labelFieldContainerStyle = { flexDirection: 'column', width: '40%', ...center }
     const dropdownStyle = { width: '60%', height: 100, marginTop: -30 };
@@ -104,7 +104,7 @@ export class UDCTrainDogScreen extends React.Component {
         <View style={labelFieldContainerStyle}>
           <Text style={labelStyle}>K9 Name</Text>
           {renderDropdown(
-            this.state.dog.name,
+            this.state.dog.name, 
             (_, i) => this.setState({ dog: this.state.dogs[i]}),
             this.state.dogs.map(dog => dog.name),
             dropdownStyle,
@@ -126,21 +126,21 @@ export class UDCTrainDogScreen extends React.Component {
         <View style={labelFieldContainerStyle}>
             <Text style={labelStyle}>Handler</Text>
             {renderReduxDropdown(
-              `${this.state.dog._id}.handler`,
-              this.state.handlers.map(handler => handler.name),
+              `${this.state.dog._id}.handler`, 
+              this.state.handlers.map(handler => handler.name), 
               dropdownStyle,
               null,
               null,
               dropdownFontSize
             )}
-
+            
         </View>
         <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
             <Text style={labelStyle}>Recorder</Text>
             {renderReduxFormInput(
-              `${this.state.dog._id}.recorder`,
-              {
-                containerStyle: { width: '60%', marginTop: 10
+              `${this.state.dog._id}.recorder`, 
+              { 
+                containerStyle: { width: '60%', marginTop: 10 
               }
             })}
         </View>
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-  },
+  },  
   hideContainer: {
     flexDirection: 'column',
     paddingLeft: 65,
@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
   }
 });
 
+const selector = formValueSelector('udc');
 export default connectReduxForm(
     'udc',
     UDCTrainDogScreen,
@@ -225,7 +226,6 @@ export default connectReduxForm(
         handlers: state.general.handlers,
     }),
     dispatch => ({
-        //Todo: Make this work
         saveDog: dogInfo =>
             dispatch({type: SAVE_UDC_DOG, dog: dogInfo})
     })
