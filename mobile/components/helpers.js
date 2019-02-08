@@ -101,29 +101,6 @@ export const renderReduxDropdown = (
   />
 );
 
-// should not be an arrow function (screws up rendering)
-export const renderTextInput = (
-  value,
-  onChange,
-  placeholder = "",
-  containerStyle = { width: "40%" },
-  editable = true,
-  maxLength = 35,
-  multiline = false
-) => {
-  return (
-    <FormInput
-      placeholder={placeholder}
-      value={value}
-      onChangeText={onChange}
-      editable={editable}
-      maxLength={maxLength}
-      multiline={multiline}
-      containerStyle={containerStyle}
-    />
-  );
-};
-
 export const request = (url, body, method = "POST") =>
   fetch(url, {
     method: method,

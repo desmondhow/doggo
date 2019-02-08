@@ -50,11 +50,38 @@ export const UDCInfo = {
   },
   BuildingSearch: { 
     Barks: arrayOfLengthN(40, true),
+    Time: arrayOfLengthN(60, true),
     HandlerRadius: [
       '0-5ft',
       '6-15ft',
       '>16ft',
       'Out of Sight'
+    ],
+    Fields: [
+      {
+        label: 'Fringe',
+        value: '1',
+      },
+      {
+        label: 'Reset',
+        value: '2',
+      },
+      {
+        label: 'False Alert',
+        value: '3',
+      },
+      {
+        label: 'False Indication',
+        value: '4',
+      },
+      {
+        label: 'Detail Search',
+        value: '5',
+      },
+      {
+        label: 'Successful',
+        value: '6',
+      }
     ],
     Distractions: [
       {

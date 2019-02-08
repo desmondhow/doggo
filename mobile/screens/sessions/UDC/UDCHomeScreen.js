@@ -47,7 +47,7 @@ import { request } from "../../../components/helpers";
     _continueTrainingSession(i) {
         const { navigate } = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCBuildingSearch', { sessionInfo: sessionData });
+        navigate('UDCTrainDog', { sessionInfo: sessionData });
     }
 
     _editTrainingSession(i) {

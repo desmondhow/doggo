@@ -10,7 +10,6 @@ export default class CheckboxContainer extends Component {
 
   render() {
     return (
-      <View>
         <Field
           name={this.props.name}
           component={inputProps => {
@@ -38,7 +37,6 @@ export default class CheckboxContainer extends Component {
             });
           }}
         />
-      </View>
     );
   }
 }
