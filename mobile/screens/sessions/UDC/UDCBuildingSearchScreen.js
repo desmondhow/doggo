@@ -64,7 +64,6 @@ export class UDCBuildingSearchScreen extends React.Component {
   }
 
   _onSubmit = sessionInfo => {
-    console.log(`info: ${JSON.stringify(sessionInfo)}`);
     API.UDCTrainURL.then(url => {
       // only send the part of the object that we care about
       Object.keys(sessionInfo).forEach(dogId => {
