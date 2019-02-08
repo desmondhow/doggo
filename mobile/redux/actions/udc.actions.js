@@ -227,6 +227,8 @@ export const saveUDCTrainingLater = ({sessionInfo}) => {
         )
 
     }
+
+
 };
 
 
