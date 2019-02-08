@@ -224,26 +224,29 @@ export const saveUDCTrainingLater = ({sessionInfo}) => {
 
 
 const parseHides = hidesData => {
-    let hides = [];
-    Object.keys(hidesData).forEach(concentration => {
-        let concentrationSizes = hidesData[concentration];
-        Object.keys(concentrationSizes).forEach(size => {
-            let location = concentrationSizes[size].location;
-            let isConcealed = concentrationSizes[size].isConcealed;
-            let placementArea = concentrationSizes[size].placementArea;
-            let placementHeight = concentrationSizes[size].placementHeight;
+  let hides = [];
+  Object.keys(hidesData).forEach(roomNumber => {
+    const h = hidesData[roomNumber];
+    let concentration = h.concentration;
+    let size = h.size;
+    let location = h.location;
+    let isConcealed = h.isConcealed;
+    let placementArea = h.placementArea;
+    let placementHeight = h.placementHeight;
+    let hideType = h.hideType;
 
-            hides.push({
-                concentration: Number(concentration),
-                size,
-                location,
-                isConcealed,
-                placementArea,
-                placementHeight
-            });
-        });
+    hides.push({
+      roomNumber,
+      concentration: Number(concentration),
+      size,
+      location,
+      isConcealed,
+      placementArea,
+      placementHeight,
+      hideType
     });
-    return hides;
+  });
+  return hides;
 };
 
 

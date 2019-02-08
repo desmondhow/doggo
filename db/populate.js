@@ -1,67 +1,73 @@
 const mongoose = require('mongoose');
 const User = require('./schemas/userSchema');
 
-var users = [
-  {
-    email: 'wdc.training@gmail.com',
-    password: 'password', 
-    password_conf: 'password', 
-    protocols: [
-      {
-        name: 'UDC',
-        sections: [
-          {
-            name: 'General',
-            fields: [
-              {
-                name: 'location',
-                fieldType: 'dropdown',
-                values: ['Training Room', 'Building Interior']
-              },
-              {
-                name: 'temperature',
-                fieldType: 'number'
-              },
-              {
-                name: 'humidity',
-                fieldType: 'number'
-              },
-              {
-                name: 'wind',
-                fieldType: 'number',
-              },
-            ]
-          },
-          {
-            name: 'Hides',
-            fields: [
-              {
-                name: '4 mil - 1',
-                fieldType: 'number'
-              },
-              {
-                name: '4 mil - .09',
-                fieldType: 'number'
-              },
-              {
-                name: '4 mil - .04',
-                fieldType: 'number'
-              },
-              {
-                name: '4 mil - .02',
-                fieldType: 'number'
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-]
+// var users = [
+//   {
+//     email: 'wdc.training@gmail.com',
+//     password: 'password', 
+//     password_conf: 'password', 
+//     protocols: [
+//       {
+//         name: 'UDC',
+//         sections: [
+//           {
+//             name: 'General',
+//             fields: [
+//               {
+//                 name: 'location',
+//                 fieldType: 'dropdown',
+//                 values: ['Training Room', 'Building Interior']
+//               },
+//               {
+//                 name: 'temperature',
+//                 fieldType: 'number'
+//               },
+//               {
+//                 name: 'humidity',
+//                 fieldType: 'number'
+//               },
+//               {
+//                 name: 'wind',
+//                 fieldType: 'number',
+//               },
+//             ]
+//           },
+//           {
+//             name: 'Hides',
+//             fields: [
+//               {
+//                 name: '4 mil - 1',
+//                 fieldType: 'number'
+//               },
+//               {
+//                 name: '4 mil - .09',
+//                 fieldType: 'number'
+//               },
+//               {
+//                 name: '4 mil - .04',
+//                 fieldType: 'number'
+//               },
+//               {
+//                 name: '4 mil - .02',
+//                 fieldType: 'number'
+//               }
+//             ]
+//           }
+//         ]
+//       }
+//     ]
+//   }
+// ]
 
 createDBUri = name => (
   `mongodb+srv://admin:doggorocks!@doggo-z5a8n.azure.mongodb.net/${name}?retryWrites=true`
 );
+
+var results = Papa.parse('./udc.xlsx', {
+	header: true
+});
+
+console.log(JSON.stringify(results));
 
 // mongoose.connect(createDBUri('users'))
 // mongoose.Promise = global.Promise;
