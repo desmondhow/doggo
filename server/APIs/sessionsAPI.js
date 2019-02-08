@@ -43,8 +43,6 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
       sessionId: currSessionID
   };
 
-
-
   // if user is editing session, isNew will be false
   const isNewSession = req.body.isNew;
   if (!isNewSession) {

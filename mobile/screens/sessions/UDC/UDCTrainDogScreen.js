@@ -10,7 +10,7 @@ import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field, formValueSelector } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle, formContainer } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput, request } from '../../../components/helpers';
+import { connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
 import { BuildingSearch, UDCInfo } from '../../../constants/SessionsConstants';
 import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
@@ -24,13 +24,13 @@ export class UDCTrainDogScreen extends React.Component {
     this.state = {
       dog: { name: '', _id: -1 },
       dogs: [],
-      trainers: [],
+      handlers: [],
     };
   }
 
   componentDidMount() {
     loadUserProfile()
-    .then(profile => this.setState({ dogs: profile.dogs, trainers: profile.trainers }))
+    .then(profile => this.setState({ dogs: profile.dogs, handlers: profile.handlers }))
     .catch(err => {
       console.log(err);
       throw err;
@@ -79,12 +79,7 @@ export class UDCTrainDogScreen extends React.Component {
       }}
     />
   )
-
-  _renderTextInput(inputProps) {
-    const textInputStyle = { width: '60%', marginTop: 10 }
-    return renderTextInput(inputProps, 'Name', textInputStyle)
-  }
-
+  
   _renderPage = () => {
     const labelFieldContainerStyle = { flexDirection: 'column', width: '40%', ...center }
     const dropdownStyle = { width: '60%', height: 100, marginTop: -30 };
@@ -112,7 +107,7 @@ export class UDCTrainDogScreen extends React.Component {
             dropdownFontSize,
           )}
         </View>
-        <View style={labelFieldContainerStyle}>
+        {/* <View style={labelFieldContainerStyle}>
           <Text style={labelStyle}>Trainer</Text>
           <Field name={`${this.state.dog._id}.trainer`} component={({input}) => (
             renderDropdown(
@@ -123,22 +118,29 @@ export class UDCTrainDogScreen extends React.Component {
               dropdownFontSize,
             )
           )}/>
-        </View>
+        </View> */}
         <View style={labelFieldContainerStyle}>
             <Text style={labelStyle}>Handler</Text>
-            <Field 
-              name={`${this.state.dog._id}.handler`} 
-              component={this._renderTextInput}
-            />  
+            {renderReduxDropdown(
+              `${this.state.dog._id}.handler`, 
+              this.state.handlers.map(handler => handler.name), 
+              dropdownStyle,
+              null,
+              null,
+              dropdownFontSize
+            )}
+            
         </View>
-        <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
+        <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
             <Text style={labelStyle}>Recorder</Text>
-            <Field 
-              name={`${this.state.dog._id}.recorder`} 
-              component={this._renderTextInput}
-            />  
+            {renderReduxFormInput(
+              `${this.state.dog._id}.recorder`, 
+              { 
+                containerStyle: { width: '60%', marginTop: 10 
+              }
+            })}
         </View>
-        <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
+        <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
             <Text style={labelStyle}>Handler Knows</Text>
             <Field
               name={`${this.state.dog._id}.handlerKnows`}

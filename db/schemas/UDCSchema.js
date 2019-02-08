@@ -73,55 +73,55 @@ export default new Schema({
         },
         hides: [
             {
-                hideId: ObjectId, //${concentration}-size
+                hideId: ObjectId,
                 performance: {
                     radiusAlert: {
                         type: String,
-                        required: true
+                        required: false, default: false
                     },
                     radiusReward: {
                         type: String,
-                        required: true
+                        required: false, default: false
                     },
                     radiusSearch: {
                         type: String,
-                        required: true
+                        required: false, default: false
                     },
                     rewarder: {
                         type: String,
-                        required: true
+                        required: false, default: false
                     },
                     barks: {
                         type: Number,
-                        required: true
+                        required: false, default: false
                     },
                     duration: {
                         type: Date,
-                        required: true
+                        required: false, default: false
                     },
                     fringe: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     reset: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     falseAlert: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     falseIndication: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     detailSearch: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     successful: {
                         type: Boolean,
-                        required: true
+                        required: false, default: false
                     },
                     failCodes: [
                         {

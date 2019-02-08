@@ -18,7 +18,7 @@ import {
   center,
   outlineButtonTextStyle
 } from "../../constants/Styles";
-import { connectReduxForm, request, renderTextInput, updateProfileState } from "../../components/helpers";
+import { connectReduxForm, request, renderTextInput, updateProfileState, renderReduxFormInput } from "../../components/helpers";
 
 /**
  * Displays the Sign up form
@@ -286,7 +286,7 @@ class ProfileScreen extends Component {
 
   _renderTextInput(inputProps) {
     const textInputStyle = { width: '60%', marginTop: 10 }
-    return renderTextInput(inputProps, 'Name', textInputStyle)
+    return renderReduxFormInput('Name', { containerStyle: textInputStyle });
   }
 
   _renderDogsTable = () => {

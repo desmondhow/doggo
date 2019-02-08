@@ -1,8 +1,8 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('../../server/node_modules/mongoose');
-const bcrypt = require('../../server/node_modules/bcrypt');
+import mongoose from '../../server/node_modules/mongoose';
+import bcrypt from '../../server/node_modules/bcrypt';
 import UDCSchema from './UDCSchema';
 
 export const UserSchema = new mongoose.Schema({
@@ -20,12 +20,11 @@ export const UserSchema = new mongoose.Schema({
       sessionType: String,
       data: UDCSchema
     }],
-    trainers: [{
+    handlers: [{
       name: String
     }],
     dogs: [{
-      name: String,
-      startDate: Date
+      name: String
     }]
 });
 
