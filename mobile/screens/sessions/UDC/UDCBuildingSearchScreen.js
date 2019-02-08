@@ -77,6 +77,8 @@ export class UDCBuildingSearchScreen extends React.Component {
             // }
             const sessionInfo = this.state.sessionInfo;
             sessionInfo.dogsTrained = dogTrainingData;
+            console.log('session data before parsing', sessionInfo.dogsTrained);
+
             this.props.dispatch(saveUDCTraining({sessionInfo: sessionInfo}));
             this.props.navigation.navigate('UDC')
         }

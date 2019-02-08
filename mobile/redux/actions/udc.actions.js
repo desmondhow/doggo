@@ -180,7 +180,7 @@ export const saveUDCTraining = ({sessionInfo}) => {
         if (isOnline()) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
-                request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo}), 'POST')
+                request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo.dogsTrained}), 'POST')
                     .then(res => {
                     })
                     .catch(err => {
@@ -206,7 +206,7 @@ export const saveUDCTraining = ({sessionInfo}) => {
 export const saveUDCTrainingLater = ({sessionInfo}) => {
     return (dispatch) => {
         API.UDCTrainURL.then(url =>
-            request(url, JSON.stringify({sessionId: this.state.sessionId, sessionInfo: sessionInfo}), 'POST')
+            request(url, JSON.stringify({sessionId: sessionInfo.sessionId, sessionInfo: sessionInfo.dogsTrained}), 'POST')
                 .then(res => {
                 })
                 .catch(err => {
@@ -251,31 +251,40 @@ const parseHides = hidesData => {
 };
 
 
-const parseTrainingData = sessionInfo => {
+const parseTrainingData = trainingData => {
 
-    Object.keys(sessionInfo).forEach(dogId => {
-        if (!!sessionInfo[dogId]["trainer"] && !!sessionInfo[dogId]["trainer"]["_id"]) {
-            sessionInfo[dogId]["trainerId"] =
-                sessionInfo[dogId]["trainer"]["_id"];
+    // only send the part of the object that we care about
+    Object.keys(trainingData).forEach(dogId => {
+        const hideInfo = trainingData[dogId];
+        if (!!hideInfo['handler']) {
+            hideInfo['handler'] = this.state.handlers.find(handler =>
+                handler.name === hideInfo['handler']);
         }
-        Object.keys(sessionInfo[dogId]["performance"]).forEach(hideId => {
-            Object.keys(sessionInfo[dogId]["performance"][hideId]).forEach(
-                field => {
-                    const hideInfo = sessionInfo[dogId]["performance"][hideId];
+
+        Object.keys(hideInfo["performance"]).forEach(hideId => {
+            Object.keys(hideInfo["performance"][hideId]).forEach(field => {
+                    const performanceInfo = hideInfo["performance"][hideId];
                     // need to figure out how to format fields since we have each field in the udc schema
                     // as its separate thing, also need to figure out how to send duration
                     if (field === "fields") {
-                        hideInfo[field].forEach(f => {
-                            sessionInfo[dogId]["performance"][hideId][f] = true;
+                        performanceInfo[field].forEach(f => {
+                            hideInfo["performance"][hideId][f] = true;
                         });
                     } else if (field === "duration") {
-                        sessionInfo[dogId]["performance"][hideId]["time"] = `${
+                        hideInfo["performance"][hideId]["time"] = `${
                             field.minutes
                             }:${field.seconds}`;
-                    } else if (typeof hideInfo[field] === "object") {
-                        if (!!hideInfo[field]["text"]) {
-                            sessionInfo[dogId]["performance"][hideId][field] =
-                                hideInfo[field]["text"];
+                    }
+                    else if (typeof hideInfo[field] === "object") {
+                        if (!!performanceInfo[field]["text"]) {
+                            hideInfo["performance"][hideId][field] =
+                                performanceInfo[field]["text"];
+                        }
+                    }
+                    else if (typeof performanceInfo[field] === "object") {
+                        if (!!performanceInfo[field]["text"]) {
+                            hideInfo["performance"][hideId][field] =
+                                performanceInfo[field]["text"];
                         }
                     }
                 }
@@ -283,7 +292,7 @@ const parseTrainingData = sessionInfo => {
         });
     });
 
-    return sessionInfo;
+    return trainingData;
 
 };
 
