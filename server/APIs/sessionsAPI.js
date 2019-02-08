@@ -79,7 +79,7 @@ router.post(createSessionApiRoute("udc/create"), function(req, res, next) {
             .status(400)
             .send(JSON.stringify({ message: `Error creating UDC session.` }));
         }
-        console.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
+        // console.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
         return res.status(200).send({ message: updatedUser, status: 200 });
       }
     );
@@ -99,6 +99,7 @@ router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
       .status(400)
       .send(JSON.stringify({ message: errors.sessionInfo }));
   }
+  console.log('HIT TRAIN REQUEST')
   const sessionInfo = req.body.sessionInfo;
 
   const dogsTrained = [];
