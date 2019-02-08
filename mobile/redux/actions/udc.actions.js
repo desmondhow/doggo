@@ -171,12 +171,9 @@ export const saveUDCTraining = ({sessionInfo}) => {
     return (dispatch, getState) => {
 
         sessionInfo = parseTrainingData(sessionInfo);
-        console.log(sessionInfo);
+        console.log('sessionm info after edit', sessionInfo);
         //We save it locally first
-        if (!sessionInfo.isNew) {
-            console.log('Saving training session');
-            // dispatch({type: SAVE_UDC_TRAINING, sessionInfo: sessionInfo});
-        }
+        dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
         if (isOnline()) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
@@ -251,7 +248,7 @@ const parseHides = hidesData => {
 
 
 const parseTrainingData = sessionInfo => {
-    //Transform session info only send the part of the object that we care about
+
     Object.keys(sessionInfo).forEach(dogId => {
         if (!!sessionInfo[dogId]['trainer']['_id']) {
             sessionInfo[dogId]['trainerId'] = sessionInfo[dogId]['trainer']['_id'];
@@ -268,5 +265,6 @@ const parseTrainingData = sessionInfo => {
         });
     });
     return sessionInfo;
+
 };
 

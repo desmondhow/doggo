@@ -21,10 +21,14 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.doggoinc.doggo"
+    },
+    "android": {
+      "package": "com.doggoinc.doggo"
     }
   }
 }

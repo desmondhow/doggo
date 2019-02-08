@@ -30,11 +30,11 @@ export default (state = initialUDCState, action) => {
                         wind: sessionInfo.wind,
                         windDirection: sessionInfo.windDirection,
                         complete: sessionInfo.complete,
-                        hides: sessionInfo.hides
+                        hides: sessionInfo.hides,
+                        dogsTrained: sessionInfo.dogsTrained
                     } :
                     // otherwise return original
                     session
-
                 )
             };
 
@@ -77,15 +77,9 @@ export default (state = initialUDCState, action) => {
             };
 
         }
-        // case SAVE_UDC_DOG_TRAINING: {
-        //     const performanceInfo = action.performanceInfo;
-        //     // console.log(`performanceInfo: ${performanceInfo}`);
-        //     // api call or whatever to actually save the perfomanceInfo for the dog to the state
-        //     // note performanceInfo.dogs is what we want!
-        //     return state;
-        // }
-
         case RESET_STATE: {
+
+            console.log('Resetting state');
             return {
                 ...state,
                 currSessionsData: []
