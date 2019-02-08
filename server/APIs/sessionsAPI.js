@@ -32,6 +32,8 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
         return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
     }
 
+    const json = JSON.parse(req.body);
+    console.log(json);
   let sessionData = {
     temperature,
     humidity,
@@ -94,14 +96,13 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   }
   const sessionInfo = req.body.sessionInfo;
 
-  let dogsTrained = [];
-  console.log(JSON.stringify(sessionInfo));
+  const dogsTrained = [];
+  console.log(`session: ${JSON.stringify(sessionInfo)}`);
   Object.keys(sessionInfo).forEach(dogId => {
-
     dogsTrained.push({
       dogId,
-      trainerId: sessionInfo[dogId].trainerId,
-      handler: sessionInfo[dogId].handler,
+      handlerId: sessionInfo[dogId].handler._id,
+      trainer: sessionInfo[dogId].trainer,
       recorder: sessionInfo[dogId].recorder,
       hides:
         Object.keys(sessionInfo[dogId].performance).map(hideId => ({

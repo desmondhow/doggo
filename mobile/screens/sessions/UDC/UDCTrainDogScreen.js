@@ -51,14 +51,14 @@ export class UDCTrainDogScreen extends React.Component {
         }
       }
     }
-    this.props.saveDog(temp);
+    this.props.saveDog(this.state.dog);
     // this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     const sessionData = {...sessionInfo, ...tempInfo};
     // const sessionData = {...sessionInfo, ...initialInfo};
     console.log(JSON.stringify(sessionData));
     // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-    this.props.navigation.navigate('UDCBuildingSearch', {sessionInfo: sessionData});
+    this.props.navigation.navigate('UDCBuildingSearch', { sessionInfo: sessionData });
   }
 
   _renderSubmitBtn = () => (
@@ -129,7 +129,6 @@ export class UDCTrainDogScreen extends React.Component {
               null,
               dropdownFontSize
             )}
-            
         </View>
         <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
             <Text style={labelStyle}>Recorder</Text>
@@ -213,6 +212,7 @@ const styles = StyleSheet.create({
   }
 });
 
+const selector = formValueSelector('udc');
 export default connectReduxForm(
     'udc',
     UDCTrainDogScreen,

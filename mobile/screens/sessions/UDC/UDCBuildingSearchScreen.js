@@ -37,11 +37,12 @@ export class UDCBuildingSearchScreen extends React.Component {
           data: [hide]
         });
       });
+      console.log(this.props.dog);
       this.state = {
         activeSection: "",
         dog: this.props.dog,
         dogs: [],
-        trainers: [],
+        handlers: [],
         hides: hideSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
@@ -54,7 +55,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   componentDidMount() {
     loadUserProfile()
       .then(profile =>
-        this.setState({ dogs: profile.dogs, trainers: profile.trainers })
+        this.setState({ dogs: profile.dogs, handlers: profile.handlers })
       )
       .catch(err => {
         console.log(err);
@@ -63,32 +64,40 @@ export class UDCBuildingSearchScreen extends React.Component {
   }
 
   _onSubmit = sessionInfo => {
-    console.log(JSON.stringify(sessionInfo));
+    console.log(`info: ${JSON.stringify(sessionInfo)}`);
     API.UDCTrainURL.then(url => {
       // only send the part of the object that we care about
       Object.keys(sessionInfo).forEach(dogId => {
-        if (!!sessionInfo[dogId]["trainer"] && !!sessionInfo[dogId]["trainer"]["_id"]) {
-          sessionInfo[dogId]["trainerId"] =
-            sessionInfo[dogId]["trainer"]["_id"];
+        const hideInfo = sessionInfo[dogId];
+        if (!!hideInfo['handler']) {
+          hideInfo['handler'] = this.state.handlers.find(handler => 
+              handler.name === hideInfo['handler']);
         }
-        Object.keys(sessionInfo[dogId]["performance"]).forEach(hideId => {
-          Object.keys(sessionInfo[dogId]["performance"][hideId]).forEach(
-            field => {
-              const hideInfo = sessionInfo[dogId]["performance"][hideId];
+
+        Object.keys(hideInfo["performance"]).forEach(hideId => {
+          Object.keys(hideInfo["performance"][hideId]).forEach(field => {
+              const performanceInfo = hideInfo["performance"][hideId];
               // need to figure out how to format fields since we have each field in the udc schema
               // as its separate thing, also need to figure out how to send duration
               if (field === "fields") {
-                hideInfo[field].forEach(f => {
-                  sessionInfo[dogId]["performance"][hideId][f] = true;
+                performanceInfo[field].forEach(f => {
+                  hideInfo["performance"][hideId][f] = true;
                 });
               } else if (field === "duration") {
-                sessionInfo[dogId]["performance"][hideId]["time"] = `${
+                hideInfo["performance"][hideId]["time"] = `${
                   field.minutes
                 }:${field.seconds}`;
-              } else if (typeof hideInfo[field] === "object") {
-                if (!!hideInfo[field]["text"]) {
-                  sessionInfo[dogId]["performance"][hideId][field] =
-                    hideInfo[field]["text"];
+              } 
+              else if (typeof hideInfo[field] === "object") {
+                if (!!performanceInfo[field]["text"]) {
+                  hideInfo["performance"][hideId][field] =
+                  performanceInfo[field]["text"];
+                }
+              }
+              else if (typeof performanceInfo[field] === "object") {
+                if (!!performanceInfo[field]["text"]) {
+                  hideInfo["performance"][hideId][field] =
+                  performanceInfo[field]["text"];
                 }
               }
             }
