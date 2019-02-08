@@ -119,7 +119,7 @@ import { request } from "../../../components/helpers";
             if (numHides === undefined) {
                 numHides = Object.keys( session.hides).length;
             }
-            const dogs = session.dogsTrained.length
+            const dogs = session.dogsTrained.length ? session.dogsTrained.length : 0;
             const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
