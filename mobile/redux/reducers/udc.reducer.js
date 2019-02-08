@@ -79,7 +79,7 @@ export default (state = initialUDCState, action) => {
 
         }
         case SAVE_UDC_DOG: {
-            return { dog: action.dog };
+            return { ...state, dog: action.dog };
         }
         case SAVE_UDC_DOG_TRAINING: {
             const performanceInfo = action.performanceInfo;
