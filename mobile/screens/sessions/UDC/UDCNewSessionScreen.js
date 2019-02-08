@@ -41,7 +41,6 @@ class UDCNewSessionScreen extends React.Component {
 
     let previousHides = {};
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
-    console.log("sessionInfo", sessionInfo);
 
     const addHideState = {
       addHideRoomNumber: null,
@@ -74,7 +73,7 @@ class UDCNewSessionScreen extends React.Component {
         temperature: sessionInfo.temperature,
         humidity: sessionInfo.humidity,
         wind: sessionInfo.wind,
-        "Wind Direction": sessionInfo.windDirection
+        windDirection: sessionInfo.windDirection
       };
     } else {
       //We are creating a new session
@@ -90,23 +89,26 @@ class UDCNewSessionScreen extends React.Component {
         temperature: null,
         humidity: null,
         wind: null,
-        "Wind Direction": null
+        windDirection: null
       };
     }
   }
 
   _onSubmit = () => {
+    console.log(JSON.stringify(this.state));
     let session = {
       isNew: this.state.isNew,
       temperature: this.state.temperature,
       humidity: this.state.humidity,
       wind: this.state.wind,
-      windDirection: this.state["Wind Direction"],
+      windDirection: this.state.windDirection,
       complete: false,
       sessionId: this.state.sessionId,
       createdAt: this.state.createdAt,
       hides: this.state.addedHides
     };
+
+    // console.log(JSON.stringify(this.state))
 
     this.props.dispatch(saveUDCSession({ sessionInfo: session }));
     this.props.navigation.navigate("UDC");
@@ -153,30 +155,40 @@ class UDCNewSessionScreen extends React.Component {
 
   _renderAddedHides = () => (
     <View>
-      {Object.keys(this.state.addedHides).map(roomNumber => (
-        <View>
-          <View style={{ flexDirection: "row", marginBottom: 15 }}>
-            <Text style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}>
-              Room #:{" "}
-            </Text>
-            <Text style={{ fontSize: 22 }}>{roomNumber} | </Text>
-            <Text style={{ fontWeight: "bold", fontSize: 22 }}>
-              {this.state.addedHides[roomNumber].hideType}
-            </Text>
+      {Object.keys(this.state.addedHides).map(roomNumber => {
+        console.log(JSON.stringify(this.state.addedHides[roomNumber]));
+        return (
+          <View style={{ marginTop: 20 }}>
+            <View style={{ flexDirection: "row", marginBottom: 20 }}>
+              <Text
+                style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}
+              >
+                Room #:
+              </Text>
+              <Text style={{ fontSize: 22 }}>{roomNumber} | </Text>
+              <Text style={{ fontWeight: "bold", fontSize: 22 }}>
+                {this.state.addedHides[roomNumber].hideType}
+              </Text>
+            </View>
+            <View style={center}>
+              {this.state.addedHides[roomNumber].hideType === "Hot"
+                ? this._renderAddHideConcentrationDropdowns(roomNumber)
+                : null}
+              {this.state.addedHides[roomNumber].hideType === "Empty"
+                ? null
+                : this._renderHideFields(roomNumber)}
+              <Divider
+                style={{
+                  backgroundColor: "black",
+                  height: 2,
+                  width: "90%",
+                  marginTop: -30
+                }}
+              />
+            </View>
           </View>
-          <View style={center}>
-            {this.state.addedHides[roomNumber].type === "Hot"
-              ? this._renderAddHideConcentrationDropdowns()
-              : null}
-            {this._renderHideFields(roomNumber)}
-          </View>
-        </View>
-      ))}
-      <View style={center}>
-        <Divider
-          style={{ backgroundColor: "black", height: 2, width: "90%" }}
-        />
-      </View>
+        );
+      })}
     </View>
   );
 
@@ -185,14 +197,16 @@ class UDCNewSessionScreen extends React.Component {
     userIsAddingHide = false
   ) => {
     const containerStyle = { flexDirection: "column", width: "40%", ...center };
-    // const dropdownContainerStyle = { marginTop: -20, width: "100%" };
-
+    const dropdownContainerStyle = { marginTop: -20, width: "100%" };
+    // console.log(`in render: ${JSON.stringify(roomNumber)}`);
     return (
       <View
         style={{
           flexDirection: "row",
           width: "55%",
-          ...center
+          ...center,
+          justifyContent: "space-between",
+          marginLeft: 60
         }}
       >
         <View style={containerStyle}>
@@ -203,14 +217,14 @@ class UDCNewSessionScreen extends React.Component {
             styles.dropdown,
             userIsAddingHide
               ? null
-              : roomNumber =>
+              : concentration =>
                   this._updateHideState(
                     roomNumber,
                     "concentration",
                     concentration
                   ),
             userIsAddingHide
-              ? this.props.addHideConcentration
+              ? null
               : this.state.addedHides[roomNumber].concentration
           )}
         </View>
@@ -224,10 +238,8 @@ class UDCNewSessionScreen extends React.Component {
             styles.dropdown,
             userIsAddingHide
               ? null
-              : roomNumber => this._updateHideState(roomNumber, "size", size),
-            userIsAddingHide
-              ? this.props.addHideSize
-              : this.state.addedHides[roomNumber].size
+              : size => this._updateHideState(roomNumber, "size", size),
+            userIsAddingHide ? null : this.state.addedHides[roomNumber].size
           )}
         </View>
       </View>
@@ -238,7 +250,10 @@ class UDCNewSessionScreen extends React.Component {
     this.setState(prevState => ({
       addedHides: {
         ...prevState.addedHides,
-        [roomNumber]: { [property]: value }
+        [roomNumber]: {
+            ...prevState.addedHides[roomNumber],
+           [property]: value 
+        }
       }
     }));
   };
@@ -248,15 +263,12 @@ class UDCNewSessionScreen extends React.Component {
     if (this.state.addHideType === "Hot") {
       hideFields = (
         <View style={center}>
-          {this._renderAddHideConcentrationDropdowns(
-            this.state.addHideRoomNumber,
-            true
-          )}
-          {this._renderHideFields(this.state.addHideRoomNumber, true)}
+          {this._renderAddHideConcentrationDropdowns(null, true)}
+          {this._renderHideFields(null, true)}
         </View>
       );
     } else if (this.state.addHideType === "Blank") {
-      hideFields = this._renderHideFields(this.state.addHideRoomNumber, true);
+      hideFields = this._renderHideFields(null, true);
     }
 
     return (
@@ -343,9 +355,7 @@ class UDCNewSessionScreen extends React.Component {
               ? null
               : location =>
                   this._updateHideState(roomNumber, "location", location),
-            userIsAddingHide
-              ? this.props.addHideLocation
-              : this.state.addedHides[roomNumber].location
+            userIsAddingHide ? null : this.state.addedHides[roomNumber].location
           )}
         </View>
         <View style={{ flexDirection: "column", ...center, marginBottom: 30 }}>
@@ -423,12 +433,11 @@ class UDCNewSessionScreen extends React.Component {
       {/* Notes */}
       <View style={center}>
         <Text style={styles.labelStyle}>Notes:</Text>
-        {renderReduxFormInput(
-          `Hides.${roomNumber}.notes`, 
-          { width: "80%" },
-          4,
-          true
-        )}
+        {renderReduxFormInput(`Hides.${roomNumber}.notes`, {
+          containerStyle: { width: 400 },
+          numberOfLine: 4,
+          multiline: true
+        })}
       </View>
     </View>
   );
@@ -471,11 +480,12 @@ class UDCNewSessionScreen extends React.Component {
 
   _renderSubmitBtn = () => {
     let width = this.state.isEditing ? 150 : 300;
+    console.log(this.state.isEditing);
     let createBtn = (
       <Button
         raised
         rounded
-        title={this.state.isEditing ? "Edit" : "Create"}
+        title={this.state.isEditing ? "Update" : "Create"}
         onPress={this.props.handleSubmit(this._onSubmit)}
         fontSize={26}
         buttonStyle={{
@@ -531,21 +541,22 @@ class UDCNewSessionScreen extends React.Component {
     const isConcealed = this.props.addHideIsConcealed;
     const placementArea = this.props.addHidePlacementArea;
     const placementHeight = this.props.addHidePlacementHeight;
+    const notes = this.props.addHideNotes;
     const hideType = this.state.addHideType;
     const roomNumber = this.state.addHideRoomNumber;
 
     // reset Add Hide section state
-    this.setState({ addHideRoomNumber: 0, hideType: "" });
+    this.setState({ addHideRoomNumber: 0, addHideType: "" });
     this._resetFields([
-      "Hides.null.concentration",
-      "Hides.null.size",
-      "Hides.null.location",
-      "Hides.null.isConcealed",
-      "Hides.null.placementArea",
-      "Hides.null.placementHeight",
-      "Hides.null.hideType"
+      `Hides[null]concentration`,
+      `Hides[null]size`,
+      `Hides[null]location`,
+      `Hides[null]isConcealed`,
+      `Hides[null]placementArea`,
+      `Hides[null]placementHeight`,
+      `Hides[null]notes`
     ]);
-
+    console.log(this.state.addHideRoomNumber);
     // store new hide
     this.setState(prevState => ({
       showAddHideModal: false,
@@ -558,7 +569,8 @@ class UDCNewSessionScreen extends React.Component {
           isConcealed,
           placementArea,
           placementHeight,
-          hideType
+          hideType,
+          notes
         }
       }
     }));
@@ -570,8 +582,7 @@ class UDCNewSessionScreen extends React.Component {
         style={{
           ...center,
           ...styles.fieldsContainer,
-          height: "80%",
-          marginTop: 50
+          height: "84%"
         }}
       >
         <Text h3>Added Hides</Text>
@@ -621,11 +632,12 @@ const styles = StyleSheet.create({
 
 const selector = formValueSelector("udc");
 export default connectReduxForm("udc", UDCNewSessionScreen, state => ({
-  addHideConcentration: selector(state, "Hides.null.concentration"),
-  addHideSize: selector(state, "Hides.null.size"),
-  addHideLocation: selector(state, "Hides.null.location"),
-  addHideIsConcealed: selector(state, "Hides.null.isConcealed"),
-  addHidePlacementArea: selector(state, "Hides.null.placementArea"),
-  addHidePlacementHeight: selector(state, "Hides.null.placementHeight"),
-  addHideType: selector(state, "Hides.null.hideType")
+  addHideConcentration: selector(state, `Hides.null.concentration`),
+  addHideSize: selector(state, `Hides.null.size`),
+  addHideLocation: selector(state, `Hides.null.location`),
+  addHideIsConcealed: selector(state, `Hides.null.isConcealed`),
+  addHidePlacementArea: selector(state, `Hides.null.placementArea`),
+  addHidePlacementHeight: selector(state, `Hides.null.placementHeight`),
+  addHideType: selector(state, `Hides.null.hideType`),
+  addHideNotes: selector(state, `Hides.null.notes`)
 }));

@@ -53,7 +53,7 @@ import { request } from "../../../components/helpers";
     _editTrainingSession(i) {
         const {navigate} = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCNewSession', {isEditing: true, sessionInfo: sessionData})
+        navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
     }
 
     _renderTableButtons = (continueButtons) => (

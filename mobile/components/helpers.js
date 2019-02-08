@@ -56,30 +56,32 @@ export const renderDropdown = (
   />
 );
 
-export const renderReduxFormInput = (
-  name, 
-  containerStyle, 
-  numberOfLines=1,
-  multiline=false
-) => (
-  <Field
-    name={name}
-    component={inputProps => {
-      const {
-        input: { value, onChange }
-      } = inputProps;
-      return (
-        <FormInput
-          containerStyle={containerStyle}
-          value={value}
-          onChangeText={onChange}
-          numberOfLines={numberOfLines}
-          multiline={multiline}
-        />
-      );
-    }}
-  />
-);
+export function renderReduxFormInput(name, options) {
+  return (
+    <Field
+      name={name}
+      component={inputProps => {
+        const {
+          input: { value, onChange }
+        } = inputProps;
+        return (
+          <FormInput
+            containerStyle={options.containerStyle}
+            value={value}
+            onChangeText={onChange}
+            numberOfLines={options.numberOfLines}
+            multiline={options.multiline}
+            inputStyle={
+              options.inputStyle ? options.inputStyle : { width: 400 }
+            }
+            placeholder={options.placeholder}
+            maxHeight={100}
+          />
+        );
+      }}
+    />
+  );
+}
 
 export const renderReduxDropdown = (
   name,
@@ -115,7 +117,8 @@ export const renderReduxDropdown = (
 
 // should not be an arrow function (screws up rendering)
 export const renderTextInput = (
-  inputProps,
+  value,
+  onChange,
   placeholder = "",
   containerStyle = { width: "40%" },
   editable = true,
@@ -125,8 +128,8 @@ export const renderTextInput = (
   return (
     <FormInput
       placeholder={placeholder}
-      value={inputProps.input.value}
-      onChangeText={inputProps.input.onChange}
+      value={value}
+      onChangeText={onChange}
       editable={editable}
       maxLength={maxLength}
       multiline={multiline}

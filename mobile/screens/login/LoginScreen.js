@@ -103,8 +103,6 @@ export default class LoginScreen extends React.Component {
         );
     }
 }
-
-
 const styles = StyleSheet.create({
     container: {
         backgroundColor: '#00aced',
@@ -123,7 +121,6 @@ const styles = StyleSheet.create({
         color: 'rgba(255, 255, 255, 0.8)',
         fontSize: 20,
         fontFamily: 'montserrat'
-
     },
     signupButton: {
         color: 'white',
@@ -131,12 +128,4 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         fontFamily: 'montserrat'
     }
-
-
 });
-
-
-
-
-
-

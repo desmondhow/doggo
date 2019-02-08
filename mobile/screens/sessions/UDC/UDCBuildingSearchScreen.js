@@ -10,7 +10,13 @@ import Collapsible from 'react-native-collapsible/Collapsible';
 import { Field, formValueSelector } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown, renderReduxDropdown, renderTextInput, request } from '../../../components/helpers';
+import { 
+  connectReduxForm, 
+  renderDropdown, 
+  renderReduxDropdown, 
+  renderReduxFormInput, 
+  request 
+} from '../../../components/helpers';
 import { UDCInfo } from '../../../constants/SessionsConstants';
 import API, { loadUserProfile } from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
@@ -258,8 +264,8 @@ export class UDCBuildingSearchScreen extends React.Component {
   }
   
   _renderTextInput(inputProps) {
-    const textInputStyle = { width: '60%', marginTop: 10 }
-    return renderTextInput(inputProps, 'Name', textInputStyle)
+    const inputStyle = { width: '60%', marginTop: 10 }
+    return renderReduxFormInput('Name', { inputStyle: textInputStyle })
   }
 
   _addStopwatchTime = onChange => {

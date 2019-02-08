@@ -8,7 +8,9 @@ LOCAL_API_URL = 'http://localhost:3010/api/';
 USERS_ROUTE = 'users';
 SESSIONS_ROUTE = 'sessions';
 
-const formatAPILink = url => LOCAL_API_URL + url;
+const formatAPILink = url =>  { 
+  return LOCAL_API_URL + url;
+}
 const formatUsersRoute = route => (
     new Promise((res, rej) => (
         getUserID()
