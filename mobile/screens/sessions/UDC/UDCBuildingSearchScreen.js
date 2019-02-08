@@ -70,8 +70,9 @@ export class UDCBuildingSearchScreen extends React.Component {
       Object.keys(sessionInfo).forEach(dogId => {
         const hideInfo = sessionInfo[dogId];
         if (!!hideInfo['handler']) {
-          hideInfo['handler'] = this.state.handlers.find(handler => 
-              handler.name === hideInfo['handler']);
+          const handler = this.state.handlers.find(handler => 
+            handler.name === hideInfo['handler']);
+          hideInfo['handlerId'] = handler._id;
         }
 
         Object.keys(hideInfo["performance"]).forEach(hideId => {
@@ -79,10 +80,14 @@ export class UDCBuildingSearchScreen extends React.Component {
               const performanceInfo = hideInfo["performance"][hideId];
               // need to figure out how to format fields since we have each field in the udc schema
               // as its separate thing, also need to figure out how to send duration
+              console.log(`FIELD: ${field}`);
               if (field === "fields") {
                 performanceInfo[field].forEach(f => {
+                  f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
+                  console.log(f);
                   hideInfo["performance"][hideId][f] = true;
                 });
+                delete performanceInfo[field];
               } else if (field === "duration") {
                 hideInfo["performance"][hideId]["time"] = `${
                   field.minutes
