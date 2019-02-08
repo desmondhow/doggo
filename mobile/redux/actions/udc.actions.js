@@ -18,12 +18,7 @@ export const GET_ALL_UDC = 'GET_ALL_UDC';
 export const DELETE_UDC_SESSION = 'DELETE_UDC_SESSION';
 export const UPDATE_UDC_SESSION = 'UPDATE_UDC_SESSION';
 export const RESET_STATE = 'RESET_STATE';
-
-
-
-
-export const SAVE_UDC_DOG = 'SAVE_UDC_DOG';
-export const SAVE_UDC_DOG_TRAINING = 'SAVE_UDC_DOG_TRAINING';
+export const SAVE_UDC_TRAINING = 'SAVE_UDC_TRAINING';
 
 
 /**
@@ -49,8 +44,8 @@ export const getAllUDC = () => {
                                 dispatch({type: SERVER_STATE, isServerOnline: false});
                             })
                             .done()
-                    }
-                )
+                    })
+                .catch(err => {})
         } else {
             console.log('No connection');
         }
@@ -89,9 +84,7 @@ export const saveUDCSession = ({sessionInfo}) => {
                             data: sessionInfo
                         });
                     });
-            })
-
-
+            }).catch(err => {})
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_NEW_UDC_LATER, data: sessionInfo});
         }
@@ -119,7 +112,6 @@ export const saveUDCSessionLater = ({sessionInfo}) => {
 };
 
 
-
 export const deleteUDCSession = ({sessionId}) => {
     return (dispatch, getState) => {
         //We first delete it locally
@@ -137,15 +129,13 @@ export const deleteUDCSession = ({sessionId}) => {
                             data: sessionId
                         });
                     });
-            })
-
+            }).catch(err => {})
 
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.DELETE_UDC_LATER, data: sessionId});
         }
     };
 };
-
 
 
 export const deleteUDCSessionLater = ({sessionId}) => {
@@ -165,6 +155,68 @@ export const deleteUDCSessionLater = ({sessionId}) => {
 
                     })
             }
+        )
+
+    }
+};
+
+
+/**
+ * Saves a UDC Training session. If there is no connection, session is saved locally and pushed to db once there is
+ * connection.
+ * @param sessionInfo
+ * @returns {Function}
+ */
+export const saveUDCTraining = ({sessionInfo}) => {
+    return (dispatch, getState) => {
+
+        sessionInfo = parseTrainingData(sessionInfo);
+        console.log(sessionInfo);
+        //We save it locally first
+        if (!sessionInfo.isNew) {
+            console.log('Saving training session');
+            // dispatch({type: SAVE_UDC_TRAINING, sessionInfo: sessionInfo});
+        }
+        if (isOnline()) {
+            API.UDCTrainURL.then(url => {
+                console.log(url);
+                request(url, JSON.stringify({sessionId: this.state.sessionId, sessionInfo: sessionInfo}), 'POST')
+                    .then(res => {
+                    })
+                    .catch(err => {
+                        console.log('error train now', err);
+                        dispatch({type: SERVER_STATE, isServerOnline: false});
+                        dispatch({
+                            type: ADD_TO_ACTION_QUEUE,
+                            payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                            data: sessionInfo
+                        });
+                    });
+            }).catch(err => {})
+
+
+        } else {
+            dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER, data: sessionInfo});
+        }
+    };
+};
+
+
+export const saveUDCTrainingLater = ({sessionInfo}) => {
+    return (dispatch) => {
+        API.UDCTrainURL.then(url =>
+            request(url, JSON.stringify({sessionId: this.state.sessionId, sessionInfo: sessionInfo}), 'POST')
+                .then(res => {
+                })
+                .catch(err => {
+                    console.log('error save training later', err);
+                    dispatch({type: SERVER_STATE, isServerOnline: false});
+                    dispatch({
+                        type: ADD_TO_ACTION_QUEUE,
+                        payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                        data: sessionInfo
+                    });
+                })
         )
 
     }
@@ -194,4 +246,24 @@ const parseHides = hidesData => {
     return hides;
 };
 
+
+const parseTrainingData = sessionInfo => {
+    //Transform session info only send the part of the object that we care about
+    Object.keys(sessionInfo).forEach(dogId => {
+        if (!!sessionInfo[dogId]['trainer']['_id']) {
+            sessionInfo[dogId]['trainerId'] = sessionInfo[dogId]['trainer']['_id'];
+        }
+        Object.keys(sessionInfo[dogId]['performance']).forEach(hideId => {
+            Object.keys(sessionInfo[dogId]['performance'][hideId]).forEach(field => {
+                const hideInfo = sessionInfo[dogId]['performance'][hideId];
+                if (typeof hideInfo[field] === 'object') {
+                    if (!!hideInfo[field]['text']) {
+                        sessionInfo[dogId]['performance'][hideId][field] = hideInfo[field]['text'];
+                    }
+                }
+            })
+        });
+    });
+    return sessionInfo;
+};
 

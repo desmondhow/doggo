@@ -17,7 +17,7 @@ const formatUsersRoute = route => (
             ))
             .catch((err) => rej(err))
     ))
-)
+);
 const formatSessionsRoute = route => (
     new Promise((res, rej) => {
         getUserID()
@@ -26,16 +26,9 @@ const formatSessionsRoute = route => (
             ))
             .catch((err) => rej(err))
     })
-)
-export const loadUserProfile = () => (
-    routes.loadProfileURL
-        .then(url => request(url, null, 'GET'))
-        .then(res => res.json())
-        .catch(err => {
-            console.log(err);
-            throw err;
-        })
 );
+
+//Todo: Change local to heroku
 
 export default routes = {
     // login
@@ -43,7 +36,6 @@ export default routes = {
     registerURL: formatAPILink(USERS_ROUTE + '/register'),
     logoutURL: formatAPILink(USERS_ROUTE + '/logout'),
     // profile
-    profileURL: formatAPILink(USERS_ROUTE + '/profile'),
     loadProfileURL: formatUsersRoute('profile'),
     addTrainerURL: formatUsersRoute('profile/add-trainer'),
     deleteTrainerURL: trainerId => formatUsersRoute(`profile/delete-trainer/${trainerId}`),
@@ -52,7 +44,6 @@ export default routes = {
     // UDC
     UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
     UDCSaveSessionURL: formatSessionsRoute('udc/create'),
-    UDCGetSessionURL: sessionId => formatAPILink(formatSessionsRoute(`udc/${sessionId}`)),
     UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
     UDCTrainURL: formatSessionsRoute(`udc/train`),
     ping: LOCAL_API_URL + 'ping'

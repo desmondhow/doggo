@@ -15,18 +15,6 @@ export const connectReduxForm = (formName, formClass, mapStateToProps, mapDispat
   )
 );
 
-// takes in a reference to 'this' instance of current screen
-export const updateProfileState = (that) => (
-  new Promise((res, rej) => (
-    API.loadProfileURL
-    .then(url => request(url, null, 'GET'))
-    .then(res => res.json())
-    .then(profile => res(that.setState({ trainers: profile.trainers, dogs: profile.dogs })))
-    .catch(err => { console.log(err); rej(err); })
-  ))
-);
-  
-
 export const renderDropdown = (
   value, 
   onChange, 

@@ -2,10 +2,9 @@ import Constants from "../../constants/Api";
 import {
     SAVE_UDC_SESSION,
     DELETE_UDC_SESSION,
-    SAVE_UDC_DOG,
-    SAVE_UDC_DOG_TRAINING,
     GET_ALL_UDC,
-    RESET_STATE, UPDATE_UDC_SESSION
+    RESET_STATE,
+    UPDATE_UDC_SESSION
 } from "../actions/udc.actions";
 
 
@@ -78,17 +77,13 @@ export default (state = initialUDCState, action) => {
             };
 
         }
-        case SAVE_UDC_DOG: {
-            return { dog: action.dog };
-        }
-        case SAVE_UDC_DOG_TRAINING: {
-            const performanceInfo = action.performanceInfo;
-            // console.log(`performanceInfo: ${performanceInfo}`);
-            // api call or whatever to actually save the perfomanceInfo for the dog to the state
-            // note performanceInfo.dogs is what we want!
-            return state;
-        }
-
+        // case SAVE_UDC_DOG_TRAINING: {
+        //     const performanceInfo = action.performanceInfo;
+        //     // console.log(`performanceInfo: ${performanceInfo}`);
+        //     // api call or whatever to actually save the perfomanceInfo for the dog to the state
+        //     // note performanceInfo.dogs is what we want!
+        //     return state;
+        // }
 
         case RESET_STATE: {
             return {
