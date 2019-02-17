@@ -6,6 +6,9 @@ import UDCHomeScreen from '../screens/sessions/UDC/UDCHomeScreen';
 import UDCNewSessionScreen from '../screens/sessions/UDC/UDCNewSessionScreen';
 import UDCBuildingSearchScreen from '../screens/sessions/UDC/UDCBuildingSearchScreen';
 import UDCTrainDogScreen from '../screens/sessions/UDC/UDCTrainDogScreen';
+import LHSHomeScreen from '../screens/sessions/LHS/LHSHomeScreen';
+import LHSNewSessionScreen from '../screens/sessions/LHS/LHSNewSessionScreen';
+
 import { mainNavHeader } from './helpers';
 
 export default createStackNavigator({
@@ -38,6 +41,18 @@ export default createStackNavigator({
     screen: UDCNewSessionScreen,
     navigationOptions: { 
       title: 'New UDC Session'
+    }
+  },
+  LHS: { 
+    screen: LHSHomeScreen,
+    navigationOptions: { 
+      title: 'LHS'
+    }
+  },
+  LHSNewSession: {
+    screen: LHSNewSessionScreen,
+    navigationOptions: {
+      title: 'New Live Human Search Session'
     }
   }
 });
