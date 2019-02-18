@@ -24,7 +24,7 @@ export default class App extends React.Component {
                 if (res !== false) {
                     this.setState({signedIn: true, checkedSignIn: true})
                 } else {
-                    this.setState({signedIn: false, checkedSignIn: true});
+                    this.setState({signedIn: true, checkedSignIn: true});
                 }
             })
             .catch((err) =>{
