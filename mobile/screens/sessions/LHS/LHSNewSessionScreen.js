@@ -24,10 +24,10 @@ import {
 import { LHSInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
-// import {
-//   deleteUDCSession,
-//   saveUDCSession
-// } from "../../../redux/actions/udc.actions";
+import {
+  deleteLHSSession,
+  saveLHSSession
+} from "../../../redux/actions/lhs.actions";
 import { guidGenerator } from "../../../redux/actions/connection.actions";
 
 class LHSNewSessionScreen extends React.Component {
@@ -35,40 +35,43 @@ class LHSNewSessionScreen extends React.Component {
     super(props);
 
     this.state = {
-
+      addedSearches: {},
+      addSearchLocation: null
     };
 
+    let previousSearches = {};
+
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
+
+    const addSearchState = {
+      addSearchLocation: null,
+    };
 
 
     // If data comes from server
     if (sessionInfo) {
-      // sessionInfo.hides.forEach(hide => {
-      //   previousHides[hide.roomNumber] = {
-      //     concentration: hide.concentration,
-      //     size: hide.size,
-      //     location: hide.location,
-      //     isConcealed: hide.isConcealed,
-      //     placementArea: hide.placementArea,
-      //     placementHeight: hide.placementHeight,
-      //     roomNumber: hide.roomNumber,
-      //     hideType: hide.hideType,
-      //     notes: hide.notes
-      //   };
-      // });
-      // this.state = {
-      //   ...addHideState,
-      //   addedHides: previousHides,
-      //   isNew: false,
-      //   sessionId: sessionInfo.sessionId,
-      //   showAddHideModal: false,
-      //   isEditing: this.props.navigation.getParam("isEditing", false),
-      //   createdAt: sessionInfo.createdAt,
-      //   temperature: sessionInfo.temperature,
-      //   humidity: sessionInfo.humidity,
-      //   wind: sessionInfo.wind,
-      //   windDirection: sessionInfo.windDirection
-      // };
+      sessionInfo.searches.forEach(search => {
+        previousSearches[search.location] = {
+          location: search.location,
+          subject1: search.subject1, 
+          subject2: search.subject2, 
+          subject3: search.subject3,
+          notes: hide.notes
+        };
+      });
+      this.state = {
+        ...addSearchState,
+        addedSearches: previousSearches,
+        isNew: false,
+        sessionId: sessionInfo.sessionId,
+        showAddHideModal: false,
+        isEditing: this.props.navigation.getParam("isEditing", false),
+        createdAt: sessionInfo.createdAt,
+        temperature: sessionInfo.temperature,
+        humidity: sessionInfo.humidity,
+        wind: sessionInfo.wind,
+        windDirection: sessionInfo.windDirection
+      };
     } else {
       //We are creating a new session
       const localID = guidGenerator();
@@ -98,8 +101,8 @@ class LHSNewSessionScreen extends React.Component {
       createdAt: this.state.createdAt,
     };
 
-    // this.props.dispatch(saveUDCSession({ sessionInfo: session }));
-    // this.props.navigation.navigate("UDC");
+    this.props.dispatch(saveLHSSession({ sessionInfo: session }));
+    this.props.navigation.navigate("LHS");
   };
 
   _updateGeneralState = (property, val) => this.setState({ [property]: val });
@@ -141,9 +144,111 @@ class LHSNewSessionScreen extends React.Component {
     </View>
   );
 
+  _renderSearchFields = (location, userIsAddingSearch = false) => (
+    <View
+      style={{
+        flexDirection: "column",
+        justifyContent: "space-between",
+        marginBottom: 100
+      }}
+    >
+      <View style={{ flexDirection: "row", ...center }}>
+        <View
+          style={{
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}
+        >
+          {/* Location */}
+          <Text style={styles.labelStyle}>Location:</Text>
+          {renderReduxDropdown(
+            `Searches.${location}.location`,
+            LHSInfo.SearchSetup.Locations,
+            styles.dropdown,
+            userIsAddingSearch
+              ? null
+              : location =>
+                  this._updateSearchState(location, "location", location),
+            userIsAddingSearch ? null : this.state.addedSearches[location].location
+          )}
+        </View>
+        {/* Subject Placement 1 */}
+        <View style={{ flexDirection: "column", ...center }}>
+          <Text style={styles.labelStyle}>Subject Placement 1:</Text>
+          {renderReduxDropdown(
+            `Searches.${location}.subject1`,
+            LHSInfo.SearchSetup.SubjectPlacement,
+            styles.dropdown,
+            userIsAddingSearch
+              ? null
+              : placementArea =>
+                  this._updateSearchState(
+                    location,
+                    "subject1",
+                    subject1
+                  ),
+            userIsAddingSearch
+              ? this.props.addSearchSubject1
+              : this.state.addedSearches[location].subject1
+          )}
+        </View>
+        {/* Subject Placement 2 */}
+        <View style={{ flexDirection: "column", ...center }}>
+          <Text style={styles.labelStyle}>Subject Placement 2:</Text>
+          {renderReduxDropdown(
+            `Searches.${location}.subject2`,
+            LHSInfo.SearchSetup.SubjectPlacement,
+            styles.dropdown,
+            userIsAddingSearch
+              ? null
+              : placementArea =>
+                  this._updateSearchState(
+                    location,
+                    "subject2",
+                    subject2
+                  ),
+            userIsAddingSearch
+              ? this.props.addSearchSubject2
+              : this.state.addedSearches[location].subject2
+          )}
+        </View>
+        {/* Subject Placement 3 */}
+        <View style={{ flexDirection: "column", ...center }}>
+          <Text style={styles.labelStyle}>Subject Placement 3:</Text>
+          {renderReduxDropdown(
+            `Searches.${location}.subject3`,
+            LHSInfo.SearchSetup.SubjectPlacement,
+            styles.dropdown,
+            userIsAddingSearch
+              ? null
+              : placementArea =>
+                  this._updateSearchState(
+                    location,
+                    "subject3",
+                    subject1
+                  ),
+            userIsAddingSearch
+              ? this.props.addSearchSubject3
+              : this.state.addedSearches[location].subject3
+          )}
+        </View>
+      </View>
+      {/* Notes */}
+      <View style={center}>
+        <Text style={styles.labelStyle}>Notes:</Text>
+        {renderReduxFormInput(`Searches.${location}.notes`, {
+          containerStyle: { width: 400 },
+          numberOfLine: 4,
+          multiline: true
+        })}
+      </View>
+    </View>
+  );
+
   render = () => (
     <View style={styles.container}>
       <View>{this._renderGeneralForm()}</View>
+      <View>{this._renderSearchFields()}</View>
     </View>
   );
 }
@@ -170,16 +275,9 @@ const styles = StyleSheet.create({
 });
 
 const selector = formValueSelector("lhs");
-// export default connectReduxForm("udc", UDCNewSessionScreen, state => ({
-//   addHideConcentration: selector(state, `Hides.null.concentration`),
-//   addHideSize: selector(state, `Hides.null.size`),
-//   addHideLocation: selector(state, `Hides.null.location`),
-//   addHideIsConcealed: selector(state, `Hides.null.isConcealed`),
-//   addHidePlacementArea: selector(state, `Hides.null.placementArea`),
-//   addHidePlacementHeight: selector(state, `Hides.null.placementHeight`),
-//   addHideType: selector(state, `Hides.null.hideType`),
-//   addHideNotes: selector(state, `Hides.null.notes`)
-// }));
 export default connectReduxForm("lhs", LHSNewSessionScreen, state => ({
-
+  addSearchLocation: selector(state, `Searches.null.location`),
+  addSearchSubject1: selector(state, `Searches.null.subject1`),
+  addSearchSubject2: selector(state, `Searches.null.subject2`),
+  addSearchSubject3: selector(state, `Searches.null.subject3`),
 }));

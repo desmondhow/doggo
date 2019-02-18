@@ -59,7 +59,7 @@ export const getAllLHS = () => {
 export const saveLHSSession = ({ sessionInfo }) => {
   return (dispatch, getState) => {
     //Transform session info
-    // sessionInfo.hides = parseHides(sessionInfo.hides);
+    sessionInfo.searches = parseSearches(sessionInfo.searches);
     //We save it locally first
     if (!sessionInfo.isNew) {
       console.log("Updating session");
@@ -159,28 +159,21 @@ export const deleteLHSSessionLater = ({ sessionId }) => {
   };
 };
 
-const parseHides = hidesData => {
-  // let hides = [];
-  // Object.keys(hidesData).forEach(roomNumber => {
-  //   const h = hidesData[roomNumber];
-  //   let concentration = h.concentration;
-  //   let size = h.size;
-  //   let location = h.location;
-  //   let isConcealed = h.isConcealed;
-  //   let placementArea = h.placementArea;
-  //   let placementHeight = h.placementHeight;
-  //   let hideType = h.hideType;
+const parseHides = searchesData => {
+  let searches = [];
+  Object.keys(searchesData).forEach(location => {
+    const s = searchesData[location];
+    let subject1 = s.subject1;
+    let subject2 = s.subject2;
+    let subject3 = s.subject3;
 
-  //   hides.push({
-  //     roomNumber,
-  //     concentration: Number(concentration),
-  //     size,
-  //     location,
-  //     isConcealed,
-  //     placementArea,
-  //     placementHeight,
-  //     hideType
-  //   });
-  // });
-  // return hides;
+
+    searches.push({
+      location,
+      subject1, 
+      subject2,
+      subject3
+    });
+  });
+  return searches;
 };
