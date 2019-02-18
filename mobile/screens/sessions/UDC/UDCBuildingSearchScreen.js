@@ -1,393 +1,498 @@
-import React from 'react';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Alert,
-  TouchableOpacity,
-  TextInput,
-} from 'react-native';
-import { Text, Icon, Button, ButtonGroup } from 'react-native-elements';
-import Accordion from 'react-native-collapsible/Accordion';
-import { Field } from 'redux-form';
-import { Dropdown } from 'react-native-material-dropdown';
+import React from "react";
+import { StyleSheet, View, ScrollView, SectionList } from "react-native";
+import { Text, Button, ButtonGroup, FormInput } from "react-native-elements";
+import Icon from "react-native-vector-icons/FontAwesome";
+import Collapsible from "react-native-collapsible/Collapsible";
+import { Field, formValueSelector } from "redux-form";
 
-import { container, formContainer, center } from '../../../constants/Styles';
-import { connectReduxForm, renderDropdown } from '../../../components/helpers';
-import { BuildingSearchInfo } from '../../../constants/sessions/UDCConstants';
-import Colors from '../../../constants/Colors';
-import * as actions from '../../../redux/actions/index.actions';
-import CustomButtonGroup from '../../../components/CustomButtonGroup';
-import CheckboxContainer from '../../../components/CheckboxContainer';
+import {
+  container,
+  center,
+  buttonStyle,
+  outlineButtonTextStyle,
+  buttonTextStyle,
+  outlineButtonStyle
+} from "../../../constants/Styles";
+import {
+  connectReduxForm,
+  renderDropdown,
+  renderReduxDropdown,
+  renderReduxFormInput,
+  request
+} from "../../../components/helpers";
+import { UDCInfo } from "../../../constants/SessionsConstants";
+import API, { loadUserProfile } from "../../../constants/Api";
+import Colors from "../../../constants/Colors";
+import CheckboxContainer from "../../../components/CheckboxContainer";
 
 export class UDCBuildingSearchScreen extends React.Component {
   constructor(props) {
     super(props);
-    this._renderPage = this._renderPage.bind(this);
+    const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
+    if (sessionInfo) {
+      const hideSections = [];
+      sessionInfo.hides.forEach(hide => {
+        hideSections.push({
+          title: this._renderSectionTitle(hide),
+          data: [hide]
+        });
+      });
+      this.state = {
+        activeSection: "",
+        dog: this.props.dog,
+        dogs: [],
+        handlers: [],
+        hides: hideSections,
+        sessionId: sessionInfo._id,
+        createdAt: sessionInfo.createdAt,
+        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
+        interval: null
+      };
+    }
   }
 
-  state = {
-    activeSections: [],
-    barks: '0',
+  componentDidMount() {
+    loadUserProfile()
+      .then(profile =>
+        this.setState({ dogs: profile.dogs, handlers: profile.handlers })
+      )
+      .catch(err => {
+        console.log(err);
+        throw err;
+      });
+  }
+
+  _onSubmit = sessionInfo => {
+    console.log(`info: ${JSON.stringify(sessionInfo)}`);
+    API.UDCTrainURL.then(url => {
+      // only send the part of the object that we care about
+      Object.keys(sessionInfo).forEach(dogId => {
+        const hideInfo = sessionInfo[dogId];
+        if (!!hideInfo['handler']) {
+          const handler = this.state.handlers.find(handler => 
+            handler.name === hideInfo['handler']);
+          hideInfo['handlerId'] = handler._id;
+        }
+
+        Object.keys(hideInfo["performance"]).forEach(hideId => {
+          Object.keys(hideInfo["performance"][hideId]).forEach(field => {
+              const performanceInfo = hideInfo["performance"][hideId];
+              // need to figure out how to format fields since we have each field in the udc schema
+              // as its separate thing, also need to figure out how to send duration
+              if (field === "fields") {
+                performanceInfo[field].forEach(f => {
+                  f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
+                  console.log(f);
+                  hideInfo["performance"][hideId][f] = true;
+                });
+                delete performanceInfo[field];
+              } 
+              else if (field === "duration") {
+                hideInfo["performance"][hideId]["duration"] = `${
+                  field.minutes
+                }:${field.seconds}`;
+              } 
+              else if (typeof performanceInfo[field] === "object") {
+                if (!!performanceInfo[field]["text"]) {
+                  hideInfo["performance"][hideId][field] =
+                  performanceInfo[field]["text"];
+                }
+              }
+            }
+          );
+        });
+      });
+      return request(
+        url,
+        JSON.stringify({
+          sessionId: this.state.sessionId,
+          sessionInfo: sessionInfo
+        }),
+        "POST"
+      );
+    })
+      .then(this.props.navigation.navigate("UDC"))
+      .catch(err => {
+        console.log(err);
+        throw err;
+      });
   };
 
-  _onSubmit = (performanceInfo) => {
-    console.log(performanceInfo)
-    this.props.saveDogTraining(performanceInfo);
-    Alert.alert('Finish Dog Training, save info for this session for this dog - requires submitting multiple forms with one click, thus maintaining a key for each search');
-    this.props.navigation.navigate('UDC');
-  }
-
-  checkNumber = (text) => {
-    this.setState({
-        barks: text.replace(/[^0-9]/g, ''),
-    });
-}
-
   _renderSubmitBtn = () => (
-  <Button
+    <Button
       raised
       rounded
-      title='Finish Training'
-      onPress={this.props.handleSubmit(this._onSubmit)} 
+      title="Finish Training"
+      onPress={this.props.handleSubmit(this._onSubmit)}
       fontSize={26}
       buttonStyle={{
         ...center,
-        marginLeft: 60, 
-        marginTop: 20, 
-        width: 300
+        ...buttonStyle,
+        marginTop: 20
       }}
       titleStyle={{
-        fontSize: 20, 
-        fontWeight: 'bold'
+        fontSize: 20,
+        fontWeight: "bold"
       }}
     />
-  )
+  );
 
-  _renderHeader = section => {
+  _renderSectionTitle = section =>
+    `${
+      section.hideType
+        ? `${section.hideType}` === "Hot" || `${section.hideType}` === "Blank"
+          ? `${section.hideType} Hide in`
+          : `${section.hideType}`
+        : ""
+    }` + `${section.roomNumber ? ` Room #${section.roomNumber}` : ""}`;
+
+  _renderLabeledButtonGroup = (label, fieldName, buttons, containerStyle) => (
+    <View style={{ flexDirection: "column" }}>
+      <Text h4>{label}</Text>
+      <Field
+        name={fieldName}
+        component={inputProps => {
+          const {
+            input: { value, onChange }
+          } = inputProps;
+          return (
+            <ButtonGroup
+              onPress={i => onChange({ i: i, text: buttons[i] })}
+              selectedIndex={value.i}
+              buttons={buttons}
+              containerStyle={containerStyle}
+              selectedBackgroundColor={"#9EDEF5"}
+              buttonStyle={{ borderColor: "grey", borderWidth: 1 }}
+            />
+          );
+        }}
+      />
+    </View>
+  );
+
+  _renderContent = sectionId => {
+    const scrollViewContainerStyle = { height: 300 };
+
+    const dogId = this.props.dog._id;
+    const BuildingSearchInfo = UDCInfo.BuildingSearch;
     return (
-      <View style={styles.field}>
-        <Text h3>{section.location}, {section.placement}, {section.concealed}</Text>
-      </View>
-    );
-  };
-
-  // section is each BuildingSearchInfo.TempSessions[0].Hides
-  _renderContent = section => {
-    return (
-      <View style={styles.content}>
-        <Text h4>Handler Radius - Alert</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
+      <View
+        style={{
+          marginTop: 20,
+          justifyContent: "center"
+        }}
+      >
+        <Text h4>Handler Radius</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          {this._renderLabeledButtonGroup(
+            "Alert",
+            `${dogId}.performance.${sectionId}.radiusAlert`,
+            BuildingSearchInfo.HandlerRadius,
+            {
+              flexDirection: "column",
+              justifyContent: "flex-between",
+              height: 250,
+              width: 125
+            }
+          )}
+          {this._renderLabeledButtonGroup(
+            "Reward",
+            `${dogId}.performance.${sectionId}.radiusReward`,
+            BuildingSearchInfo.HandlerRadius,
+            {
+              flexDirection: "column",
+              justifyContent: "flex-between",
+              height: 250,
+              width: 125
+            }
+          )}
+          {this._renderLabeledButtonGroup(
+            "Search",
+            `${dogId}.performance.${sectionId}.radiusSearch`,
+            BuildingSearchInfo.HandlerRadius,
+            {
+              flexDirection: "column",
+              justifyContent: "flex-between",
+              height: 250,
+              width: 125
+            }
+          )}
+          <View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              {this._renderLabeledButtonGroup(
+                "Rewarder",
+                `${dogId}.performance.${sectionId}.rewarder`,
+                ["Handler", "Trainer"],
+                {
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  height: 125
+                }
+              )}
+              <View>
+                <Text h4>Barks</Text>
+                <View>
+                  {renderReduxDropdown(
+                    `${dogId}.performance.${sectionId}.barks`,
+                    BuildingSearchInfo.Barks,
+                    { width: 100, height: 100 },
+                    null,
+                    null,
+                    20
+                  )}
+                </View>
+              </View>
+            </View>
+            <View>
+              <Text h4>Duration</Text>
+              <View style={{ flexDirection: "row" }}>
+                <View style={{ flexDirection: "row" }}>
+                  {renderReduxDropdown(
+                    `${dogId}.performance.${sectionId}.duration.minutes`,
+                    BuildingSearchInfo.Time,
+                    { width: 100, height: 100 },
+                    null,
+                    null,
+                    20
+                  )}
+                  <Text h6>mins</Text>
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  {renderReduxDropdown(
+                    `${dogId}.performance.${sectionId}.duration.seconds`,
+                    BuildingSearchInfo.Time,
+                    { width: 100, height: 100 },
+                    null,
+                    null,
+                    20
+                  )}
+                  <Text h6>secs</Text>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
-        <Text h4>Handler Radius - Reward</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusReward`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
+        <Text h4>Select all that apply:</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <CheckboxContainer
+            name={`${dogId}.performance.${sectionId}.fields`}
+            checkboxes={BuildingSearchInfo.Fields}
+          />
         </View>
-        <Text h4>Handler Radius - Search</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.radiusSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={BuildingSearchInfo.HandlerRadius}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        {/* need to show actual string of the things instead of "selectedIndex" being returned */}
-        <Text h4>Rewarder</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.rewarder`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['Handler', 'Trainer']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-
-        <Text h4>Barks</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.barks`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <TextInput 
-                    style={styles.input}
-                    keyboardType='numeric'
-                    onChangeText={(text)=> text}
-                    value={this.state.barks}
-                    maxLength={3}  //setting limit of input
-                />
-              )}}
-            />
-        </View>
-
-        <Text h4>Handler Knows</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.handlerKnows`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Fringe</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.fringe`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Reset</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.reset`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Alert</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.falseAlert`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>On Lead</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.lead`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>False Indication</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.falseIndication`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Detail Search</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.detailSearch`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        <Text h4>Successful</Text>
-        <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.successful`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-        </View>
-        
         <Text h4>Failure Codes</Text>
-        <ScrollView style={{height: '20%'}}>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.failCodes`} component={(inputProps) => {
-                const { input: { value, onChange } } = inputProps;
-                // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-                return (
-                    <CheckboxContainer checkboxes={BuildingSearchInfo.FailCodes}/>
-                )}}
-                /> 
+        <ScrollView style={scrollViewContainerStyle}>
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+            <CheckboxContainer
+              name={`${dogId}.performance.${sectionId}.failCodes`}
+              checkboxes={BuildingSearchInfo.FailCodes}
+            />
+          </View>
         </ScrollView>
         <Text h4>Distractions</Text>
-        <ScrollView style={{height: '20%'}}>
-        <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.distractions`} component={(inputProps) => {
-                const { input: { value, onChange } } = inputProps;
-                // what to do with the selectedIndex={value} thing for these checkboxes to get actual values
-                return (
-                    <CheckboxContainer checkboxes={BuildingSearchInfo.Distractions}/>
-                )}}
-                /> 
-        </ScrollView>
-        <View>
-          <Text h3>Agility</Text>
-          <Text h4>Object Provided</Text>
-          <View>
-            {renderDropdown(`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.objectProvided`, BuildingSearchInfo.AgilityObjects, { width: 200, height: 100 })}
-          </View>
-          <Text h4>Object Used</Text>
-          <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.objectUsed`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <ButtonGroup
-                  onPress={onChange}
-                  selectedIndex={value}
-                  buttons={['No', 'Yes']}
-                  containerStyle={{height: 50}}
-                />
-              )}}
-            />
-          </View>   
-          <Text h4>Surface Type</Text>
-          <View>
-            {renderDropdown(`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.surfaceType`, BuildingSearchInfo.SurfaceTypes, { width: 200, height: 100 })}
-          </View>
-          <Text h4>Canine End Height (ft)</Text>
-          <View>
-            <Field name={`dogs.${this.props.dog.id}.${section.concentration}.${section.size}.endHeight`} component={(inputProps) => {
-              const { input: { value, onChange } } = inputProps;
-              return (
-                <TextInput 
-                    style={styles.input}
-                    keyboardType='numeric'
-                    onChangeText={(text)=> this.checkNumber(text)}
-                    value={0}
-                    maxLength={3}  //setting limit of input
-                />
-              )}}
-            />
-          </View>
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <CheckboxContainer
+            name={`${dogId}.performance.${sectionId}.distractions`}
+            checkboxes={BuildingSearchInfo.Distractions}
+          />
         </View>
       </View>
     );
   };
 
-  setSections = sections => {
-    this.setState({
-      activeSections: sections.includes(undefined) ? [] : sections,
-    });
+  _addStopwatchTime = onChange => {
+    let time = this.state.stopwatchTime;
+
+    time.seconds++;
+    if (time.seconds >= 60) {
+      time.seconds = 0;
+      time.minutes++;
+      if (time.minutes >= 60) {
+        time.minutes = 0;
+        time.hours++;
+      }
+    }
+
+    onChange(time);
+    this.setState({ stopwatchTime: time });
   };
 
-  _renderPage = () => (
-    <View style={center}>
-        <View>
-            <Text>Training {this.props.dog.name}</Text>
+  _clearStopwatch = onChange => {
+    this.setState({ stopwatchTime: { seconds: 0, minutes: 0, hours: 0 } });
+  };
+
+  _toggleStopwatch = onChange => {
+    if (this.state.interval) {
+      clearInterval(this.state.interval);
+      this.setState({ interval: null });
+    } else {
+      let int = setInterval(() => this._addStopwatchTime(onChange), 1000);
+      this.setState({ interval: int });
+    }
+  };
+
+  _renderStopwatch = () => (
+    <Field
+      name={`${this.props.dog._id}.performance.${
+        this.state.activeSection._id
+      }.time`}
+      component={inputProps => {
+        const { input } = inputProps;
+
+        const time = this.state.stopwatchTime;
+        const hours =
+          time.hours === 0
+            ? "00"
+            : time.hours < 10
+            ? "0" + time.hours
+            : time.hours;
+        const minutes =
+          time.minutes === 0
+            ? "00"
+            : time.minutes < 10
+            ? "0" + time.minutes
+            : time.minutes;
+        const seconds =
+          time.seconds === 0
+            ? "00"
+            : time.seconds < 10
+            ? "0" + time.seconds
+            : time.seconds;
+
+        return (
+          <View style={{ flexDirection: "row" }}>
+            <Button
+              title={
+                !this.state.interval ? "Start Stopwatch" : "Stop Stopwatch"
+              }
+              onPress={() => this._toggleStopwatch(input.onChange)}
+              textStyle={buttonTextStyle}
+              buttonStyle={buttonStyle}
+            />
+            <Text
+              style={{ marginTop: 15 }}
+            >{`${hours}:${minutes}:${seconds}`}</Text>
+            {!this.state.interval && (
+              <Button
+                title={"Clear"}
+                onPress={() => this._clearStopwatch(input.onChange)}
+                textStyle={buttonTextStyle}
+                buttonStyle={buttonStyle}
+              />
+            )}
+          </View>
+        );
+      }}
+    />
+  );
+
+  _renderPage = () => {
+    return (
+      <View
+        style={{
+          marginTop: 30,
+          backgroundColor: "white",
+          alignItems: "center",
+          width: "90%",
+          height: "89%",
+          paddingHorizontal: 10
+        }}
+      >
+        <View style={{ height: "90%", marginTop: 30, alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center"
+            }}
+          >
+            <Text h3>Searches</Text>
+            {this._renderStopwatch()}
+            <Text style={{
+              color: 'red',
+              fontWeight: 'bold',
+              marginBottom: 100,
+              marginLeft: 120,
+              fontSize: 20
+              }}>{this.state.dog.name}</Text>
+          </View>
+          <SectionList
+            sections={this.state.hides}
+            keyExtractor={a => a}
+            style={{ marginTop: 15 }}
+            renderSectionHeader={({ section }) => (
+              <View
+                style={{
+                  backgroundColor: "#EEEEEE",
+                  flexDirection: "row",
+                  justifyContent: "space-between"
+                }}
+              >
+                <Text h3 style={{ paddingLeft: 10 }}>
+                  {section.title}
+                </Text>
+                {!!section.notes && (
+                  <Button
+                    icon={
+                      <Icon
+                        name="info-circle"
+                        size={15}
+                        color="white"
+                        onPress={() => alert("notes")}
+                      />
+                    }
+                    type="clear"
+                    title="i"
+                  />
+                )}
+              </View>
+            )}
+            renderItem={({ item, section }) => (
+              <View key={item}>{this._renderContent(item._id)}</View>
+            )}
+          />
         </View>
-      <View>
-        <Text>Handler</Text>
-        {renderDropdown(`dogs.${this.props.dog.id}.Handler`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
       </View>
-      <View>
-        <Text>Recorder</Text>
-        {renderDropdown(`dogs.${this.props.dog.id}.Recorder`, BuildingSearchInfo.TempTrainers, { width: 200, height: 100 })}
-      </View>
-      <Text h2>Searches</Text>
-      <Accordion
-            activeSections={this.state.activeSections}
-            sections={BuildingSearchInfo.TempSessions[0].Hides}
-            touchableComponent={TouchableOpacity}
-            renderHeader={this._renderHeader}
-            renderContent={this._renderContent}
-            onChange={this.setSections}
-            expandMultiple={false}
-        />
-      {this._renderSubmitBtn()}
-    </View>
-  )
+    );
+  };
+
+  _renderAddDogNameField(inputProps) {
+    return (
+      <FormInput
+        placeholder="Name"
+        value={inputProps.input.value}
+        onChangeText={inputProps.input.onChange}
+        editable={true}
+        maxLength={35}
+        multiline={false}
+        containerStyle={{ width: "40%" }}
+      />
+    );
+  }
 
   render = () => (
     <View style={container}>
-    <ScrollView style={formContainer} keyboardShouldPersistTaps={'handled'}>
-      <View>
-        <Text h2>Building Search</Text>
-        {this._renderPage()}
-      </View>
-    </ScrollView>
+      {this._renderPage()}
+      {this._renderSubmitBtn()}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
-  field: {
-    marginTop: 30,
-    height: 100, 
-    flexDirection: 'column',
+  container: {
+    flex: 1,
+    backgroundColor: "white"
+  },
+  hideContainer: {
+    flexDirection: "column",
     paddingLeft: 65,
-    paddingRight: 65
+    paddingRight: 65,
+    ...center
   },
   fieldsContainer: {
-    marginLeft: 60,
-    marginTop: 50,
     borderColor: Colors.darkGrey,
     borderRadius: 10,
-    borderWidth: 8,
-    height: '80%',
-    width: '85%'
+    borderWidth: 8
   },
   dropdown: {
     width: 150,
@@ -396,18 +501,10 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
-    width: 100,
-  },
+    width: 100
+  }
 });
 
-export default connectReduxForm(
-    'udc',
-    UDCBuildingSearchScreen,
-    state => ({
-        dog: state.udc.dog
-    }),
-    dispatch => ({
-        saveDogTraining: performanceInfo =>
-          dispatch({ type: actions.SAVE_UDC_DOG_TRAINING, performanceInfo })
-      })
-  )
+export default connectReduxForm("udc", UDCBuildingSearchScreen, state => ({
+  dog: state.udc.dog
+}));

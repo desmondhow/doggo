@@ -1,14 +1,15 @@
 import React from 'react';
-import {Platform, StatusBar, StyleSheet, View, Image, Text} from 'react-native';
+import {NetInfo, Platform, StatusBar, StyleSheet, View} from 'react-native';
 import {AppLoading, Asset, Font, Icon} from 'expo';
-import {createStore} from 'redux';
-import {Provider, connect} from 'react-redux';
-
 import {createRootNavigator} from './navigation/AppNavigator';
 import {isSignedIn} from "./components/auth";
-import reducer from './redux/reducers/index.reducers/'
+import {createAppContainer} from 'react-navigation';
 
-const store = createStore(reducer);
+import store from './redux/reduxConfig'
+import {Provider} from 'react-redux';
+import {connectionState, dispatchActionQueueElt, pingServer} from "./redux/actions/connection.actions";
+import Constants from "./constants/Api";
+
 
 export default class App extends React.Component {
     state = {
@@ -16,25 +17,75 @@ export default class App extends React.Component {
         signedIn: true,
         checkedSignIn: true
     };
-
-
-    /**
-     * Checks if user is signed in before accesing profile
-     */
     async componentDidMount() {
+        //Check if user is already signed in
         await isSignedIn()
             .then(res => {
-                this.setState({signedIn: true, checkedSignIn: true})
+                if (res !== false) {
+                    this.setState({signedIn: true, checkedSignIn: true})
+                } else {
+                    this.setState({signedIn: false, checkedSignIn: true});
+                }
             })
-            .catch((err) => alert("An error occurred:\n" + err));
+            .catch((err) =>{
+                this.setState({signedIn: false, checkedSignIn: true});
+                alert("An error occurred:\n" + err);
+            });
+
+        //Ping Our Server and check if the server is  working
+        store.dispatch(pingServer({url: Constants.ping}));
+        //Add event listener for internet connection
+        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
+        //Ping server every 10 sec
+        setInterval(this.pingServerFunction,
+            10 * 1000
+        )
     }
+
+    /**
+     * If our server is working and the device has internet connection, this function dispatches every action in the
+     * offline actions queue
+     */
+    handleConnectionChange = (isConnected) => {
+        if (!isConnected) {
+            //Todo: Change to GUI symbol
+            alert('No internet connection. Everything will be stored locally.')
+        }
+        const { actionQueue, isServerOnline } = store.getState().connection;
+        //Update connection state
+        store.dispatch(connectionState({ status: isConnected }));
+
+        // Once the app connects, dispatch all requests
+        if (isConnected && isServerOnline && actionQueue.length > 0) {
+            store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
+        }
+
+    };
+
+    /**
+     * Pings our server to make sure its working.
+     */
+    pingServerFunction() {
+        store.dispatch(pingServer({url: Constants.ping}));
+        const { isConnected, actionQueue, isServerOnline } = store.getState().connection;
+        // Once the app connects, dispatch all requests
+        if (isConnected && isServerOnline && actionQueue.length > 0) {
+            store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
+        }
+    }
+
+    componentWillUnmount() {
+        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
+    }
+
+
 
     render() {
         if (!this.state.isReady) {
             return (
                 <AppLoading
                     startAsync={this._cacheResourcesAsync}
-                    onFinish={() => this.setState({ isReady: !this.state.isReady })}
+                    onFinish={() => this.setState({isReady: !this.state.isReady})}
                     onError={console.warn}
                 />
             );
@@ -46,19 +97,22 @@ export default class App extends React.Component {
             return null;
         }
         const {signedIn} = this.state;
-        console.log(signedIn)
+
         let RootNav = createRootNavigator(signedIn);
+        const App = createAppContainer(RootNav);
+
 
         return (
+
             <Provider store={store}>
                 <View style={styles.container}>
                     {Platform.OS === 'ios' && <StatusBar barStyle="default"/>}
-                    <RootNav />
+                    <App/>
                 </View>
             </Provider>
+
         );
     }
-
 
 
     async _cacheResourcesAsync() {
@@ -83,7 +137,6 @@ export default class App extends React.Component {
     }
 
 }
-
 
 
 const styles = StyleSheet.create({

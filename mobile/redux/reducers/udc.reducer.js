@@ -1,51 +1,102 @@
-import * as actions from '../actions/index.actions';
-import { InitialValues } from '../../constants/sessions/UDCConstants';
 import Constants from "../../constants/Api";
+import {
+    SAVE_UDC_SESSION,
+    DELETE_UDC_SESSION,
+    SAVE_UDC_DOG,
+    SAVE_UDC_DOG_TRAINING,
+    GET_ALL_UDC,
+    RESET_STATE, UPDATE_UDC_SESSION
+} from "../actions/udc.actions";
 
-export default (state = {}, action) => {
-  switch (action.type) {
-    case actions.GET_UDC_GENERAL_INITIAL_STATE: {
-      return { general: InitialValues.General };
+
+// Initial state
+export const initialUDCState = {
+    currSessionsData: [],
+};
+
+export default (state = initialUDCState, action) => {
+    switch (action.type) {
+
+        case UPDATE_UDC_SESSION: {
+            const sessionInfo = action.sessionInfo;
+            const sessionId = sessionInfo.sessionId;
+            //Update element
+            return {
+                ...state,
+                currSessionsData: state.currSessionsData.map(session => session.sessionId === sessionId ?
+                    // transform the one with a matching id
+                    {...session,
+                        temperature: sessionInfo.temperature,
+                        humidity: sessionInfo.humidity,
+                        wind: sessionInfo.wind,
+                        windDirection: sessionInfo.windDirection,
+                        complete: sessionInfo.complete,
+                        hides: sessionInfo.hides
+                    } :
+                    // otherwise return original
+                    session
+
+                )
+            };
+
+        }
+
+        case DELETE_UDC_SESSION: {
+            const sessionId = action.sessionId;
+            // Find index where session to be deleted is located.
+            let i =0;
+
+            for (i; i < state.currSessionsData.length; i++ ) {
+                if (state.currSessionsData[i].sessionId === sessionId) {
+                    break;
+                }
+            }
+            return {
+                ...state,
+                currSessionsData: [
+                    ...state.currSessionsData.filter((item, index) => index !== i)
+                ]
+            };
+
+        }
+
+        case SAVE_UDC_SESSION: {
+            const sessionInfo = action.sessionInfo;
+            return {
+                ...state,
+                //Push new session
+                currSessionsData: [...state.currSessionsData, sessionInfo]
+            };
+        }
+
+        case GET_ALL_UDC: {
+            //Overrides local data with the data obtained from server
+            const sessions = action.sessions;
+            return {
+                ...state,
+                currSessionsData: sessions,
+            };
+
+        }
+        case SAVE_UDC_DOG: {
+            return { ...state, dog: action.dog };
+        }
+        case SAVE_UDC_DOG_TRAINING: {
+            const performanceInfo = action.performanceInfo;
+            // console.log(`performanceInfo: ${performanceInfo}`);
+            // api call or whatever to actually save the perfomanceInfo for the dog to the state
+            // note performanceInfo.dogs is what we want!
+            return state;
+        }
+
+
+        case RESET_STATE: {
+            return {
+                ...state,
+                currSessionsData: []
+            };
+        }
+        default:
+            return state;
     }
-    case actions.GET_UDC_HIDE_INITIAL_STATE: {
-      return { hides: InitialValues.Hides };
-    }
-    case actions.SAVE_NEW_UDC_SESSION: {
-      const sessionInfo = action.sessionInfo
-      
-      Constants.getSaveUDCSessionURL()
-      .then(url => (   
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sessionInfo)
-        })
-      ))
-      .then(res => res.json())
-      .then((res) => { 
-        console.log(`New UDC Session Id: ${res}`)
-        console.log('this isnt reached because User.findById on server doesnt work')
-      })
-      .catch(err => {
-        console.log(err);
-        throw err;
-      })
-      // return { hides: InitialValues.Hides };
-    }
-    case actions.SAVE_UDC_DOG: {
-      return { dog: action.dog };
-    }
-    case actions.SAVE_UDC_DOG_TRAINING: {
-      const performanceInfo = action.performanceInfo.dogs;
-      console.log(performanceInfo);
-      // api call or whatever to actually save the perfomanceInfo for the dog to the state
-      // note performanceInfo.dogs is what we want!
-      return state;
-    }
-    default:
-      return state;
-  }
 };
