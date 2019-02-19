@@ -21,7 +21,7 @@ export const UDCInfo = {
       'SW',
       'W',
       'NW'
-    ],
+    ]
   },
   Hides: {
     Measurements: {
@@ -322,6 +322,12 @@ export const LHSInfo = {
       'W',
       'NW'
     ],
+    timeOfDay: [
+      'Daylight',
+      'Nighttime',
+      'Dark/unlit',
+      'Rescue Lighting'
+    ]
   },
   SearchSetup: {
     Locations: [
@@ -336,7 +342,7 @@ export const LHSInfo = {
       'Offsite',
       'Other'
     ],
-    SubjectPlacement: [
+    Placements: [
       'Prop Off Rubble',
       'Prop Edge of Rubble',
       'Prop On Rubble',
@@ -351,7 +357,8 @@ export const LHSInfo = {
       'Below',
       'Distance 3-6ft',
       'Distance >7ft'
-    ]
+    ],
+    
   },
   Search: {
     Barks: arrayOfLengthN(40, true),
