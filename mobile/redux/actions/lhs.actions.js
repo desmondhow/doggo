@@ -159,21 +159,134 @@ export const deleteLHSSessionLater = ({ sessionId }) => {
   };
 };
 
-const parseHides = searchesData => {
+/**
+ * Saves a LHS Training session. If there is no connection, session is saved locally and pushed to db once there is
+ * connection.
+ * @param sessionInfo
+ * @returns {Function}
+ */
+export const saveLHSTraining = ({sessionInfo, handlers}) => {
+  return (dispatch, getState) => {
+
+      sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained, handlers);
+      console.log('session info after edit', sessionInfo);
+      //We save it locally first
+      dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
+      if (isOnline()) {
+          API.LHSTrainURL.then(url => {
+              console.log(url);
+              request(url, JSON.stringify({
+                  sessionId: sessionInfo.sessionId,
+                  sessionInfo: sessionInfo.dogsTrained
+              }), 'POST')
+                  .then(res => {
+                  })
+                  .catch(err => {
+                      console.log('error train now', err);
+                      dispatch({type: SERVER_STATE, isServerOnline: false});
+                      dispatch({
+                          type: ADD_TO_ACTION_QUEUE,
+                          payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+                          data: sessionInfo
+                      });
+                  });
+          }).catch(err => {
+          })
+
+
+      } else {
+          dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER, data: sessionInfo});
+      }
+  };
+};
+
+export const saveLHSTrainingLater = ({sessionInfo}) => {
+  return (dispatch) => {
+      API.LHSTrainURL.then(url =>
+          request(url, JSON.stringify({
+              sessionId: sessionInfo.sessionId,
+              sessionInfo: sessionInfo.dogsTrained
+          }), 'POST')
+              .then(res => {
+              })
+              .catch(err => {
+                  console.log('error save training later', err);
+                  dispatch({type: SERVER_STATE, isServerOnline: false});
+                  dispatch({
+                      type: ADD_TO_ACTION_QUEUE,
+                      payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+                      data: sessionInfo
+                  });
+              })
+      )
+
+  }
+
+
+};
+
+
+const parseSearches = searchesData => {
   let searches = [];
-  Object.keys(searchesData).forEach(location => {
-    const s = searchesData[location];
-    let subject1 = s.subject1;
-    let subject2 = s.subject2;
-    let subject3 = s.subject3;
+  Object.keys(searchesData).forEach(searchNumber => {
+      const h = searchesData[searchNumber];
+      let location = h.location;
+      Object.keys(h.placements).forEach(placement => {
+        placement = placement[0].toLowerCase() + placement.replace(' ', '').substr(1);
+        console.log(placement);
+        h[placements][placement] = true;
+      });
+      let placements = h.placements;
 
-
-    searches.push({
-      location,
-      subject1, 
-      subject2,
-      subject3
-    });
+      searches.push({
+          searchNumber,
+          location,
+          placements,
+      });
   });
   return searches;
+};
+
+
+const parseTrainingData = (trainingData, handlers) => {
+
+  Object.keys(trainingData).forEach(dogId => {
+      const searchInfo = trainingData[dogId];
+      if (!!searchInfo['handler']) {
+          const handler = handlers.find(handler =>
+              handler.name === searchInfo['handler']);
+          searchInfo['handlerId'] = handler._id;
+      }
+
+      Object.keys(searchInfo["performance"]).forEach(searchId => {
+          Object.keys(searchInfo["performance"][searchId]).forEach(field => {
+                  const performanceInfo = searchInfo["performance"][searchId];
+                  // need to figure out how to format fields since we have each field in the lhs schema
+                  // as its separate thing, also need to figure out how to send duration
+                  if (field === "fields") {
+                      performanceInfo[field].forEach(f => {
+                          f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
+                          console.log(f);
+                          searchInfo["performance"][searchId][f] = true;
+                      });
+                      delete performanceInfo[field];
+                  }
+                  else if (field === "duration") {
+                      searchInfo["performance"][searchId]["duration"] = `${
+                          field.minutes
+                          }:${field.seconds}`;
+                  }
+                  else if (typeof performanceInfo[field] === "object") {
+                      if (!!performanceInfo[field]["text"]) {
+                          searchInfo["performance"][searchId][field] =
+                              performanceInfo[field]["text"];
+                      }
+                  }
+              }
+          );
+      });
+  });
+
+  return trainingData;
+
 };
