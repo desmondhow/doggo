@@ -343,20 +343,62 @@ export const LHSInfo = {
       'Other'
     ],
     Placements: [
-      'Prop Off Rubble',
-      'Prop Edge of Rubble',
-      'Prop On Rubble',
-      'Diffused',
-      'In Vehicle',
-      'In Room',
-      'Concealed',
-      'Visible',
-      'High/Ceiling',
-      'Props',
-      'In Rubble Hole',
-      'Below',
-      'Distance 3-6ft',
-      'Distance >7ft'
+      {
+        label: 'Prop Off Rubble',
+        value: '1',
+      },
+      {
+        label: 'Prop Edge of Rubble',
+        value: '2',
+      },
+      {
+        label: 'Prop On Rubble',
+        value: '3',
+      },
+      {
+        label: 'Diffused',
+        value: '4',
+      },
+      {
+        label: 'In Vehicle',
+        value: '5',
+      },
+      {
+        label: 'In Room',
+        value: '6',
+      },
+      {
+        label: 'Concealed',
+        value: '7',
+      },
+      {
+        label: 'Visible',
+        value: '8',
+      },
+      {
+        label: 'High/Ceiling',
+        value: '9',
+      },
+      {
+        label: 'Props',
+        value: '10',
+      },
+      {
+        label: 'In Rubble Hole',
+        value: '11',
+      },
+      {
+        label: 'Below',
+        value: '12',
+      },
+      {
+        label: 'Distance 3-6ft',
+        value: '13',
+      },
+      {
+        label: 'Distance >7ft',
+        value: '14',
+      },
     ],
     
   },

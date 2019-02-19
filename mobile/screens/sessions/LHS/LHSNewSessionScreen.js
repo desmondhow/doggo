@@ -54,9 +54,7 @@ class LHSNewSessionScreen extends React.Component {
       sessionInfo.searches.forEach(search => {
         previousSearches[search.searchNumber] = {
           location: search.location,
-          subject1: search.subject1, 
-          subject2: search.subject2, 
-          subject3: search.subject3,
+          placements: search.placements,
           notes: search.notes
         };
       });
@@ -103,8 +101,10 @@ class LHSNewSessionScreen extends React.Component {
       complete: false,
       sessionId: this.state.sessionId,
       createdAt: this.state.createdAt,
+      searches: this.state.addedSearches,
     };
-
+    console.log("On SUbmit");
+    console.log(JSON.stringify(session));
     this.props.dispatch(saveLHSSession({ sessionInfo: session }));
     this.props.navigation.navigate("LHS");
   };
@@ -160,7 +160,7 @@ class LHSNewSessionScreen extends React.Component {
               >
                 Search #:
               </Text>
-              <Text style={{ fontSize: 22 }}>{roomNumber} | </Text>
+              <Text style={{ fontSize: 22 }}>{searchNumber} | </Text>
               <Text style={{ fontWeight: "bold", fontSize: 22 }}>
                 {this.state.addedSearches[searchNumber].location}
               </Text>
@@ -215,7 +215,7 @@ class LHSNewSessionScreen extends React.Component {
               borderRadius: 5
             }}
           >
-            <View style={{ margin: 20, ...center }}>
+            <View style={{ margin: 20, ...center}}>
               <View style={{ flexDirection: "row", marginBottom: 20 }}>
                 <Text h3>Adding a search</Text>
               </View>
@@ -264,7 +264,7 @@ class LHSNewSessionScreen extends React.Component {
         marginBottom: 100
       }}
     >
-      <View style={{ flexDirection: "row", ...center }}>
+      <View style={{ flexWrap: "wrap", flexDirection: "row", ...center }}>
         <View
           style={{
             flexDirection: "column",
@@ -285,6 +285,7 @@ class LHSNewSessionScreen extends React.Component {
           )}
         </View>
         {/* Subject Placement */}
+        <Text style={styles.labelStyle}>Subject Placement:</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
             name={`Searches.${searchNumber}.placements`}
@@ -389,6 +390,7 @@ class LHSNewSessionScreen extends React.Component {
   };
 
 _addSearch = () => {
+  console.log("Search", this.state.addSearchNumber);
   const placements = this.props.addSearchPlacements;
   const location = this.props.addSearchLocation;
   const notes = this.props.addSearchNotes;
@@ -401,7 +403,6 @@ _addSearch = () => {
     `Searches[null]location`,
     `Searches[null]notes`
   ]);
-
   // store new hide
   this.setState(prevState => ({
     showAddSearchModal: false,
@@ -473,6 +474,6 @@ const styles = StyleSheet.create({
 const selector = formValueSelector("lhs");
 export default connectReduxForm("lhs", LHSNewSessionScreen, state => ({
   addSearchLocation: selector(state, `Searches.null.location`),
-  addSearchSubject1: selector(state, `Searches.null.notes`),
-  addSearchSubject2: selector(state, `Searches.null.placements`)
+  addSearchNotes: selector(state, `Searches.null.notes`),
+  addSearchPlacements: selector(state, `Searches.null.placements`)
 }));
