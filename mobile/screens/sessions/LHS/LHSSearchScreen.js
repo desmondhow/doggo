@@ -20,10 +20,12 @@ import {
   renderReduxFormInput,
   request
 } from "../../../components/helpers";
-import { LHSInfo } from "../../../constants/SessionsConstants";
-import API, { loadUserProfile } from "../../../constants/Api";
+import {LHSInfo} from "../../../constants/SessionsConstants";
+import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
+import {saveLHSTraining} from "../../../redux/actions/lhs.actions";
+
 
 export class LHSBuildingSearchScreen extends React.Component {
   constructor(props) {
@@ -31,17 +33,19 @@ export class LHSBuildingSearchScreen extends React.Component {
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
     if (sessionInfo) {
       const searchSections = [];
-      sessionInfo.searches.forEach(search => {
+      sessionInfo.searches.forEach(hide => {
         searchSections.push({
-          title: search.location,
-          data: [search]
+          title: this._renderSectionTitle(hide),
+          data: [hide]
         });
       });
       this.state = {
-        activeSection: "",
+          sessionInfo: sessionInfo,
+          activeSection: "",
         dog: this.props.dog,
         dogs: [],
         handlers: [],
+        searches: searchSections,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
         stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
@@ -50,72 +54,34 @@ export class LHSBuildingSearchScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
-    loadUserProfile()
-      .then(profile =>
-        this.setState({ dogs: profile.dogs, handlers: profile.handlers })
-      )
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
-  }
+    componentDidMount() {
+        this.setState(
+            {
+                handlers: this.props.handlers,
+                dogs: this.props.dogs
+            },
+        );
+    }
 
-  _onSubmit = sessionInfo => {
-    console.log(`info: ${JSON.stringify(sessionInfo)}`);
-    API.LHSTrainURL.then(url => {
-      // only send the part of the object that we care about
-      Object.keys(sessionInfo).forEach(dogId => {
-        const hideInfo = sessionInfo[dogId];
-        if (!!hideInfo['handler']) {
-          const handler = this.state.handlers.find(handler => 
-            handler.name === hideInfo['handler']);
-          hideInfo['handlerId'] = handler._id;
+    _onSubmit = dogTrainingData => {
+        if (dogTrainingData.length === 0) {
+            alert('Please fill the training session.')
+        } else {
+            //Todo: remove comment
+            // for (let i = 0, l = sessionInfo.length; i < l; i++) {
+            //     if (typeof(sessionInfo[i])==='undefined'||  sessionInfo[i]=== null) {
+            //         alert('Please fill the training session.')
+            //         return;
+            //     }
+            // }
+            const sessionInfo = this.state.sessionInfo;
+            sessionInfo.dogsTrained = dogTrainingData;
+
+            this.props.dispatch(saveLHSTraining({sessionInfo: sessionInfo, handlers: this.state.handlers}));
+            this.props.navigation.navigate('LHS')
         }
 
-        Object.keys(hideInfo["performance"]).forEach(hideId => {
-          Object.keys(hideInfo["performance"][hideId]).forEach(field => {
-              const performanceInfo = hideInfo["performance"][hideId];
-              // need to figure out how to format fields since we have each field in the lhs schema
-              // as its separate thing, also need to figure out how to send duration
-              if (field === "fields") {
-                performanceInfo[field].forEach(f => {
-                  f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
-                  console.log(f);
-                  hideInfo["performance"][hideId][f] = true;
-                });
-                delete performanceInfo[field];
-              } 
-              else if (field === "duration") {
-                hideInfo["performance"][hideId]["duration"] = `${
-                  field.minutes
-                }:${field.seconds}`;
-              } 
-              else if (typeof performanceInfo[field] === "object") {
-                if (!!performanceInfo[field]["text"]) {
-                  hideInfo["performance"][hideId][field] =
-                  performanceInfo[field]["text"];
-                }
-              }
-            }
-          );
-        });
-      });
-      return request(
-        url,
-        JSON.stringify({
-          sessionId: this.state.sessionId,
-          sessionInfo: sessionInfo
-        }),
-        "POST"
-      );
-    })
-      .then(this.props.navigation.navigate("LHS"))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
-  };
+    };
 
   _renderSubmitBtn = () => (
     <Button
@@ -135,6 +101,9 @@ export class LHSBuildingSearchScreen extends React.Component {
       }}
     />
   );
+
+  _renderSectionTitle = section =>
+    `${section.searchNumber ? ` Search #${section.searchNumber}` : ""}`;
 
   _renderLabeledButtonGroup = (label, fieldName, buttons, containerStyle) => (
     <View style={{ flexDirection: "column" }}>
@@ -214,7 +183,7 @@ export class LHSBuildingSearchScreen extends React.Component {
               {this._renderLabeledButtonGroup(
                 "Rewarder",
                 `${dogId}.performance.${sectionId}.rewarder`,
-                LHSSearchInfo.Rewarder,
+                ["Handler", "Victim"],
                 {
                   flexDirection: "column",
                   justifyContent: "flex-start",
@@ -264,7 +233,7 @@ export class LHSBuildingSearchScreen extends React.Component {
             </View>
           </View>
         </View>
-        <Text h4>Select appropriate option:</Text>
+        <Text h4>Select all that apply:</Text>
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
             name={`${dogId}.performance.${sectionId}.fields`}
@@ -407,7 +376,7 @@ export class LHSBuildingSearchScreen extends React.Component {
               }}>{this.state.dog.name}</Text>
           </View>
           <SectionList
-            sections={this.state.hides}
+            sections={this.state.searches}
             keyExtractor={a => a}
             style={{ marginTop: 15 }}
             renderSectionHeader={({ section }) => (
@@ -495,6 +464,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connectReduxForm("lhs", LHSSearchScreen, state => ({
-  dog: state.lhs.dog
-}));
+const selector = formValueSelector('lhs');
+export default connectReduxForm(
+    'lhs',
+    LHSBuildingSearchScreen,
+    state => ({
+        dog: state.lhs.dog,
+        dogs: state.general.dogs,
+        handlers: state.general.handlers,
+    })
+)

@@ -48,6 +48,10 @@ export default routes = {
     UDCSaveSessionURL: formatSessionsRoute('udc/create'),
     UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
     UDCTrainURL: formatSessionsRoute(`udc/train`),
+    LHSCurrentSessionsURL: formatSessionsRoute('lhs/get-current-sessions'),
+    LHSSaveSessionURL: formatSessionsRoute('lhs/create'),
+    LHSDeleteSessionURL: sessionId => formatSessionsRoute(`lhs/${sessionId}`),
+    LHSTrainURL: formatSessionsRoute(`lhs/train`),
     ping: LOCAL_API_URL + 'ping'
 
 }

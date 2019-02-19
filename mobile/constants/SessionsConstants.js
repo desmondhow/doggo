@@ -366,19 +366,19 @@ export const LHSInfo = {
       'On Lead',
       'Off Lead'
     ],
-    Rewarder: [
-      'Handler',
-      'Victim',
-      'Bite'
-    ],
-    
     Odor: [
       'Diffused',
       'Not Diffused'
     ],
-    Hider: [
-      'Familiar',
-      'Unfamiliar'
+    Fields: [
+      {
+        label: 'Familiar',
+        value: '1',
+      },
+      {
+        label: 'Successful',
+        value: '2',
+      }
     ],
     Distractions: [
       {

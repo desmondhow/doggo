@@ -12,7 +12,7 @@ import { Field, formValueSelector } from 'redux-form';
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle, formContainer } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
 import { BuildingSearch, LHSInfo } from '../../../constants/SessionsConstants';
-import API, { loadUserProfile } from '../../../constants/Api';
+import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
 import {SAVE_LHS_DOG} from "../../../redux/actions/lhs.actions";
 
@@ -28,14 +28,16 @@ export class LHSTrainDogScreen extends React.Component {
     };
   }
 
-  componentDidMount() {
-    loadUserProfile()
-    .then(profile => this.setState({ dogs: profile.dogs, handlers: profile.handlers }))
-    .catch(err => {
-      console.log(err);
-      throw err;
-    });
-  }
+    componentDidMount() {
+        this.setState(
+            {
+                handlers: this.props.handlers,
+                dogs: this.props.dogs
+            },
+        );
+
+    }
+
 
   _onSubmit = (initialInfo) => {
     // need to remove all this temp shit once we have actual dogs in db
@@ -52,7 +54,6 @@ export class LHSTrainDogScreen extends React.Component {
       }
     }
     this.props.saveDog(this.state.dog);
-    // this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
     const sessionData = {...sessionInfo, ...tempInfo};
     // const sessionData = {...sessionInfo, ...initialInfo};
@@ -60,6 +61,8 @@ export class LHSTrainDogScreen extends React.Component {
     // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
     this.props.navigation.navigate('LHSSearch', { sessionInfo: sessionData });
   }
+
+
 
   _renderSubmitBtn = () => (
     <Button
@@ -129,51 +132,16 @@ export class LHSTrainDogScreen extends React.Component {
               null,
               dropdownFontSize
             )}
+            
         </View>
         <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
-            <Text style={labelStyle}>Rewarder</Text>
-            {renderReduxDropdown(
-              `${this.state.dog._id}.rewarder`, 
-              LHSInfo.Search.Rewarder,
-              dropdownStyle,
-              null,
-              null,
-              dropdownFontSize
-            )}
-        </View>
-        <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
-            <Text style={labelStyle}>Hider Is:</Text>
-            <Field
-              name={`${this.state.dog._id}.hider`}
-              component={inputProps => {
-                const { input: { value, onChange } } = inputProps;
-                return (
-                  <ButtonGroup
-                    onPress={i => onChange({ i: i, text: LHSInfo.Search.Hider[i] })}
-                    selectedIndex={value.i}
-                    buttons={LHSInfo.Search.Hider}
-                    containerStyle={buttonGroupContainerStyle}
-                  />
-                );
-              }}
-            />
-        </View>
-        <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
-            <Text style={labelStyle}>Odor Is:</Text>
-            <Field
-              name={`${this.state.dog._id}.odor`}
-              component={inputProps => {
-                const { input: { value, onChange } } = inputProps;
-                return (
-                  <ButtonGroup
-                    onPress={i => onChange({ i: i, text: LHSInfo.Search.Odor[i] })}
-                    selectedIndex={value.i}
-                    buttons={LHSInfo.Search.Odor}
-                    containerStyle={buttonGroupContainerStyle}
-                  />
-                );
-              }}
-            />
+            <Text style={labelStyle}>Recorder</Text>
+            {renderReduxFormInput(
+              `${this.state.dog._id}.recorder`, 
+              { 
+                containerStyle: { width: '60%', marginTop: 10 
+              }
+            })}
         </View>
         <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
             <Text style={labelStyle}>On Lead</Text>
@@ -231,13 +199,15 @@ const styles = StyleSheet.create({
   }
 });
 
-const selector = formValueSelector('lhs');
 export default connectReduxForm(
     'lhs',
     LHSTrainDogScreen,
-    null,
+    state => ({
+        dogs: state.general.dogs,
+        handlers: state.general.handlers,
+    }),
     dispatch => ({
         saveDog: dogInfo =>
-          dispatch({ type: SAVE_LHS_DOG, dog: dogInfo })
-      })
-  )
+            dispatch({ type: SAVE_LHS_DOG, dog: dogInfo })
+    })
+)

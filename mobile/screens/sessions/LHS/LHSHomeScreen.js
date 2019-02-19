@@ -18,7 +18,7 @@ import {
 } from "../../../constants/Styles";
 import {connect} from "react-redux";
 import { getAllLHS} from "../../../redux/actions/lhs.actions";
-// const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
+// const currentSessionsTableHeaderText = ["Created At", "# Searches", "\tDogs", '', ''];
 import API from "../../../constants/Api";
 import { request } from "../../../components/helpers";
 
@@ -115,12 +115,12 @@ import { request } from "../../../components/helpers";
                 }`;
 
 
-            let numHides = session.hides.length
-            if (numHides === undefined) {
-                numHides = Object.keys( session.hides).length;
+            let numSearches = session.searches.length
+            if (numSearches === undefined) {
+                numSearches = Object.keys( session.searches).length;
             }
             const dogs = session.dogsTrained ? session.dogsTrained.length : 0;
-            const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+            const rowData = [createdAt, numSearches, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>
@@ -148,7 +148,7 @@ import { request } from "../../../components/helpers";
       );
     });
 
-    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\t# Dogs", '', ''];
+    const currentSessionsTableHeaderText = ["Created At", "\t# Searches", "\t# Dogs", '', ''];
     return (
       <View style={container}>
         <View style={styles.sessionsContainer}>

@@ -31,7 +31,7 @@ export default (state = initialLHSState, action) => {
                         wind: sessionInfo.wind,
                         windDirection: sessionInfo.windDirection,
                         complete: sessionInfo.complete,
-                        hides: sessionInfo.hides
+                        searches: sessionInfo.searches
                     } :
                     // otherwise return original
                     session

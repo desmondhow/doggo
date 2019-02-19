@@ -11,7 +11,8 @@ const emoji = require('node-emoji');
 const PORT = process.env.PORT || 3010;
 
 const users = require('./APIs/usersAPI');
-const sessions = require('./APIs/sessionsAPI');
+const UDCSessions = require('./APIs/UDCSessionsAPI');
+const LHSSessions = require('./APIs/LHSSessionsAPI');
 const dataAnalysis = require('./APIs/dataAnalysisAPI');
 
 const app = express();
@@ -74,7 +75,8 @@ app.use(function (req, res, next) {
 
 // API routes
 app.use('/api/users', users);
-app.use('/api/users', sessions);
+app.use('/api/users', UDCSessions);
+app.use('/api/users', LHSSessions);
 
 //Default page is index
 app.get('/', function (req, res) {
