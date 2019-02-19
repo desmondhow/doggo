@@ -76,6 +76,8 @@ class LHSNewSessionScreen extends React.Component {
       //We are creating a new session
       const localID = guidGenerator();
       this.state = {
+        ...addSearchState,
+        addedSearches: {},
         isNew: true,
         sessionId: localID,
         isEditing: false,
