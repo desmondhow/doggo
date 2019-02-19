@@ -8,6 +8,8 @@ import UDCBuildingSearchScreen from '../screens/sessions/UDC/UDCBuildingSearchSc
 import UDCTrainDogScreen from '../screens/sessions/UDC/UDCTrainDogScreen';
 import LHSHomeScreen from '../screens/sessions/LHS/LHSHomeScreen';
 import LHSNewSessionScreen from '../screens/sessions/LHS/LHSNewSessionScreen';
+import LHSSearchScreen from '../screens/sessions/LHS/LHSSearchScreen';
+import LHSTrainDogScreen from '../screens/sessions/LHS/LHSTrainDogScreen';
 
 import { mainNavHeader } from './helpers';
 
@@ -54,5 +56,17 @@ export default createStackNavigator({
     navigationOptions: {
       title: 'New Live Human Search Session'
     }
-  }
+  },
+  LHSSearch: {
+    screen: LHSSearchScreen,
+    navigationOptions: { 
+      title: 'Live Human Search'
+    }
+  },
+  LHSTrainDog: {
+    screen: LHSTrainDogScreen,
+    navigationOptions: { 
+      title: 'Live Human Search'
+    }
+  },
 });

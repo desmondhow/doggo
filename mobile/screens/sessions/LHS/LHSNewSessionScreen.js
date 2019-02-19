@@ -286,19 +286,27 @@ class LHSNewSessionScreen extends React.Component {
         </View>
         {/* Subject Placement */}
         <Text style={styles.labelStyle}>Subject Placement:</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          <CheckboxContainer
-            name={`Searches.${searchNumber}.placements`}
-            checkboxes={LHSInfo.SearchSetup.Placements}
-          />
-        </View>
+        {
+          userIsAddingSearch &&
+          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+            <CheckboxContainer
+              name={`Searches.${searchNumber}.placements`}
+              checkboxes={LHSInfo.SearchSetup.Placements}
+            />
+          </View>
+        }
+        {
+          !userIsAddingSearch &&
+          this.state.addedSearches[searchNumber].placements.map(p => <Text>{p}, </Text>)
+        }
         {/* Notes */}
         <View style={center}>
           <Text style={styles.labelStyle}>Notes:</Text>
           {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
             containerStyle: { width: 400 },
             numberOfLine: 4,
-            multiline: true
+            multiline: true,
+            placeholder: userIsAddingSearch ? null : this.state.addedSearches[searchNumber].notes
           })}
         </View>
       </View>
@@ -380,13 +388,13 @@ class LHSNewSessionScreen extends React.Component {
   };
 
   _resetFields = fields => {
-    fields.forEach(field => {
-      //reset the field's value
-      this.props.dispatch(change("lhs", field, ""));
+    // fields.forEach(field => {
+    //   //reset the field's value
+    //   this.props.dispatch(change("lhs", field, ""));
 
-      //reset the field's error
-      this.props.dispatch(untouch("lhs", field));
-    });
+    //   //reset the field's error
+    //   this.props.dispatch(untouch("lhs", field));
+    // });
   };
 
 _addSearch = () => {

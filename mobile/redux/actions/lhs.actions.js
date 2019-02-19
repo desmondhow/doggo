@@ -225,23 +225,42 @@ export const saveLHSTrainingLater = ({sessionInfo}) => {
 
 };
 
+const PLACEMENTS = {
+  'Prop Off Rubble': 'offRubble',
+  'Prop Edge of Rubble': 'edgeRubble',
+  'Prop On Rubble': 'onRubble',
+  'Diffused': 'diffused',
+  'In Vehicle': 'inVehicle',
+  'In Room': 'inRoom',
+  'Concealed': 'concealed',
+  'Visible': 'visible',
+  'High/Ceiling': 'highCeiling',
+  'Props': 'props',
+  'In Rubble Hole': 'inRubbleHole',
+  'Below': 'below',
+  'Distance 3-6ft': 'distanceLow',
+  'Distance >7ft': 'distanceHigh',
+}
 
 const parseSearches = searchesData => {
   let searches = [];
+  console.log(searchesData);
   Object.keys(searchesData).forEach(searchNumber => {
-      const h = searchesData[searchNumber];
-      let location = h.location;
-      Object.keys(h.placements).forEach(placement => {
-        placement = placement[0].toLowerCase() + placement.replace(' ', '').substr(1);
-        console.log(placement);
-        h[placements][placement] = true;
+      let location = searchesData[searchNumber].location;
+      let placements = {};
+      searchesData[searchNumber].placements.forEach(placement => {
+        console.log(searchesData);
+        placement = PLACEMENTS[placement];
+        placements[placement] = true;
       });
-      let placements = h.placements;
+      let notes = searchesData[searchNumber].notes;
+      console.log("Parse Searches placements", placements);
 
       searches.push({
           searchNumber,
           location,
           placements,
+          notes
       });
   });
   return searches;
