@@ -13,7 +13,8 @@ export async function onSignIn(user_id) {
 
 export async function onSignOut() {
     try {
-        return await AsyncStorage.removeItem(USER_KEY);
+        await AsyncStorage.removeItem(USER_KEY);
+        return true;
     } catch (error) {
         console.log(error.message);
 

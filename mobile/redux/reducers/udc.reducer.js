@@ -2,16 +2,16 @@ import Constants from "../../constants/Api";
 import {
     SAVE_UDC_SESSION,
     DELETE_UDC_SESSION,
-    SAVE_UDC_DOG,
-    SAVE_UDC_DOG_TRAINING,
     GET_ALL_UDC,
-    RESET_STATE, UPDATE_UDC_SESSION
+    RESET_STATE,
+    UPDATE_UDC_SESSION, SAVE_UDC_DOG
 } from "../actions/udc.actions";
 
 
 // Initial state
 export const initialUDCState = {
     currSessionsData: [],
+    dog: null
 };
 
 export default (state = initialUDCState, action) => {
@@ -20,6 +20,7 @@ export default (state = initialUDCState, action) => {
         case UPDATE_UDC_SESSION: {
             const sessionInfo = action.sessionInfo;
             const sessionId = sessionInfo.sessionId;
+            //Todo: Should we check if dog has already being trained in this session
             //Update element
             return {
                 ...state,
@@ -31,11 +32,11 @@ export default (state = initialUDCState, action) => {
                         wind: sessionInfo.wind,
                         windDirection: sessionInfo.windDirection,
                         complete: sessionInfo.complete,
-                        hides: sessionInfo.hides
+                        hides: sessionInfo.hides,
+                        dogsTrained: sessionInfo.dogsTrained
                     } :
                     // otherwise return original
                     session
-
                 )
             };
 
@@ -81,19 +82,14 @@ export default (state = initialUDCState, action) => {
         case SAVE_UDC_DOG: {
             return { ...state, dog: action.dog };
         }
-        case SAVE_UDC_DOG_TRAINING: {
-            const performanceInfo = action.performanceInfo;
-            // console.log(`performanceInfo: ${performanceInfo}`);
-            // api call or whatever to actually save the perfomanceInfo for the dog to the state
-            // note performanceInfo.dogs is what we want!
-            return state;
-        }
-
 
         case RESET_STATE: {
+
+            console.log('Resetting state');
             return {
                 ...state,
-                currSessionsData: []
+                currSessionsData: [],
+                dog: null
             };
         }
         default:

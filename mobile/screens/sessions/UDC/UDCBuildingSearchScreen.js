@@ -20,10 +20,12 @@ import {
   renderReduxFormInput,
   request
 } from "../../../components/helpers";
-import { UDCInfo } from "../../../constants/SessionsConstants";
-import API, { loadUserProfile } from "../../../constants/Api";
+import {UDCInfo} from "../../../constants/SessionsConstants";
+import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
+import {saveUDCTraining} from "../../../redux/actions/udc.actions";
+
 
 export class UDCBuildingSearchScreen extends React.Component {
   constructor(props) {
@@ -38,7 +40,8 @@ export class UDCBuildingSearchScreen extends React.Component {
         });
       });
       this.state = {
-        activeSection: "",
+          sessionInfo: sessionInfo,
+          activeSection: "",
         dog: this.props.dog,
         dogs: [],
         handlers: [],
@@ -51,72 +54,34 @@ export class UDCBuildingSearchScreen extends React.Component {
     }
   }
 
-  componentDidMount() {
-    loadUserProfile()
-      .then(profile =>
-        this.setState({ dogs: profile.dogs, handlers: profile.handlers })
-      )
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
-  }
+    componentDidMount() {
+        this.setState(
+            {
+                handlers: this.props.handlers,
+                dogs: this.props.dogs
+            },
+        );
+    }
 
-  _onSubmit = sessionInfo => {
-    console.log(`info: ${JSON.stringify(sessionInfo)}`);
-    API.UDCTrainURL.then(url => {
-      // only send the part of the object that we care about
-      Object.keys(sessionInfo).forEach(dogId => {
-        const hideInfo = sessionInfo[dogId];
-        if (!!hideInfo['handler']) {
-          const handler = this.state.handlers.find(handler => 
-            handler.name === hideInfo['handler']);
-          hideInfo['handlerId'] = handler._id;
+    _onSubmit = dogTrainingData => {
+        if (dogTrainingData.length === 0) {
+            alert('Please fill the training session.')
+        } else {
+            //Todo: remove comment
+            // for (let i = 0, l = sessionInfo.length; i < l; i++) {
+            //     if (typeof(sessionInfo[i])==='undefined'||  sessionInfo[i]=== null) {
+            //         alert('Please fill the training session.')
+            //         return;
+            //     }
+            // }
+            const sessionInfo = this.state.sessionInfo;
+            sessionInfo.dogsTrained = dogTrainingData;
+
+            this.props.dispatch(saveUDCTraining({sessionInfo: sessionInfo, handlers: this.state.handlers}));
+            this.props.navigation.navigate('UDC')
         }
 
-        Object.keys(hideInfo["performance"]).forEach(hideId => {
-          Object.keys(hideInfo["performance"][hideId]).forEach(field => {
-              const performanceInfo = hideInfo["performance"][hideId];
-              // need to figure out how to format fields since we have each field in the udc schema
-              // as its separate thing, also need to figure out how to send duration
-              if (field === "fields") {
-                performanceInfo[field].forEach(f => {
-                  f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
-                  console.log(f);
-                  hideInfo["performance"][hideId][f] = true;
-                });
-                delete performanceInfo[field];
-              } 
-              else if (field === "duration") {
-                hideInfo["performance"][hideId]["duration"] = `${
-                  field.minutes
-                }:${field.seconds}`;
-              } 
-              else if (typeof performanceInfo[field] === "object") {
-                if (!!performanceInfo[field]["text"]) {
-                  hideInfo["performance"][hideId][field] =
-                  performanceInfo[field]["text"];
-                }
-              }
-            }
-          );
-        });
-      });
-      return request(
-        url,
-        JSON.stringify({
-          sessionId: this.state.sessionId,
-          sessionInfo: sessionInfo
-        }),
-        "POST"
-      );
-    })
-      .then(this.props.navigation.navigate("UDC"))
-      .catch(err => {
-        console.log(err);
-        throw err;
-      });
-  };
+    };
 
   _renderSubmitBtn = () => (
     <Button
@@ -505,6 +470,13 @@ const styles = StyleSheet.create({
   }
 });
 
-export default connectReduxForm("udc", UDCBuildingSearchScreen, state => ({
-  dog: state.udc.dog
-}));
+const selector = formValueSelector('udc');
+export default connectReduxForm(
+    'udc',
+    UDCBuildingSearchScreen,
+    state => ({
+        dog: state.udc.dog,
+        dogs: state.general.dogs,
+        handlers: state.general.handlers,
+    })
+)

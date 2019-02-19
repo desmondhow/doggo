@@ -2,7 +2,13 @@
 import Constants from "../../constants/Api";
 import fetch from 'cross-fetch'
 import 'babel-polyfill'
-import {deleteUDCSessionLater, getAllUDCLater, saveUDCSession, saveUDCSessionLater} from "./udc.actions";
+import {
+    deleteUDCSessionLater,
+    getAllUDCLater,
+    saveUDCSession,
+    saveUDCSessionLater,
+    saveUDCTrainingLater
+} from "./udc.actions";
 
 
 /**
@@ -16,7 +22,8 @@ export const RESET_STATE = 'RESET_STATE';
 
 export const ActionQueueTypes = {
     SAVE_NEW_UDC_LATER: 'SAVE_NEW_UDC_LATER',
-    DELETE_UDC_LATER: 'DELETE_UDC_LATER'
+    DELETE_UDC_LATER: 'DELETE_UDC_LATER',
+    SAVE_UDC_TRAINING_LATER: 'SAVE_UDC_TRAINING_LATER'
 
 };
 
@@ -68,6 +75,18 @@ export const dispatchActionQueueElt = ({elts}) => {
                 });
                 dispatch(deleteUDCSessionLater({sessionId: elts[i].data}));
             }
+            if (elts[i].type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(saveUDCTrainingLater({sessionInfo: elts[i].data}));
+
+            }
+
+
 
             else {
                 console.log('error action queue', elts[i].type);
