@@ -296,7 +296,7 @@ class LHSNewSessionScreen extends React.Component {
           </View>
         }
         {
-          !userIsAddingSearch &&
+          !userIsAddingSearch && !this.state.isEditing &&
           this.state.addedSearches[searchNumber].placements.map(p => <Text>{p}, </Text>)
         }
         {/* Notes */}
