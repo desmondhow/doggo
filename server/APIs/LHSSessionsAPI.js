@@ -15,12 +15,10 @@ router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
     let temperature = req.body.temperature;
     let humidity = req.body.humidity;
     let wind = req.body.wind;
+    let windDirection = req.body.windDirection;
     let complete = req.body.complete;
     let createdAt = req.body.createdAt;
     let currSessionID = req.body.sessionId;
-
-
-    let windDirection = req.body.windDirection;
 
     if (isParamEmpty(req, 'id')) {
         console.log(`UserId was not sent with request.`)
@@ -43,8 +41,11 @@ router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
       sessionId: currSessionID
   };
 
+  console.log(`sessionData: ${JSON.stringify(sessionData)}\n`);
+
   // if user is editing session, isNew will be false
   const isNewSession = req.body.isNew;
+  console.log(`isNewSession: ${isNewSession}`);
   if (!isNewSession) {
     // only update the fields that the user edited
     let updateObj = {$set: {}};

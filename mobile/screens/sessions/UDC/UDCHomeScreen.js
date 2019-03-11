@@ -114,7 +114,7 @@ import { request } from "../../../components/helpers";
                 1})`
                 }`;
 
-
+            console.log(JSON.stringify(session));
             let numHides = session.hides.length
             if (numHides === undefined) {
                 numHides = Object.keys( session.hides).length;

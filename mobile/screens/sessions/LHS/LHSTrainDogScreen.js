@@ -40,26 +40,8 @@ export class LHSTrainDogScreen extends React.Component {
 
 
   _onSubmit = (initialInfo) => {
-    // need to remove all this temp shit once we have actual dogs in db
-    temp = {
-      name: 'TempDog',
-      _id: 0
-    }
-    tempInfo = {
-      0: {
-        'trainer': {
-          name: 'TempTrainer',
-          _id: 0
-        }
-      }
-    }
-    this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    const sessionData = {...sessionInfo, ...tempInfo};
-    // const sessionData = {...sessionInfo, ...initialInfo};
-    console.log(JSON.stringify(sessionData));
-    // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-    this.props.navigation.navigate('LHSSearch', { sessionInfo: sessionData });
+    this.props.navigation.navigate('LHSSearch', { sessionInfo: sessionInfo, dog: this.state.dog });
   }
 
 

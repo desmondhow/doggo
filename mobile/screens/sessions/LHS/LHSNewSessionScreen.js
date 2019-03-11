@@ -45,9 +45,8 @@ class LHSNewSessionScreen extends React.Component {
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
 
     const addSearchState = {
-      addSearchNumber: null,
+      addSearchNumber: null
     };
-
 
     // If data comes from server
     if (sessionInfo) {
@@ -101,7 +100,7 @@ class LHSNewSessionScreen extends React.Component {
       complete: false,
       sessionId: this.state.sessionId,
       createdAt: this.state.createdAt,
-      searches: this.state.addedSearches,
+      searches: this.state.addedSearches
     };
     console.log("On SUbmit");
     console.log(JSON.stringify(session));
@@ -137,10 +136,8 @@ class LHSNewSessionScreen extends React.Component {
             name,
             LHSInfo.General[name],
             { width: 150, height: 100 },
-            this.state.isEditing
-              ? val => this._updateGeneralState(name, val)
-              : null,
-            this.state.isEditing ? this.state[name] : null,
+            val => this._updateGeneralState(name, val),
+            this.state.isEditing,
             20
           )}
         </View>
@@ -166,7 +163,7 @@ class LHSNewSessionScreen extends React.Component {
               </Text>
             </View>
             <View style={center}>
-              { this._renderSearchFields(searchNumber)}
+              {this._renderSearchFields(searchNumber)}
               <Divider
                 style={{
                   backgroundColor: "black",
@@ -187,8 +184,8 @@ class LHSNewSessionScreen extends React.Component {
       addedSearches: {
         ...prevState.addedSearches,
         [searchNumber]: {
-            ...prevState.addedSearches[searchNumber],
-           [property]: value 
+          ...prevState.addedSearches[searchNumber],
+          [property]: value
         }
       }
     }));
@@ -196,10 +193,8 @@ class LHSNewSessionScreen extends React.Component {
 
   _renderAddSearchModal = () => {
     let searchFields = (
-      <View style={center}>
-        {this._renderSearchFields(null, true)}
-      </View>
-    )
+      <View style={center}>{this._renderSearchFields(null, true)}</View>
+    );
 
     return (
       this.state.showAddSearchModal && (
@@ -215,7 +210,7 @@ class LHSNewSessionScreen extends React.Component {
               borderRadius: 5
             }}
           >
-            <View style={{ margin: 20, ...center}}>
+            <View style={{ margin: 20, ...center }}>
               <View style={{ flexDirection: "row", marginBottom: 20 }}>
                 <Text h3>Adding a search</Text>
               </View>
@@ -261,62 +256,61 @@ class LHSNewSessionScreen extends React.Component {
       style={{
         flexDirection: "column",
         justifyContent: "space-between",
-        marginBottom: 100
+        marginBottom: 100,
+        ...center
       }}
     >
-      <View style={{ flexWrap: "wrap", flexDirection: "row", ...center }}>
-        <View
-          style={{
-            flexDirection: "column",
-            justifyContent: "space-between"
-          }}
-        >
-          {/* Location */}
-          <Text style={styles.labelStyle}>Location:</Text>
-          {renderReduxDropdown(
-            `Searches.${searchNumber}.location`,
-            LHSInfo.SearchSetup.Locations,
-            styles.dropdown,
-            userIsAddingSearch
-              ? null
-              : searchNumber =>
-                  this._updateSearchState(searchNumber, "searchNumber", searchNumber),
-            userIsAddingSearch ? null : this.state.addedSearches[searchNumber].location
-          )}
+      {/* Location */}
+      <Text style={styles.labelStyle}>Location:</Text>
+      {renderReduxDropdown(
+        `Searches.${searchNumber}.location`,
+        LHSInfo.SearchSetup.Locations,
+        styles.dropdown,
+        userIsAddingSearch
+          ? null
+          : searchNumber =>
+              this._updateSearchState(
+                searchNumber,
+                "searchNumber",
+                searchNumber
+              ),
+        userIsAddingSearch
+          ? null
+          : this.state.addedSearches[searchNumber].location
+      )}
+      {/* Subject Placement */}
+      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>Subject Placement:</Text>
+      {userIsAddingSearch && (
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <CheckboxContainer
+            name={`Searches.${searchNumber}.placements`}
+            checkboxes={LHSInfo.SearchSetup.Placements}
+          />
         </View>
-        {/* Subject Placement */}
-        <Text style={styles.labelStyle}>Subject Placement:</Text>
-        {
-          userIsAddingSearch &&
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            <CheckboxContainer
-              name={`Searches.${searchNumber}.placements`}
-              checkboxes={LHSInfo.SearchSetup.Placements}
-            />
-          </View>
-        }
-        {
-          !userIsAddingSearch &&
-          this.state.addedSearches[searchNumber].placements.map(p => <Text>{p}, </Text>)
-        }
-        {/* Notes */}
-        <View style={center}>
-          <Text style={styles.labelStyle}>Notes:</Text>
-          {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
-            containerStyle: { width: 400 },
-            numberOfLine: 4,
-            multiline: true,
-            placeholder: userIsAddingSearch ? null : this.state.addedSearches[searchNumber].notes
-          })}
-        </View>
+      )}
+      {!userIsAddingSearch &&
+        this.state.addedSearches[searchNumber].placements.map(p => (
+          <Text>{p}, </Text>
+        ))}
+      {/* Notes */}
+      <View style={{ ...center, paddingTop: 10 }}>
+        <Text style={styles.labelStyle}>Notes:</Text>
+        {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
+          containerStyle: { width: 400 },
+          numberOfLine: 4,
+          multiline: true,
+          placeholder: userIsAddingSearch
+            ? null
+            : this.state.addedSearches[searchNumber].notes
+        })}
       </View>
     </View>
   );
 
   _toggleAddSearchModal = () =>
-  this.setState(prevState => ({
-    showAddSearchModal: !prevState.showAddSearchModal
-  }));
+    this.setState(prevState => ({
+      showAddSearchModal: !prevState.showAddSearchModal
+    }));
 
   _renderAddSearchButton = () => (
     <Button
@@ -330,7 +324,7 @@ class LHSNewSessionScreen extends React.Component {
         type: "font-awesome",
         size: 26
       }}
-      containerViewStyle={{ paddingBottom: 10, marginRight: 50 }}
+      containerViewStyle={{ paddingBottom: 10 }}
       onPress={() => this._toggleAddSearchModal()}
     />
   );
@@ -388,66 +382,66 @@ class LHSNewSessionScreen extends React.Component {
   };
 
   _resetFields = fields => {
-    // fields.forEach(field => {
-    //   //reset the field's value
-    //   this.props.dispatch(change("lhs", field, ""));
-
-    //   //reset the field's error
-    //   this.props.dispatch(untouch("lhs", field));
-    // });
+    fields.forEach(field => {
+      //reset the field's value
+      this.props.dispatch(change("lhs", field, ""));
+      //reset the field's error
+      this.props.dispatch(untouch("lhs", field));
+    });
   };
 
-_addSearch = () => {
-  console.log("Search", this.state.addSearchNumber);
-  const placements = this.props.addSearchPlacements;
-  const location = this.props.addSearchLocation;
-  const notes = this.props.addSearchNotes;
-  const searchNumber = this.state.addSearchNumber;
+  _addSearch = () => {
+    console.log("Search", this.state.addSearchNumber);
+    const placements = this.props.addSearchPlacements;
+    const location = this.props.addSearchLocation;
+    const notes = this.props.addSearchNotes;
+    const searchNumber = this.state.addSearchNumber;
 
-  // reset Add Hide section state
-  this.setState({ addSearchNumber: 0});
-  this._resetFields([
-    `Searches[null]placements`,
-    `Searches[null]location`,
-    `Searches[null]notes`
-  ]);
-  // store new hide
-  this.setState(prevState => ({
-    showAddSearchModal: false,
-    addedSearches: {
-      ...prevState.addedSearches,
-      [searchNumber]: {
-        location,
-        placements,
-        notes
+    // reset Add Hide section state
+    this.setState({ addSearchNumber: 0 });
+    this._resetFields([
+      `Searches[null]placements`,
+      `Searches[null]location`,
+      `Searches[null]notes`
+    ]);
+    // store new hide
+    this.setState(prevState => ({
+      showAddSearchModal: false,
+      addedSearches: {
+        ...prevState.addedSearches,
+        [searchNumber]: {
+          location,
+          placements,
+          notes
+        }
       }
-    }
-  }));
-};
+    }));
+  };
 
-_renderSearchesForm = () => (
-  <View style={{ ...center, width: "100%" }}>
-    <View
-      style={{
-        ...center,
-        ...styles.fieldsContainer,
-        height: "84%"
-      }}
-    >
-      <Text h3>Added Searches</Text>
-      <ScrollView
-        style={{ width: "100%" }}
-        keyboardShouldPersistTaps={"handled"}
+  _renderSearchesForm = () => (
+    <View style={{ ...center, width: "100%" }}>
+      <View
+        style={{
+          ...center,
+          ...styles.fieldsContainer,
+          height: "84%",
+          padding: 20
+        }}
       >
-        {Object.keys(this.state.addedSearches).length > 0
-          ? this._renderAddedSearches()
-          : null}
-      </ScrollView>
-      {this._renderAddSearchButton()}
+        <Text h3>Added Searches</Text>
+        <ScrollView
+          style={{ width: "100%" }}
+          keyboardShouldPersistTaps={"handled"}
+        >
+          {Object.keys(this.state.addedSearches).length > 0
+            ? this._renderAddedSearches()
+            : null}
+        </ScrollView>
+        {this._renderAddSearchButton()}
+      </View>
+      {this._renderSubmitBtn()}
     </View>
-    {this._renderSubmitBtn()}
-  </View>
-);
+  );
 
   render = () => (
     <View style={styles.container}>

@@ -31,6 +31,9 @@ export class UDCBuildingSearchScreen extends React.Component {
   constructor(props) {
     super(props);
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
+    console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
+    const dog = this.props.navigation.getParam("dog", false);
+
     if (sessionInfo) {
       const hideSections = [];
       sessionInfo.hides.forEach(hide => {
@@ -42,7 +45,7 @@ export class UDCBuildingSearchScreen extends React.Component {
       this.state = {
           sessionInfo: sessionInfo,
           activeSection: "",
-        dog: this.props.dog,
+        dog,
         dogs: [],
         handlers: [],
         hides: hideSections,
@@ -67,13 +70,6 @@ export class UDCBuildingSearchScreen extends React.Component {
         if (dogTrainingData.length === 0) {
             alert('Please fill the training session.')
         } else {
-            //Todo: remove comment
-            // for (let i = 0, l = sessionInfo.length; i < l; i++) {
-            //     if (typeof(sessionInfo[i])==='undefined'||  sessionInfo[i]=== null) {
-            //         alert('Please fill the training session.')
-            //         return;
-            //     }
-            // }
             const sessionInfo = this.state.sessionInfo;
             sessionInfo.dogsTrained = dogTrainingData;
 
@@ -136,6 +132,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   );
 
   _renderContent = sectionId => {
+    console.log(`sectionId: ${sectionId}`);
     const scrollViewContainerStyle = { height: 300 };
 
     const dogId = this.props.dog._id;
@@ -412,9 +409,9 @@ export class UDCBuildingSearchScreen extends React.Component {
                 )}
               </View>
             )}
-            renderItem={({ item, section }) => (
-              <View key={item}>{this._renderContent(item._id)}</View>
-            )}
+            renderItem={({ item, section }) => {
+              return <View key={item}>{this._renderContent(item.roomNumber)}</View>
+            }}
           />
         </View>
       </View>
