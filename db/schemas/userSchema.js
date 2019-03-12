@@ -1,9 +1,10 @@
 /**
  * Schema used for user registration/ login
  */
-const mongoose = require('../../server/node_modules/mongoose');
-const bcrypt = require('../../server/node_modules/bcrypt');
+import mongoose from '../../server/node_modules/mongoose';
+import bcrypt from '../../server/node_modules/bcrypt';
 import UDCSchema from './UDCSchema';
+import LHSSchema from './LHSSchema';
 
 export const UserSchema = new mongoose.Schema({
     email: {
@@ -18,14 +19,13 @@ export const UserSchema = new mongoose.Schema({
     },
     sessions: [{
       sessionType: String,
-      data: UDCSchema
+      data: UDCSchema | LHSSchema
     }],
-    trainers: [{
+    handlers: [{
       name: String
     }],
     dogs: [{
-      name: String,
-      startDate: Date
+      name: String
     }]
 });
 

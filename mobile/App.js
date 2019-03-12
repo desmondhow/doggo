@@ -9,6 +9,7 @@ import store from './redux/reduxConfig'
 import {Provider} from 'react-redux';
 import {connectionState, dispatchActionQueueElt, pingServer} from "./redux/actions/connection.actions";
 import Constants from "./constants/Api";
+import {getProfileData} from "./redux/actions/general.actions";
 
 
 export default class App extends React.Component {
@@ -17,6 +18,7 @@ export default class App extends React.Component {
         signedIn: true,
         checkedSignIn: true
     };
+
     async componentDidMount() {
         //Check if user is already signed in
         await isSignedIn()
@@ -24,16 +26,17 @@ export default class App extends React.Component {
                 if (res !== false) {
                     this.setState({signedIn: true, checkedSignIn: true})
                 } else {
-                    this.setState({signedIn: false, checkedSignIn: true});
+                    this.setState({signedIn: true, checkedSignIn: true});
                 }
             })
-            .catch((err) =>{
+            .catch((err) => {
                 this.setState({signedIn: false, checkedSignIn: true});
                 alert("An error occurred:\n" + err);
             });
 
         //Ping Our Server and check if the server is  working
         store.dispatch(pingServer({url: Constants.ping}));
+        store.dispatch(getProfileData());
         //Add event listener for internet connection
         NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
         //Ping server every 10 sec
@@ -51,10 +54,9 @@ export default class App extends React.Component {
             //Todo: Change to GUI symbol
             alert('No internet connection. Everything will be stored locally.')
         }
-        const { actionQueue, isServerOnline } = store.getState().connection;
+        const {actionQueue, isServerOnline} = store.getState().connection;
         //Update connection state
-        store.dispatch(connectionState({ status: isConnected }));
-
+        store.dispatch(connectionState({status: isConnected}));
         // Once the app connects, dispatch all requests
         if (isConnected && isServerOnline && actionQueue.length > 0) {
             store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
@@ -67,17 +69,18 @@ export default class App extends React.Component {
      */
     pingServerFunction() {
         store.dispatch(pingServer({url: Constants.ping}));
-        const { isConnected, actionQueue, isServerOnline } = store.getState().connection;
+        const {isConnected, actionQueue, isServerOnline} = store.getState().connection;
         // Once the app connects, dispatch all requests
         if (isConnected && isServerOnline && actionQueue.length > 0) {
             store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
         }
+        store.dispatch(getProfileData());
+
     }
 
     componentWillUnmount() {
         NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
     }
-
 
 
     render() {

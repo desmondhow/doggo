@@ -11,6 +11,7 @@ import { buttonStyle, buttonTextStyle } from '../../constants/Styles';
 
 const HomeScreen = class extends React.Component {
   render() { 
+    console.disableYellowBox = true;
     const { navigate } = this.props.navigation;
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2

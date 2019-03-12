@@ -11,12 +11,12 @@ import { Field, formValueSelector } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle, formContainer } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
-import { BuildingSearch, UDCInfo } from '../../../constants/SessionsConstants';
+import { BuildingSearch, LHSInfo } from '../../../constants/SessionsConstants';
 import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
-import {SAVE_UDC_DOG} from "../../../redux/actions/udc.actions";
+import {SAVE_LHS_DOG} from "../../../redux/actions/lhs.actions";
 
-export class UDCTrainDogScreen extends React.Component {
+export class LHSTrainDogScreen extends React.Component {
   constructor(props) {
     super(props);
     // this._renderPage = this._renderPage.bind(this);
@@ -40,11 +40,8 @@ export class UDCTrainDogScreen extends React.Component {
 
 
   _onSubmit = (initialInfo) => {
-    this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-
-    // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-    this.props.navigation.navigate('UDCBuildingSearch', { sessionInfo: sessionInfo, dog: this.state.dog });
+    this.props.navigation.navigate('LHSSearch', { sessionInfo: sessionInfo, dog: this.state.dog });
   }
 
 
@@ -128,23 +125,6 @@ export class UDCTrainDogScreen extends React.Component {
               }
             })}
         </View>
-        <View style={{ paddingTop: 30, ...labelFieldContainerStyle }}>
-            <Text style={labelStyle}>Handler Knows</Text>
-            <Field
-              name={`${this.state.dog._id}.handlerKnows`}
-              component={inputProps => {
-                const { input: { value, onChange } } = inputProps;
-                return (
-                  <ButtonGroup
-                    onPress={i => onChange({ i: i, text: yesNoButtons[i] })}
-                    selectedIndex={value.i}
-                    buttons={yesNoButtons}
-                    containerStyle={buttonGroupContainerStyle}
-                  />
-                );
-              }}
-            />
-        </View>
         <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
             <Text style={labelStyle}>On Lead</Text>
             <Field
@@ -202,13 +182,14 @@ const styles = StyleSheet.create({
 });
 
 export default connectReduxForm(
-    'udc',
-    UDCTrainDogScreen,
+    'lhs',
+    LHSTrainDogScreen,
     state => ({
         dogs: state.general.dogs,
         handlers: state.general.handlers,
     }),
     dispatch => ({
-        saveDog: dogInfo => dispatch({ type: SAVE_UDC_DOG, dog: dogInfo })
+        saveDog: dogInfo =>
+            dispatch({ type: SAVE_LHS_DOG, dog: dogInfo })
     })
 )

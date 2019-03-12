@@ -5,15 +5,18 @@ export const USER_KEY = "auth_v3.1.1";
 
 export async function onSignIn(user_id) {
     try {
-        return await AsyncStorage.setItem(USER_KEY, JSON.stringify(user_id));
+        console.log(`user_id: ${user_id}`);
+        return await AsyncStorage.setItem(USER_KEY, user_id)
     } catch (error) {
+        console.log('error');
         console.log(error.message);
     }
 }
 
 export async function onSignOut() {
     try {
-        return await AsyncStorage.removeItem(USER_KEY);
+        return AsyncStorage.removeItem(USER_KEY)
+        .then(() => true);
     } catch (error) {
         console.log(error.message);
 

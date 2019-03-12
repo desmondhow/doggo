@@ -18,12 +18,7 @@ export const GET_ALL_UDC = 'GET_ALL_UDC';
 export const DELETE_UDC_SESSION = 'DELETE_UDC_SESSION';
 export const UPDATE_UDC_SESSION = 'UPDATE_UDC_SESSION';
 export const RESET_STATE = 'RESET_STATE';
-
-
-
-
 export const SAVE_UDC_DOG = 'SAVE_UDC_DOG';
-export const SAVE_UDC_DOG_TRAINING = 'SAVE_UDC_DOG_TRAINING';
 
 
 /**
@@ -35,22 +30,23 @@ export const getAllUDC = () => {
         if (isOnline()) {
             API.UDCCurrentSessionsURL
                 .then(url => {
-                        request(url, null, 'GET')
-                            .then(res => res.json())
-                            .then(res => {
-                                let sessionData = [];
-                                res.sessions.map((key, i) => {
-                                    sessionData.push(key.data)
-                                });
-                                dispatch({type: GET_ALL_UDC, sessions: sessionData})
-                            })
-                            .catch(err => {
-                                console.log('error get all udc', err);
-                                dispatch({type: SERVER_STATE, isServerOnline: false});
-                            })
-                            .done()
-                    }
-                )
+                    request(url, null, 'GET')
+                        .then(res => res.json())
+                        .then(res => {
+                            let sessionData = [];
+                            res.sessions.map((key, i) => {
+                                sessionData.push(key.data)
+                            });
+                            dispatch({type: GET_ALL_UDC, sessions: sessionData})
+                        })
+                        .catch(err => {
+                            console.log('error get all udc', err);
+                            dispatch({type: SERVER_STATE, isServerOnline: false});
+                        })
+                        .done()
+                })
+                .catch(err => {
+                })
         } else {
             console.log('No connection');
         }
@@ -65,6 +61,7 @@ export const getAllUDC = () => {
  */
 export const saveUDCSession = ({sessionInfo}) => {
     return (dispatch, getState) => {
+      console.log(`sessionInfo: ${sessionInfo}`);
         //Transform session info
         sessionInfo.hides = parseHides(sessionInfo.hides);
         //We save it locally first
@@ -78,6 +75,7 @@ export const saveUDCSession = ({sessionInfo}) => {
 
         if (isOnline()) {
             API.UDCSaveSessionURL.then(url => {
+              console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
                     })
@@ -89,9 +87,8 @@ export const saveUDCSession = ({sessionInfo}) => {
                             data: sessionInfo
                         });
                     });
+            }).catch(err => {
             })
-
-
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_NEW_UDC_LATER, data: sessionInfo});
         }
@@ -119,7 +116,6 @@ export const saveUDCSessionLater = ({sessionInfo}) => {
 };
 
 
-
 export const deleteUDCSession = ({sessionId}) => {
     return (dispatch, getState) => {
         //We first delete it locally
@@ -137,15 +133,14 @@ export const deleteUDCSession = ({sessionId}) => {
                             data: sessionId
                         });
                     });
+            }).catch(err => {
             })
-
 
         } else {
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.DELETE_UDC_LATER, data: sessionId});
         }
     };
 };
-
 
 
 export const deleteUDCSessionLater = ({sessionId}) => {
@@ -171,27 +166,141 @@ export const deleteUDCSessionLater = ({sessionId}) => {
 };
 
 
+/**
+ * Saves a UDC Training session. If there is no connection, session is saved locally and pushed to db once there is
+ * connection.
+ * @param sessionInfo
+ * @returns {Function}
+ */
+export const saveUDCTraining = ({sessionInfo, handlers}) => {
+    return (dispatch, getState) => {
+
+        sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained, handlers);
+        console.log('session info after edit', sessionInfo);
+        //We save it locally first
+        dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
+        if (isOnline()) {
+            API.UDCTrainURL.then(url => {
+                console.log(url);
+                request(url, JSON.stringify({
+                    sessionId: sessionInfo.sessionId,
+                    sessionInfo: sessionInfo.dogsTrained
+                }), 'POST')
+                    .then(res => {
+                    })
+                    .catch(err => {
+                        console.log('error train now', err);
+                        dispatch({type: SERVER_STATE, isServerOnline: false});
+                        dispatch({
+                            type: ADD_TO_ACTION_QUEUE,
+                            payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                            data: sessionInfo
+                        });
+                    });
+            }).catch(err => {
+            })
+
+
+        } else {
+            dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER, data: sessionInfo});
+        }
+    };
+};
+
+
+export const saveUDCTrainingLater = ({sessionInfo}) => {
+    return (dispatch) => {
+        API.UDCTrainURL.then(url =>
+            request(url, JSON.stringify({
+                sessionId: sessionInfo.sessionId,
+                sessionInfo: sessionInfo.dogsTrained
+            }), 'POST')
+                .then(res => {
+                })
+                .catch(err => {
+                    console.log('error save training later', err);
+                    dispatch({type: SERVER_STATE, isServerOnline: false});
+                    dispatch({
+                        type: ADD_TO_ACTION_QUEUE,
+                        payload: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                        data: sessionInfo
+                    });
+                })
+        )
+
+    }
+
+
+};
+
+
 const parseHides = hidesData => {
     let hides = [];
-    Object.keys(hidesData).forEach(concentration => {
-        let concentrationSizes = hidesData[concentration];
-        Object.keys(concentrationSizes).forEach(size => {
-            let location = concentrationSizes[size].location;
-            let isConcealed = concentrationSizes[size].isConcealed;
-            let placementArea = concentrationSizes[size].placementArea;
-            let placementHeight = concentrationSizes[size].placementHeight;
+    Object.keys(hidesData).forEach(roomNumber => {
+        const h = hidesData[roomNumber];
+        let concentration = h.concentration;
+        let size = h.size;
+        let location = h.location;
+        let isConcealed = h.isConcealed;
+        let placementArea = h.placementArea;
+        let placementHeight = h.placementHeight;
+        let hideType = h.hideType;
 
-            hides.push({
-                concentration: Number(concentration),
-                size,
-                location,
-                isConcealed,
-                placementArea,
-                placementHeight
-            });
+        hides.push({
+            roomNumber,
+            concentration: Number(concentration),
+            size,
+            location,
+            isConcealed,
+            placementArea,
+            placementHeight,
+            hideType
         });
     });
     return hides;
 };
 
+
+const parseTrainingData = (trainingData, handlers) => {
+
+    Object.keys(trainingData).forEach(dogId => {
+        const hideInfo = trainingData[dogId];
+        if (!!hideInfo['handler']) {
+            const handler = handlers.find(handler =>
+                handler.name === hideInfo['handler']);
+            hideInfo['handlerId'] = handler._id;
+        }
+
+        Object.keys(hideInfo["performance"]).forEach(hideId => {
+            Object.keys(hideInfo["performance"][hideId]).forEach(field => {
+                    const performanceInfo = hideInfo["performance"][hideId];
+                    // need to figure out how to format fields since we have each field in the udc schema
+                    // as its separate thing, also need to figure out how to send duration
+                    if (field === "fields") {
+                        performanceInfo[field].forEach(f => {
+                            f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
+                            console.log(f);
+                            hideInfo["performance"][hideId][f] = true;
+                        });
+                        delete performanceInfo[field];
+                    }
+                    else if (field === "duration") {
+                        hideInfo["performance"][hideId]["duration"] = `${
+                            field.minutes
+                            }:${field.seconds}`;
+                    }
+                    else if (typeof performanceInfo[field] === "object") {
+                        if (!!performanceInfo[field]["text"]) {
+                            hideInfo["performance"][hideId][field] =
+                                performanceInfo[field]["text"];
+                        }
+                    }
+                }
+            );
+        });
+    });
+
+    return trainingData;
+
+};
 

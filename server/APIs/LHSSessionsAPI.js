@@ -1,6 +1,6 @@
 import express from 'express';
 
-import UDCSession from '../../db/schemas/UDCSchema'
+import LHSSession from '../../db/schemas/LHSSchema'
 import User from '../../db/schemas/userSchema';
 import { isParamEmpty, errors } from './helpers';
 
@@ -9,27 +9,25 @@ const createSessionApiRoute = route => `/:id/sessions/${route}`
 
 
 /**
- * Creates a new UDC session
+ * Creates a new LHS session
  */
-router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
+router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
     let temperature = req.body.temperature;
     let humidity = req.body.humidity;
     let wind = req.body.wind;
+    let windDirection = req.body.windDirection;
     let complete = req.body.complete;
     let createdAt = req.body.createdAt;
     let currSessionID = req.body.sessionId;
-
-
-    let windDirection = req.body.windDirection;
 
     if (isParamEmpty(req, 'id')) {
         console.log(`UserId was not sent with request.`)
         return res.status(400).send(JSON.stringify({ message: errors.userId }));
     }
 
-    let hidesData = req.body.hides;
-    if (isParamEmpty(req, 'hides', true)) {
-        return res.status(400).send(JSON.stringify({message: "Session doesn't contain any hides."}));
+    let searchesData = req.body.searches;
+    if (isParamEmpty(req, 'searches', true)) {
+        return res.status(400).send(JSON.stringify({message: "Session doesn't contain any searches."}));
     }
 
   let sessionData = {
@@ -39,14 +37,15 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     windDirection,
     complete: complete,
     createdAt: createdAt,
-    hides: hidesData,
+    searches: searchesData,
       sessionId: currSessionID
   };
 
-
+  console.log(`sessionData: ${JSON.stringify(sessionData)}\n`);
 
   // if user is editing session, isNew will be false
   const isNewSession = req.body.isNew;
+  console.log(`isNewSession: ${isNewSession}`);
   if (!isNewSession) {
     // only update the fields that the user edited
     let updateObj = {$set: {}};
@@ -58,14 +57,14 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error editing UDC session.`}));
+        return res.status(400).send(JSON.stringify({message: `Error editing LHS session.`}));
       }
       console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
   }
   else {
-    const newSession = { sessionType: 'UDC', data: sessionData }
+    const newSession = { sessionType: 'LHS', data: sessionData }
     const userId = req.params.id;
 
     User.findByIdAndUpdate(userId,
@@ -73,7 +72,7 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
+        return res.status(400).send(JSON.stringify({message: `Error creating LHS session.`}));
       }
       console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
@@ -82,9 +81,9 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
 });
 
 /**
- * Trains dogs under a UDC session
+ * Trains dogs under a LHS session
  */
-router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
+router.post(createSessionApiRoute('lhs/train'), function (req, res, next) {
 
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId', true)) {
     console.log(`UserId or sessionId was not sent with request.`)
@@ -96,32 +95,32 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
   }
   const sessionInfo = req.body.sessionInfo;
 
-  let dogsTrained = [];
-  console.log(JSON.stringify(sessionInfo));
+  const dogsTrained = [];
+  console.log(`session: ${JSON.stringify(sessionInfo)}\n\n\n`);
   Object.keys(sessionInfo).forEach(dogId => {
-
     dogsTrained.push({
       dogId,
-      trainerId: sessionInfo[dogId].trainerId,
-      handler: sessionInfo[dogId].handler,
+      handlerId: sessionInfo[dogId].handlerId,
+      trainer: sessionInfo[dogId].trainer,
       recorder: sessionInfo[dogId].recorder,
-      hides:
-        Object.keys(sessionInfo[dogId].performance).map(hideId => ({
-          hideId,
-          performance: sessionInfo[dogId].performance[hideId]
+      searches:
+        Object.keys(sessionInfo[dogId].performance).map(searchId => ({
+          searchId,
+          performance: sessionInfo[dogId].performance[searchId]
         }))
     })
   });
+  console.log(`dogsTrained: ${JSON.stringify(dogsTrained)}\n\n\n`);
 
   const sessionId = req.body.sessionId;
   User.update(
-    { 'sessions.data._id': sessionId },
+    { 'sessions.data.sessionId': sessionId },
     { $set: { 'sessions.$.data.dogsTrained': dogsTrained }},
     { upsert: true },
   ((err, updatedUser) => {
     if (err) {
       console.log(err);
-      return res.status(400).send(JSON.stringify({message: `Error updating UDC session.`}));
+      return res.status(400).send(JSON.stringify({message: `Error updating LHS session.`}));
     }
     console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
     return res.status(200).send(JSON.stringify({message: updatedUser, status: 200}));
@@ -129,8 +128,8 @@ router.post(createSessionApiRoute('udc/train'), function (req, res, next) {
 })
 
 
-// Deletes a udc session
-router.post(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
+// Deletes a LHS session
+router.post(createSessionApiRoute('lhs/:sessionId'), function (req, res, next) {
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -159,9 +158,9 @@ router.post(createSessionApiRoute('udc/:sessionId'), function (req, res, next) {
 });
 
 /**
- * Returns all the non complete UDC sessions
+ * Returns all the non complete LHS sessions
  */
-router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res) {
+router.get(createSessionApiRoute('lhs/get-current-sessions'), function (req, res) {
   if (isParamEmpty(req, 'id')) {
     console.log(`UserId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -169,10 +168,10 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   const userId = req.params.id;
 
   User.findById(userId)
-  .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
+  .where({sessions: { $elemMatch: { sessionType: 'LHS', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({message: 'There are no current UDC sessions', sessions: []}));
+        return res.status(400).send(JSON.stringify({message: 'There are no current LHS sessions', sessions: []}));
     } else {
       return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }
@@ -185,7 +184,7 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
 
 
 /**
- * Get a specific UDC session by its uniquide ID
+ * Get a specific LHS session by its uniquide ID
  */
 router.get(createSessionApiRoute('/get-session/:sessionId'), (req, res) => {
     const id = req.params.sessionId;
@@ -194,9 +193,9 @@ router.get(createSessionApiRoute('/get-session/:sessionId'), (req, res) => {
         return  res.status(400).send(JSON.stringify({status: false, message: 'Please add an ID'}));
 
     }
-    UDCSession.findById(id, function (err, session) {
+    LHSSession.findById(id, function (err, session) {
         if (err || session === undefined || session.length === 0) {
-            return  res.status(400).send(JSON.stringify({status: false, message: 'Could not find any UDC sessions' +
+            return  res.status(400).send(JSON.stringify({status: false, message: 'Could not find any LHS sessions' +
                 ' with that ID'}));
         }
         return  res.status(200).send(JSON.stringify({status: true, data: session}));
@@ -205,5 +204,3 @@ router.get(createSessionApiRoute('/get-session/:sessionId'), (req, res) => {
 
 
 module.exports = router;
-
-
