@@ -67,10 +67,6 @@ export default new Schema({
         type: ObjectId,
         required: false,
       },
-      trainer: { 
-        type: String,
-        required: false 
-      },
       recorder: String,
       handlerKnows: {
         type: Boolean,

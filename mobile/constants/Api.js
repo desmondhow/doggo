@@ -9,7 +9,7 @@ USERS_ROUTE = 'users';
 SESSIONS_ROUTE = 'sessions';
 
 const formatAPILink = url =>  { 
-  return HEROKU_API_URL + url;
+  return LOCAL_API_URL + url;
 }
 const formatUsersRoute = route => (
     new Promise((res, rej) => (
@@ -48,10 +48,11 @@ export default routes = {
     UDCSaveSessionURL: formatSessionsRoute('udc/create'),
     UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
     UDCTrainURL: formatSessionsRoute(`udc/train`),
+    // LHS
     LHSCurrentSessionsURL: formatSessionsRoute('lhs/get-current-sessions'),
     LHSSaveSessionURL: formatSessionsRoute('lhs/create'),
     LHSDeleteSessionURL: sessionId => formatSessionsRoute(`lhs/${sessionId}`),
     LHSTrainURL: formatSessionsRoute(`lhs/train`),
+    // ping
     ping: LOCAL_API_URL + 'ping'
-
 }

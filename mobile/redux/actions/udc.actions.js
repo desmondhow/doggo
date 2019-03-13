@@ -61,6 +61,7 @@ export const getAllUDC = () => {
  */
 export const saveUDCSession = ({sessionInfo}) => {
     return (dispatch, getState) => {
+      console.log(`sessionInfo: ${sessionInfo}`);
         //Transform session info
         sessionInfo.hides = parseHides(sessionInfo.hides);
         //We save it locally first
@@ -74,6 +75,7 @@ export const saveUDCSession = ({sessionInfo}) => {
 
         if (isOnline()) {
             API.UDCSaveSessionURL.then(url => {
+              console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
                     })

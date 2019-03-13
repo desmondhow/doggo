@@ -13,9 +13,10 @@ router.get("/", function(req, res) {
 });
 
 router.post("/import-user", (req, res) => {
-  console.log(req.body);
+  const email = req.body.email ? req.body.email.toLowerCase() : "";
+
   const userData = {
-    email: req.body.email,
+    email,
     password: req.body.password,
     sessions: req.body.sessions,
     dogs: req.body.dogs,
@@ -70,7 +71,7 @@ router.post("/register", function(req, res) {
   } else {
     // Get the values
     const userData = {
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
       password: req.body.password
     };
 
@@ -105,7 +106,7 @@ router.post("/register", function(req, res) {
  */
 router.post("/login", function(req, res, next) {
   if (req.body.email && req.body.password) {
-    User.authenticate(req.body.email, req.body.password, function(error, user) {
+    User.authenticate(req.body.email.toLowerCase(), req.body.password, function(error, user) {
       if (error || !user) {
         res.status(400);
         return res.send(

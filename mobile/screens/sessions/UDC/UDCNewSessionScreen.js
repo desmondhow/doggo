@@ -95,7 +95,7 @@ class UDCNewSessionScreen extends React.Component {
   }
 
   _onSubmit = () => {
-    console.log(JSON.stringify(this.state));
+    console.log(`state: ${JSON.stringify(this.state)}`);
     let session = {
       isNew: this.state.isNew,
       temperature: this.state.temperature,
@@ -142,10 +142,8 @@ class UDCNewSessionScreen extends React.Component {
             name,
             UDCInfo.General[name],
             { width: 150, height: 100 },
-            this.state.isEditing
-              ? val => this._updateGeneralState(name, val)
-              : null,
-            this.state.isEditing ? this.state[name] : null,
+            val => this._updateGeneralState(name, val),
+            this.state[name],
             20
           )}
         </View>
@@ -156,7 +154,6 @@ class UDCNewSessionScreen extends React.Component {
   _renderAddedHides = () => (
     <View>
       {Object.keys(this.state.addedHides).map(roomNumber => {
-        console.log(JSON.stringify(this.state.addedHides[roomNumber]));
         return (
           <View style={{ marginTop: 20 }}>
             <View style={{ flexDirection: "row", marginBottom: 20 }}>
@@ -480,7 +477,6 @@ class UDCNewSessionScreen extends React.Component {
 
   _renderSubmitBtn = () => {
     let width = this.state.isEditing ? 150 : 300;
-    console.log(this.state.isEditing);
     let createBtn = (
       <Button
         raised
@@ -556,7 +552,6 @@ class UDCNewSessionScreen extends React.Component {
       `Hides[null]placementHeight`,
       `Hides[null]notes`
     ]);
-    console.log(this.state.addHideRoomNumber);
     // store new hide
     this.setState(prevState => ({
       showAddHideModal: false,
