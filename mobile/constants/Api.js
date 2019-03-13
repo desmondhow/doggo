@@ -53,6 +53,11 @@ export default routes = {
     LHSSaveSessionURL: formatSessionsRoute('lhs/create'),
     LHSDeleteSessionURL: sessionId => formatSessionsRoute(`lhs/${sessionId}`),
     LHSTrainURL: formatSessionsRoute(`lhs/train`),
+    // OBD
+    OBDCurrentSessionsURL: formatSessionsRoute('obd/get-current-sessions'),
+    OBDSaveSessionURL: formatSessionsRoute('obd/create'),
+    OBDDeleteSessionURL: sessionId => formatSessionsRoute(`obd/${sessionId}`),
+    OBDTrainURL: formatSessionsRoute(`obd/train`),
     // ping
     ping: LOCAL_API_URL + 'ping'
 }

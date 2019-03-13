@@ -10,6 +10,10 @@ import LHSHomeScreen from '../screens/sessions/LHS/LHSHomeScreen';
 import LHSNewSessionScreen from '../screens/sessions/LHS/LHSNewSessionScreen';
 import LHSSearchScreen from '../screens/sessions/LHS/LHSSearchScreen';
 import LHSTrainDogScreen from '../screens/sessions/LHS/LHSTrainDogScreen';
+import OBDHomeScreen from '../screens/sessions/Obedience/OBDHomeScreen';
+import OBDNewSessionScreen from '../screens/sessions/Obedience/OBDNewSessionScreen';
+import OBDFunctionScreen from '../screens/sessions/Obedience/OBDFunctionScreen';
+import OBDTrainDogScreen from '../screens/sessions/Obedience/OBDTrainDogScreen';
 
 import { mainNavHeader } from './helpers';
 
@@ -48,7 +52,7 @@ export default createStackNavigator({
   LHS: { 
     screen: LHSHomeScreen,
     navigationOptions: { 
-      title: 'LHS'
+      title: 'Live Human Search'
     }
   },
   LHSNewSession: {
@@ -67,6 +71,30 @@ export default createStackNavigator({
     screen: LHSTrainDogScreen,
     navigationOptions: { 
       title: 'Live Human Search'
+    }
+  },
+  OBD: { 
+    screen: OBDHomeScreen,
+    navigationOptions: { 
+      title: 'Obedience'
+    }
+  },
+  OBDNewSession: {
+    screen: OBDNewSessionScreen,
+    navigationOptions: {
+      title: 'New Obedience Session'
+    }
+  },
+  OBDFunction: {
+    screen: OBDFunctionScreen,
+    navigationOptions: { 
+      title: 'Obedience Training'
+    }
+  },
+  OBDTrainDog: {
+    screen: OBDTrainDogScreen,
+    navigationOptions: { 
+      title: 'Obedience Training'
     }
   },
 });
