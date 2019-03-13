@@ -1,7 +1,7 @@
 import {getUserID} from '../components/auth';
 import {request} from '../components/helpers';
 
-HEROKU_API_URL = 'https://doggoplatform1.herokuapp.com/api/';
+HEROKU_API_URL = 'https://doggoplatform.herokuapp.com/api/';
 LOCAL_API_URL = 'http://localhost:3010/api/';
 
 // routes
@@ -48,6 +48,10 @@ export default routes = {
     UDCSaveSessionURL: formatSessionsRoute('udc/create'),
     UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
     UDCTrainURL: formatSessionsRoute(`udc/train`),
-    ping: HEROKU_API_URL + 'ping'
+    LHSCurrentSessionsURL: formatSessionsRoute('lhs/get-current-sessions'),
+    LHSSaveSessionURL: formatSessionsRoute('lhs/create'),
+    LHSDeleteSessionURL: sessionId => formatSessionsRoute(`lhs/${sessionId}`),
+    LHSTrainURL: formatSessionsRoute(`lhs/train`),
+    ping: LOCAL_API_URL + 'ping'
 
 }
