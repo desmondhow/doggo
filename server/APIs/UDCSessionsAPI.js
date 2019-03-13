@@ -18,6 +18,7 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     let complete = req.body.complete;
     let createdAt = req.body.createdAt;
     let currSessionID = req.body.sessionId;
+    let dogsTrained = req.body.dogsTrained;
     
     console.log(`body: ${JSON.stringify(req.body)}`);
 
@@ -42,7 +43,8 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     complete: complete,
     createdAt: createdAt,
     hides: hidesData,
-      sessionId: currSessionID
+      sessionId: currSessionID,
+      dogsTrained: dogsTrained
   };
 
   // if user is editing session, isNew will be false

@@ -73,7 +73,8 @@ class UDCNewSessionScreen extends React.Component {
                 temperature: sessionInfo.temperature,
                 humidity: sessionInfo.humidity,
                 wind: sessionInfo.wind,
-                windDirection: sessionInfo.windDirection
+                windDirection: sessionInfo.windDirection,
+                dogsTrained: sessionInfo.dogsTrained
             };
         } else {
             //We are creating a new session
@@ -89,7 +90,8 @@ class UDCNewSessionScreen extends React.Component {
                 temperature: null,
                 humidity: null,
                 wind: null,
-                windDirection: null
+                windDirection: null,
+                dogsTrained: []
             };
         }
     }
@@ -105,7 +107,8 @@ class UDCNewSessionScreen extends React.Component {
             complete: false,
             sessionId: this.state.sessionId,
             createdAt: this.state.createdAt,
-            hides: this.state.addedHides
+            hides: this.state.addedHides,
+            dogsTrained: this.state.dogsTrained
         };
 
         // console.log(JSON.stringify(this.state))
