@@ -21,17 +21,17 @@ import {
   renderReduxDropdown,
   renderReduxFormInput
 } from "../../../components/helpers";
-import { LHSInfo } from "../../../constants/SessionsConstants";
+import { OBDInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
 import {
-  deleteLHSSession,
-  saveLHSSession
-} from "../../../redux/actions/lhs.actions";
+  deleteOBDSession,
+  saveOBDSession
+} from "../../../redux/actions/obd.actions";
 import { guidGenerator } from "../../../redux/actions/connection.actions";
 import CheckboxContainer from "../../../components/CheckboxContainer";
 
-class LHSNewSessionScreen extends React.Component {
+class OBDNewSessionScreen extends React.Component {
   constructor(props) {
     super(props);
 
@@ -104,8 +104,8 @@ class LHSNewSessionScreen extends React.Component {
     };
     console.log("On SUbmit");
     console.log(JSON.stringify(session));
-    this.props.dispatch(saveLHSSession({ sessionInfo: session }));
-    this.props.navigation.navigate("LHS");
+    this.props.dispatch(saveOBDSession({ sessionInfo: session }));
+    this.props.navigation.navigate("OBD");
   };
 
   _updateGeneralState = (property, val) => this.setState({ [property]: val });
@@ -119,7 +119,7 @@ class LHSNewSessionScreen extends React.Component {
         flexDirection: "row"
       }}
     >
-      {Object.keys(LHSInfo.General).map(name => (
+      {Object.keys(OBDInfo.General).map(name => (
         <View
           style={{
             marginTop: 30,
@@ -134,7 +134,7 @@ class LHSNewSessionScreen extends React.Component {
           </Text>
           {renderReduxDropdown(
             name,
-            LHSInfo.General[name],
+            OBDInfo.General[name],
             { width: 150, height: 100 },
             val => this._updateGeneralState(name, val),
             this.state.isEditing,
@@ -264,7 +264,7 @@ class LHSNewSessionScreen extends React.Component {
       <Text style={styles.labelStyle}>Location:</Text>
       {renderReduxDropdown(
         `Searches.${searchNumber}.location`,
-        LHSInfo.SearchSetup.Locations,
+        OBDInfo.Locations,
         styles.dropdown,
         userIsAddingSearch
           ? null
@@ -284,7 +284,7 @@ class LHSNewSessionScreen extends React.Component {
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
             name={`Searches.${searchNumber}.placements`}
-            checkboxes={LHSInfo.SearchSetup.Placements}
+            checkboxes={OBDInfo.Commands}
           />
         </View>
       )}
@@ -330,8 +330,8 @@ class LHSNewSessionScreen extends React.Component {
   );
 
   _onDeleteSession = () => {
-    this.props.dispatch(deleteLHSSession({ sessionId: this.state.sessionId }));
-    this.props.navigation.navigate("LHS");
+    this.props.dispatch(deleteOBDSession({ sessionId: this.state.sessionId }));
+    this.props.navigation.navigate("OBD");
   };
 
   _renderSubmitBtn = () => {
@@ -384,9 +384,9 @@ class LHSNewSessionScreen extends React.Component {
   _resetFields = fields => {
     fields.forEach(field => {
       //reset the field's value
-      this.props.dispatch(change("lhs", field, ""));
+      this.props.dispatch(change("obd", field, ""));
       //reset the field's error
-      this.props.dispatch(untouch("lhs", field));
+      this.props.dispatch(untouch("obd", field));
     });
   };
 
@@ -473,8 +473,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const selector = formValueSelector("lhs");
-export default connectReduxForm("lhs", LHSNewSessionScreen, state => ({
+const selector = formValueSelector("obd");
+export default connectReduxForm("obd", OBDNewSessionScreen, state => ({
   addSearchLocation: selector(state, `Searches.null.location`),
   addSearchNotes: selector(state, `Searches.null.notes`),
   addSearchPlacements: selector(state, `Searches.null.placements`)

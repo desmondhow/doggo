@@ -39,11 +39,13 @@ export class UDCTrainDogScreen extends React.Component {
     }
 
 
-  _onSubmit = () => {
+  _onSubmit = (initialInfo) => {
     this.props.saveDog(this.state.dog);
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    this.props.navigation.navigate('UDCBuildingSearch', { sessionInfo: sessionInfo });
-  };
+
+    // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
+    this.props.navigation.navigate('UDCBuildingSearch', { sessionInfo: sessionInfo, dog: this.state.dog });
+  }
 
 
 
@@ -207,7 +209,6 @@ export default connectReduxForm(
         handlers: state.general.handlers,
     }),
     dispatch => ({
-        saveDog: dogInfo =>
-            dispatch({ type: SAVE_UDC_DOG, dog: dogInfo })
+        saveDog: dogInfo => dispatch({ type: SAVE_UDC_DOG, dog: dogInfo })
     })
 )

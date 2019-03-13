@@ -17,26 +17,26 @@ import {
   oddTableRow
 } from "../../../constants/Styles";
 import {connect} from "react-redux";
-import { getAllUDC} from "../../../redux/actions/udc.actions";
-const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
+import { getAllOBD} from "../../../redux/actions/obd.actions";
+// const currentSessionsTableHeaderText = ["Created At", "# Searches", "\tDogs", '', ''];
 import API from "../../../constants/Api";
 import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
- class UDCHomeScreen extends React.Component {
+ class OBDHomeScreen extends React.Component {
     constructor(props) {
         super(props);
     }
 
     componentDidMount() {
-        //Get all UDCs whenever user opens this screen
-        this.props.dispatch(getAllUDC());
+        //Get all OBDs whenever user opens this screen
+        this.props.dispatch(getAllOBD());
         //Keep fetching for data every minute.
-        this.interval = setInterval(() => this.getAllUDCs, 5000);
+        this.interval = setInterval(() => this.getAllOBDs, 5000);
     }
 
-    getAllUDCs(){
-        this.props.dispatch(getAllUDC());
+    getAllOBDs(){
+        this.props.dispatch(getAllOBD());
     }
 
     componentWillUnmount() {
@@ -47,13 +47,13 @@ import { request } from "../../../components/helpers";
     _continueTrainingSession(i) {
         const { navigate } = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCTrainDog', { sessionInfo: sessionData });
+        navigate('OBDTrainDog', { sessionInfo: sessionData });
     }
 
     _editTrainingSession(i) {
         const {navigate} = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
+        navigate('OBDNewSession', { isEditing: true, sessionInfo: sessionData })
     }
 
     _renderTableButtons = (continueButtons) => (
@@ -114,13 +114,9 @@ import { request } from "../../../components/helpers";
                 1})`
                 }`;
 
-            console.log(JSON.stringify(session));
-            let numHides = session.hides.length
-            if (numHides === undefined) {
-                numHides = Object.keys( session.hides).length;
-            }
+
             const dogs = session.dogsTrained ? session.dogsTrained.length : 0;
-            const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+            const rowData = [createdAt, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>
@@ -148,7 +144,7 @@ import { request } from "../../../components/helpers";
       );
     });
 
-    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\t# Dogs", '', ''];
+    const currentSessionsTableHeaderText = ["Created At", "\t# Dogs", '', ''];
     return (
       <View style={container}>
         <View style={styles.sessionsContainer}>
@@ -228,7 +224,7 @@ import { request } from "../../../components/helpers";
             title="Start New Session"
             rightIcon={{ name: "create", type: "montserrat" }}
             onPress={() =>
-              navigate("UDCNewSession", { onSubmit: this._handleGeneralSubmit })
+              navigate("OBDNewSession", { onSubmit: this._handleGeneralSubmit })
             }
             buttonStyle={styles.newSessionButton}
             textStyle={buttonTextStyle}
@@ -242,13 +238,13 @@ import { request } from "../../../components/helpers";
 
 mapStateToProps = (state) => {
     return {
-        currSessionsData: state.udc.currSessionsData,
+        currSessionsData: state.obd.currSessionsData,
         actionQueue: state.connection.actionQueue,
         isConnected: state.connection.isConnected,
         isServerOnline: state.connection.isServerOnline
     };
 };
-export default connect(mapStateToProps)(UDCHomeScreen)
+export default connect(mapStateToProps)(OBDHomeScreen)
 
 
 

@@ -20,36 +20,34 @@ import {
   renderReduxFormInput,
   request
 } from "../../../components/helpers";
-import {UDCInfo} from "../../../constants/SessionsConstants";
+import { OBDInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
-import {saveUDCTraining} from "../../../redux/actions/udc.actions";
+import { saveOBDTraining } from "../../../redux/actions/obd.actions";
 
-
-export class UDCBuildingSearchScreen extends React.Component {
+export class OBDBuildingSearchScreen extends React.Component {
   constructor(props) {
     super(props);
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
-    console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
     const dog = this.props.navigation.getParam("dog", false);
 
     if (sessionInfo) {
-      const hideSections = [];
-      sessionInfo.hides.forEach(hide => {
-        hideSections.push({
+      const searchSections = [];
+      sessionInfo.searches.forEach(hide => {
+        searchSections.push({
           title: this._renderSectionTitle(hide),
           data: [hide]
         });
       });
       this.state = {
-          sessionInfo: sessionInfo,
-          activeSection: "",
-        dog,
+        sessionInfo: sessionInfo,
+        activeSection: "",
+        dog: dog,
         dogs: [],
         handlers: [],
-        hides: hideSections,
-        sessionId: sessionInfo.sessionId,
+        searches: searchSections,
+        sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
         stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
         interval: null
@@ -57,27 +55,30 @@ export class UDCBuildingSearchScreen extends React.Component {
     }
   }
 
-    componentDidMount() {
-        this.setState(
-            {
-                handlers: this.props.handlers,
-                dogs: this.props.dogs
-            },
-        );
+  componentDidMount() {
+    this.setState({
+      handlers: this.props.handlers,
+      dogs: this.props.dogs
+    });
+  }
+
+  _onSubmit = dogTrainingData => {
+    if (dogTrainingData.length === 0) {
+      alert("Please fill the training session.");
+    } else {
+
+      const sessionInfo = this.state.sessionInfo;
+      sessionInfo.dogsTrained = dogTrainingData;
+
+      this.props.dispatch(
+        saveOBDTraining({
+          sessionInfo: sessionInfo,
+          handlers: this.state.handlers
+        })
+      );
+      this.props.navigation.navigate("OBD");
     }
-
-    _onSubmit = dogTrainingData => {
-        if (dogTrainingData.length === 0) {
-            alert('Please fill the training session.')
-        } else {
-            const sessionInfo = this.state.sessionInfo;
-            sessionInfo.dogsTrained = dogTrainingData;
-
-            this.props.dispatch(saveUDCTraining({sessionInfo: sessionInfo, handlers: this.state.handlers}));
-            this.props.navigation.navigate('UDC')
-        }
-
-    };
+  };
 
   _renderSubmitBtn = () => (
     <Button
@@ -99,13 +100,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   );
 
   _renderSectionTitle = section =>
-    `${
-      section.hideType
-        ? `${section.hideType}` === "Hot" || `${section.hideType}` === "Blank"
-          ? `${section.hideType} Hide in`
-          : `${section.hideType}`
-        : ""
-    }` + `${section.roomNumber ? ` Room #${section.roomNumber}` : ""}`;
+    `${section.searchNumber ? ` Search #${section.searchNumber}` : ""}`;
 
   _renderLabeledButtonGroup = (label, fieldName, buttons, containerStyle) => (
     <View style={{ flexDirection: "column" }}>
@@ -132,11 +127,10 @@ export class UDCBuildingSearchScreen extends React.Component {
   );
 
   _renderContent = sectionId => {
-    console.log(`sectionId: ${sectionId}`);
     const scrollViewContainerStyle = { height: 300 };
-
+    sectionId = sectionId.toString();
     const dogId = this.props.dog._id;
-    const BuildingSearchInfo = UDCInfo.BuildingSearch;
+    const OBDFunctionInfo = OBDInfo.Search;
     return (
       <View
         style={{
@@ -149,7 +143,7 @@ export class UDCBuildingSearchScreen extends React.Component {
           {this._renderLabeledButtonGroup(
             "Alert",
             `${dogId}.performance.${sectionId}.radiusAlert`,
-            BuildingSearchInfo.HandlerRadius,
+            OBDFunctionInfo.HandlerRadius,
             {
               flexDirection: "column",
               justifyContent: "flex-between",
@@ -160,7 +154,7 @@ export class UDCBuildingSearchScreen extends React.Component {
           {this._renderLabeledButtonGroup(
             "Reward",
             `${dogId}.performance.${sectionId}.radiusReward`,
-            BuildingSearchInfo.HandlerRadius,
+            OBDFunctionInfo.HandlerRadius,
             {
               flexDirection: "column",
               justifyContent: "flex-between",
@@ -171,7 +165,7 @@ export class UDCBuildingSearchScreen extends React.Component {
           {this._renderLabeledButtonGroup(
             "Search",
             `${dogId}.performance.${sectionId}.radiusSearch`,
-            BuildingSearchInfo.HandlerRadius,
+            OBDFunctionInfo.HandlerRadius,
             {
               flexDirection: "column",
               justifyContent: "flex-between",
@@ -186,7 +180,7 @@ export class UDCBuildingSearchScreen extends React.Component {
               {this._renderLabeledButtonGroup(
                 "Rewarder",
                 `${dogId}.performance.${sectionId}.rewarder`,
-                ["Handler", "Trainer"],
+                ["Handler", "Victim"],
                 {
                   flexDirection: "column",
                   justifyContent: "flex-start",
@@ -198,7 +192,7 @@ export class UDCBuildingSearchScreen extends React.Component {
                 <View>
                   {renderReduxDropdown(
                     `${dogId}.performance.${sectionId}.barks`,
-                    BuildingSearchInfo.Barks,
+                    OBDFunctionInfo.Barks,
                     { width: 100, height: 100 },
                     null,
                     null,
@@ -213,7 +207,7 @@ export class UDCBuildingSearchScreen extends React.Component {
                 <View style={{ flexDirection: "row" }}>
                   {renderReduxDropdown(
                     `${dogId}.performance.${sectionId}.duration.minutes`,
-                    BuildingSearchInfo.Time,
+                    OBDFunctionInfo.Time,
                     { width: 100, height: 100 },
                     null,
                     null,
@@ -224,7 +218,7 @@ export class UDCBuildingSearchScreen extends React.Component {
                 <View style={{ flexDirection: "row" }}>
                   {renderReduxDropdown(
                     `${dogId}.performance.${sectionId}.duration.seconds`,
-                    BuildingSearchInfo.Time,
+                    OBDFunctionInfo.Time,
                     { width: 100, height: 100 },
                     null,
                     null,
@@ -240,7 +234,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
             name={`${dogId}.performance.${sectionId}.fields`}
-            checkboxes={BuildingSearchInfo.Fields}
+            checkboxes={OBDFunctionInfo.Fields}
           />
         </View>
         <Text h4>Failure Codes</Text>
@@ -248,7 +242,7 @@ export class UDCBuildingSearchScreen extends React.Component {
           <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
             <CheckboxContainer
               name={`${dogId}.performance.${sectionId}.failCodes`}
-              checkboxes={BuildingSearchInfo.FailCodes}
+              checkboxes={OBDFunctionInfo.FailCodes}
             />
           </View>
         </ScrollView>
@@ -256,7 +250,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
             name={`${dogId}.performance.${sectionId}.distractions`}
-            checkboxes={BuildingSearchInfo.Distractions}
+            checkboxes={OBDFunctionInfo.Distractions}
           />
         </View>
       </View>
@@ -370,16 +364,20 @@ export class UDCBuildingSearchScreen extends React.Component {
           >
             <Text h3>Searches</Text>
             {this._renderStopwatch()}
-            <Text style={{
-              color: 'red',
-              fontWeight: 'bold',
-              marginBottom: 100,
-              marginLeft: 120,
-              fontSize: 20
-              }}>{this.state.dog.name}</Text>
+            <Text
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                marginBottom: 100,
+                marginLeft: 120,
+                fontSize: 20
+              }}
+            >
+              {this.state.dog.name}
+            </Text>
           </View>
           <SectionList
-            sections={this.state.hides}
+            sections={this.state.searches}
             keyExtractor={a => a}
             style={{ marginTop: 15 }}
             renderSectionHeader={({ section }) => (
@@ -410,7 +408,8 @@ export class UDCBuildingSearchScreen extends React.Component {
               </View>
             )}
             renderItem={({ item, section }) => {
-              return <View key={item}>{this._renderContent(item.roomNumber)}</View>
+              console.log(`item: ${JSON.stringify(item)}`);
+              return <View key={item}>{this._renderContent(item.searchNumber)}</View>
             }}
           />
         </View>
@@ -467,13 +466,9 @@ const styles = StyleSheet.create({
   }
 });
 
-const selector = formValueSelector('udc');
-export default connectReduxForm(
-    'udc',
-    UDCBuildingSearchScreen,
-    state => ({
-        dog: state.udc.dog,
-        dogs: state.general.dogs,
-        handlers: state.general.handlers,
-    })
-)
+const selector = formValueSelector("obd");
+export default connectReduxForm("obd", OBDBuildingSearchScreen, state => ({
+  dog: state.obd.dog,
+  dogs: state.general.dogs,
+  handlers: state.general.handlers
+}));

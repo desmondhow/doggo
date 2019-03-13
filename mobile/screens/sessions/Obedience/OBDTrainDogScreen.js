@@ -11,12 +11,12 @@ import { Field, formValueSelector } from 'redux-form';
 
 import { container, center, buttonStyle, outlineButtonTextStyle, buttonTextStyle, outlineButtonStyle, formContainer } from '../../../constants/Styles';
 import { connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
-import { BuildingSearch, LHSInfo } from '../../../constants/SessionsConstants';
+import { BuildingSearch, OBDInfo } from '../../../constants/SessionsConstants';
 import API from '../../../constants/Api';
 import Colors from '../../../constants/Colors';
-import {SAVE_LHS_DOG} from "../../../redux/actions/lhs.actions";
+import {SAVE_OBD_DOG} from "../../../redux/actions/obd.actions";
 
-export class LHSTrainDogScreen extends React.Component {
+export class OBDTrainDogScreen extends React.Component {
   constructor(props) {
     super(props);
     // this._renderPage = this._renderPage.bind(this);
@@ -41,7 +41,7 @@ export class LHSTrainDogScreen extends React.Component {
 
   _onSubmit = (initialInfo) => {
     const sessionInfo = this.props.navigation.getParam('sessionInfo', false);
-    this.props.navigation.navigate('LHSSearch', { sessionInfo: sessionInfo, dog: this.state.dog });
+    this.props.navigation.navigate('OBDFunction', { sessionInfo: sessionInfo, dog: this.state.dog });
   }
 
 
@@ -182,14 +182,14 @@ const styles = StyleSheet.create({
 });
 
 export default connectReduxForm(
-    'lhs',
-    LHSTrainDogScreen,
+    'obd',
+    OBDTrainDogScreen,
     state => ({
         dogs: state.general.dogs,
         handlers: state.general.handlers,
     }),
     dispatch => ({
         saveDog: dogInfo =>
-            dispatch({ type: SAVE_LHS_DOG, dog: dogInfo })
+            dispatch({ type: SAVE_OBD_DOG, dog: dogInfo })
     })
 )

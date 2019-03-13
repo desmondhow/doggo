@@ -1,6 +1,6 @@
 import express from 'express';
 
-import LHSSession from '../../db/schemas/LHSSchema'
+import OBDSession from '../../db/schemas/OBDSchema'
 import User from '../../db/schemas/userSchema';
 import { isParamEmpty, errors } from './helpers';
 
@@ -9,9 +9,9 @@ const createSessionApiRoute = route => `/:id/sessions/${route}`
 
 
 /**
- * Creates a new LHS session
+ * Creates a new OBD session
  */
-router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
+router.post(createSessionApiRoute('obd/create'), function (req, res, next) {
     let temperature = req.body.temperature;
     let humidity = req.body.humidity;
     let wind = req.body.wind;
@@ -57,14 +57,14 @@ router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error editing LHS session.`}));
+        return res.status(400).send(JSON.stringify({message: `Error editing OBD session.`}));
       }
       console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
     }));
   }
   else {
-    const newSession = { sessionType: 'LHS', data: sessionData }
+    const newSession = { sessionType: 'OBD', data: sessionData }
     const userId = req.params.id;
 
     User.findByIdAndUpdate(userId,
@@ -72,7 +72,7 @@ router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
     ((err, updatedUser) => {
       if (err) {
         console.log(err);
-        return res.status(400).send(JSON.stringify({message: `Error creating LHS session.`}));
+        return res.status(400).send(JSON.stringify({message: `Error creating OBD session.`}));
       }
       console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
       return res.status(200).send({message: updatedUser, status: 200});
@@ -81,9 +81,9 @@ router.post(createSessionApiRoute('lhs/create'), function (req, res, next) {
 });
 
 /**
- * Trains dogs under a LHS session
+ * Trains dogs under a OBD session
  */
-router.post(createSessionApiRoute('lhs/train'), function (req, res, next) {
+router.post(createSessionApiRoute('obd/train'), function (req, res, next) {
 
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId', true)) {
     console.log(`UserId or sessionId was not sent with request.`)
@@ -120,7 +120,7 @@ router.post(createSessionApiRoute('lhs/train'), function (req, res, next) {
   ((err, updatedUser) => {
     if (err) {
       console.log(err);
-      return res.status(400).send(JSON.stringify({message: `Error updating LHS session.`}));
+      return res.status(400).send(JSON.stringify({message: `Error updating OBD session.`}));
     }
     console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`)
     return res.status(200).send(JSON.stringify({message: updatedUser, status: 200}));
@@ -128,8 +128,8 @@ router.post(createSessionApiRoute('lhs/train'), function (req, res, next) {
 })
 
 
-// Deletes a LHS session
-router.post(createSessionApiRoute('lhs/:sessionId'), function (req, res, next) {
+// Deletes a OBD session
+router.post(createSessionApiRoute('obd/:sessionId'), function (req, res, next) {
   if (isParamEmpty(req, 'id') || isParamEmpty(req, 'sessionId')) {
     console.log(`UserId or sessionId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -158,9 +158,9 @@ router.post(createSessionApiRoute('lhs/:sessionId'), function (req, res, next) {
 });
 
 /**
- * Returns all the non complete LHS sessions
+ * Returns all the non complete OBD sessions
  */
-router.get(createSessionApiRoute('lhs/get-current-sessions'), function (req, res) {
+router.get(createSessionApiRoute('obd/get-current-sessions'), function (req, res) {
   if (isParamEmpty(req, 'id')) {
     console.log(`UserId was not sent with request.`)
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -168,10 +168,10 @@ router.get(createSessionApiRoute('lhs/get-current-sessions'), function (req, res
   const userId = req.params.id;
 
   User.findById(userId)
-  .where({sessions: { $elemMatch: { sessionType: 'LHS', 'data.complete': false }}})
+  .where({sessions: { $elemMatch: { sessionType: 'OBD', 'data.complete': false }}})
   .then(data => {
     if (!data) {
-        return res.status(400).send(JSON.stringify({message: 'There are no current LHS sessions', sessions: []}));
+        return res.status(400).send(JSON.stringify({message: 'There are no current OBD sessions', sessions: []}));
     } else {
       return res.status(200).send(JSON.stringify({sessions: data.sessions}));
     }
@@ -184,7 +184,7 @@ router.get(createSessionApiRoute('lhs/get-current-sessions'), function (req, res
 
 
 /**
- * Get a specific LHS session by its uniquide ID
+ * Get a specific OBD session by its uniquide ID
  */
 router.get(createSessionApiRoute('/get-session/:sessionId'), (req, res) => {
     const id = req.params.sessionId;
@@ -193,9 +193,9 @@ router.get(createSessionApiRoute('/get-session/:sessionId'), (req, res) => {
         return  res.status(400).send(JSON.stringify({status: false, message: 'Please add an ID'}));
 
     }
-    LHSSession.findById(id, function (err, session) {
+    OBDSession.findById(id, function (err, session) {
         if (err || session === undefined || session.length === 0) {
-            return  res.status(400).send(JSON.stringify({status: false, message: 'Could not find any LHS sessions' +
+            return  res.status(400).send(JSON.stringify({status: false, message: 'Could not find any OBD sessions' +
                 ' with that ID'}));
         }
         return  res.status(200).send(JSON.stringify({status: true, data: session}));

@@ -1,4 +1,4 @@
-// export const GET_LHS_NEW_SESSION_INITIAL_STATE = 'GET_LHS_NEW_SESSION_INITIAL_STATE';
+// export const GET_OBD_NEW_SESSION_INITIAL_STATE = 'GET_OBD_NEW_SESSION_INITIAL_STATE';
 import API from "../../constants/Api";
 import fetch from "cross-fetch";
 import "babel-polyfill";
@@ -13,23 +13,23 @@ import { request } from "../../components/helpers";
 /**
  * Action types
  */
-export const SAVE_LHS_SESSION = "SAVE_LHS_SESSION";
-export const GET_ALL_LHS = "GET_ALL_LHS";
-export const DELETE_LHS_SESSION = "DELETE_LHS_SESSION";
-export const UPDATE_LHS_SESSION = "UPDATE_LHS_SESSION";
+export const SAVE_OBD_SESSION = "SAVE_OBD_SESSION";
+export const GET_ALL_OBD = "GET_ALL_OBD";
+export const DELETE_OBD_SESSION = "DELETE_OBD_SESSION";
+export const UPDATE_OBD_SESSION = "UPDATE_OBD_SESSION";
 export const RESET_STATE = "RESET_STATE";
 
-export const SAVE_LHS_DOG = "SAVE_LHS_DOG";
-export const SAVE_LHS_DOG_TRAINING = "SAVE_LHS_DOG_TRAINING";
+export const SAVE_OBD_DOG = "SAVE_OBD_DOG";
+export const SAVE_OBD_DOG_TRAINING = "SAVE_OBD_DOG_TRAINING";
 
 /**
  * Action Creators
  */
-export const getAllLHS = () => {
-  console.log("Getting all lhs sessions");
+export const getAllOBD = () => {
+  console.log("Getting all obd sessions");
   return (dispatch, getState) => {
     if (isOnline()) {
-      API.LHSCurrentSessionsURL.then(url => {
+      API.OBDCurrentSessionsURL.then(url => {
         request(url, null, "GET")
           .then(res => res.json())
           .then(res => {
@@ -37,10 +37,10 @@ export const getAllLHS = () => {
             res.sessions.map((key, i) => {
               sessionData.push(key.data);
             });
-            dispatch({ type: GET_ALL_LHS, sessions: sessionData });
+            dispatch({ type: GET_ALL_OBD, sessions: sessionData });
           })
           .catch(err => {
-            console.log("error get all lhs", err);
+            console.log("error get all obd", err);
             dispatch({ type: SERVER_STATE, isServerOnline: false });
           })
           .done();
@@ -52,24 +52,24 @@ export const getAllLHS = () => {
 };
 
 /**
- * Saves a LHS session. If there is no connection, session is saved locally and pushed to db once there is connection.
+ * Saves a OBD session. If there is no connection, session is saved locally and pushed to db once there is connection.
  * @param sessionInfo
  * @returns {Function}
  */
-export const saveLHSSession = ({ sessionInfo }) => {
+export const saveOBDSession = ({ sessionInfo }) => {
   return (dispatch, getState) => {
     //Transform session info
     sessionInfo.searches = parseSearches(sessionInfo.searches);
     //We save it locally first
     if (!sessionInfo.isNew) {
       console.log("Updating session");
-      dispatch({ type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo });
+      dispatch({ type: UPDATE_OBD_SESSION, sessionInfo: sessionInfo });
     } else {
       console.log("Creating new session");
-      dispatch({ type: SAVE_LHS_SESSION, sessionInfo: sessionInfo });
+      dispatch({ type: SAVE_OBD_SESSION, sessionInfo: sessionInfo });
     }
     if (isOnline()) {
-      API.LHSSaveSessionURL.then(url => {
+      API.OBDSaveSessionURL.then(url => {
         console.log(url);
         console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
         request(url, JSON.stringify(sessionInfo))
@@ -79,7 +79,7 @@ export const saveLHSSession = ({ sessionInfo }) => {
             dispatch({ type: SERVER_STATE, isServerOnline: false });
             dispatch({
               type: ADD_TO_ACTION_QUEUE,
-              payload: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+              payload: ActionQueueTypes.SAVE_NEW_OBD_LATER,
               data: sessionInfo
             });
           });
@@ -88,16 +88,16 @@ export const saveLHSSession = ({ sessionInfo }) => {
       console.log("adding 2 quere");
       dispatch({
         type: ADD_TO_ACTION_QUEUE,
-        payload: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+        payload: ActionQueueTypes.SAVE_NEW_OBD_LATER,
         data: sessionInfo
       });
     }
   };
 };
 
-export const saveLHSSessionLater = ({ sessionInfo }) => {
+export const saveOBDSessionLater = ({ sessionInfo }) => {
   return dispatch => {
-    API.LHSSaveSessionURL.then(url =>
+    API.OBDSaveSessionURL.then(url =>
       request(url, JSON.stringify(sessionInfo))
         .then(res => {})
         .catch(err => {
@@ -105,7 +105,7 @@ export const saveLHSSessionLater = ({ sessionInfo }) => {
           dispatch({ type: SERVER_STATE, isServerOnline: false });
           dispatch({
             type: ADD_TO_ACTION_QUEUE,
-            payload: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+            payload: ActionQueueTypes.SAVE_NEW_OBD_LATER,
             data: sessionInfo
           });
         })
@@ -113,12 +113,12 @@ export const saveLHSSessionLater = ({ sessionInfo }) => {
   };
 };
 
-export const deleteLHSSession = ({ sessionId }) => {
+export const deleteOBDSession = ({ sessionId }) => {
   return (dispatch, getState) => {
     //We first delete it locally
-    dispatch({ type: DELETE_LHS_SESSION, sessionId: sessionId });
+    dispatch({ type: DELETE_OBD_SESSION, sessionId: sessionId });
     if (isOnline()) {
-      API.LHSDeleteSessionURL(sessionId).then(url => {
+      API.OBDDeleteSessionURL(sessionId).then(url => {
         request(url, JSON.stringify({ sessionId: sessionId }))
           .then(res => {})
           .catch(err => {
@@ -126,7 +126,7 @@ export const deleteLHSSession = ({ sessionId }) => {
             dispatch({ type: SERVER_STATE, isServerOnline: false });
             dispatch({
               type: ADD_TO_ACTION_QUEUE,
-              payload: ActionQueueTypes.DELETE_LHS_LATER,
+              payload: ActionQueueTypes.DELETE_OBD_LATER,
               data: sessionId
             });
           });
@@ -134,16 +134,16 @@ export const deleteLHSSession = ({ sessionId }) => {
     } else {
       dispatch({
         type: ADD_TO_ACTION_QUEUE,
-        payload: ActionQueueTypes.DELETE_LHS_LATER,
+        payload: ActionQueueTypes.DELETE_OBD_LATER,
         data: sessionId
       });
     }
   };
 };
 
-export const deleteLHSSessionLater = ({ sessionId }) => {
+export const deleteOBDSessionLater = ({ sessionId }) => {
   return dispatch => {
-    API.LHSDeleteSessionURL(sessionId).then(url => {
+    API.OBDDeleteSessionURL(sessionId).then(url => {
       request(url, JSON.stringify({ sessionId: sessionId }))
         .then(res => {
           console.log(res);
@@ -153,7 +153,7 @@ export const deleteLHSSessionLater = ({ sessionId }) => {
           dispatch({ type: SERVER_STATE, isServerOnline: false });
           dispatch({
             type: ADD_TO_ACTION_QUEUE,
-            payload: ActionQueueTypes.DELETE_LHS_LATER,
+            payload: ActionQueueTypes.DELETE_OBD_LATER,
             data: sessionId
           });
         });
@@ -162,12 +162,12 @@ export const deleteLHSSessionLater = ({ sessionId }) => {
 };
 
 /**
- * Saves a LHS Training session. If there is no connection, session is saved locally and pushed to db once there is
+ * Saves a OBD Training session. If there is no connection, session is saved locally and pushed to db once there is
  * connection.
  * @param sessionInfo
  * @returns {Function}
  */
-export const saveLHSTraining = ({ sessionInfo, handlers }) => {
+export const saveOBDTraining = ({ sessionInfo, handlers }) => {
   return (dispatch, getState) => {
     console.log(`SESSIONINFO: ${JSON.stringify(sessionInfo)}\n\n`);
     sessionInfo.dogsTrained = parseTrainingData(
@@ -176,9 +176,9 @@ export const saveLHSTraining = ({ sessionInfo, handlers }) => {
     );
     console.log("session info after edit", sessionInfo);
     //We save it locally first
-    dispatch({ type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo });
+    dispatch({ type: UPDATE_OBD_SESSION, sessionInfo: sessionInfo });
     if (isOnline()) {
-      API.LHSTrainURL.then(url => {
+      API.OBDTrainURL.then(url => {
         console.log(url);
         request(
           url,
@@ -194,7 +194,7 @@ export const saveLHSTraining = ({ sessionInfo, handlers }) => {
             dispatch({ type: SERVER_STATE, isServerOnline: false });
             dispatch({
               type: ADD_TO_ACTION_QUEUE,
-              payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+              payload: ActionQueueTypes.SAVE_OBD_TRAINING_LATER,
               data: sessionInfo
             });
           });
@@ -202,16 +202,16 @@ export const saveLHSTraining = ({ sessionInfo, handlers }) => {
     } else {
       dispatch({
         type: ADD_TO_ACTION_QUEUE,
-        payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+        payload: ActionQueueTypes.SAVE_OBD_TRAINING_LATER,
         data: sessionInfo
       });
     }
   };
 };
 
-export const saveLHSTrainingLater = ({ sessionInfo }) => {
+export const saveOBDTrainingLater = ({ sessionInfo }) => {
   return dispatch => {
-    API.LHSTrainURL.then(url =>
+    API.OBDTrainURL.then(url =>
       request(
         url,
         JSON.stringify({
@@ -226,7 +226,7 @@ export const saveLHSTrainingLater = ({ sessionInfo }) => {
           dispatch({ type: SERVER_STATE, isServerOnline: false });
           dispatch({
             type: ADD_TO_ACTION_QUEUE,
-            payload: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+            payload: ActionQueueTypes.SAVE_OBD_TRAINING_LATER,
             data: sessionInfo
           });
         })

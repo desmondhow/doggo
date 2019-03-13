@@ -20,17 +20,18 @@ import {
   renderReduxFormInput,
   request
 } from "../../../components/helpers";
-import {LHSInfo} from "../../../constants/SessionsConstants";
+import { LHSInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
 import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
-import {saveLHSTraining} from "../../../redux/actions/lhs.actions";
-
+import { saveLHSTraining } from "../../../redux/actions/lhs.actions";
 
 export class LHSBuildingSearchScreen extends React.Component {
   constructor(props) {
     super(props);
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
+    const dog = this.props.navigation.getParam("dog", false);
+
     if (sessionInfo) {
       const searchSections = [];
       sessionInfo.searches.forEach(hide => {
@@ -40,9 +41,9 @@ export class LHSBuildingSearchScreen extends React.Component {
         });
       });
       this.state = {
-          sessionInfo: sessionInfo,
-          activeSection: "",
-        dog: this.props.dog,
+        sessionInfo: sessionInfo,
+        activeSection: "",
+        dog: dog,
         dogs: [],
         handlers: [],
         searches: searchSections,
@@ -54,34 +55,30 @@ export class LHSBuildingSearchScreen extends React.Component {
     }
   }
 
-    componentDidMount() {
-        this.setState(
-            {
-                handlers: this.props.handlers,
-                dogs: this.props.dogs
-            },
-        );
+  componentDidMount() {
+    this.setState({
+      handlers: this.props.handlers,
+      dogs: this.props.dogs
+    });
+  }
+
+  _onSubmit = dogTrainingData => {
+    if (dogTrainingData.length === 0) {
+      alert("Please fill the training session.");
+    } else {
+
+      const sessionInfo = this.state.sessionInfo;
+      sessionInfo.dogsTrained = dogTrainingData;
+
+      this.props.dispatch(
+        saveLHSTraining({
+          sessionInfo: sessionInfo,
+          handlers: this.state.handlers
+        })
+      );
+      this.props.navigation.navigate("LHS");
     }
-
-    _onSubmit = dogTrainingData => {
-        if (dogTrainingData.length === 0) {
-            alert('Please fill the training session.')
-        } else {
-            //Todo: remove comment
-            // for (let i = 0, l = sessionInfo.length; i < l; i++) {
-            //     if (typeof(sessionInfo[i])==='undefined'||  sessionInfo[i]=== null) {
-            //         alert('Please fill the training session.')
-            //         return;
-            //     }
-            // }
-            const sessionInfo = this.state.sessionInfo;
-            sessionInfo.dogsTrained = dogTrainingData;
-
-            this.props.dispatch(saveLHSTraining({sessionInfo: sessionInfo, handlers: this.state.handlers}));
-            this.props.navigation.navigate('LHS')
-        }
-
-    };
+  };
 
   _renderSubmitBtn = () => (
     <Button
@@ -131,7 +128,7 @@ export class LHSBuildingSearchScreen extends React.Component {
 
   _renderContent = sectionId => {
     const scrollViewContainerStyle = { height: 300 };
-
+    sectionId = sectionId.toString();
     const dogId = this.props.dog._id;
     const LHSSearchInfo = LHSInfo.Search;
     return (
@@ -367,13 +364,17 @@ export class LHSBuildingSearchScreen extends React.Component {
           >
             <Text h3>Searches</Text>
             {this._renderStopwatch()}
-            <Text style={{
-              color: 'red',
-              fontWeight: 'bold',
-              marginBottom: 100,
-              marginLeft: 120,
-              fontSize: 20
-              }}>{this.state.dog.name}</Text>
+            <Text
+              style={{
+                color: "red",
+                fontWeight: "bold",
+                marginBottom: 100,
+                marginLeft: 120,
+                fontSize: 20
+              }}
+            >
+              {this.state.dog.name}
+            </Text>
           </View>
           <SectionList
             sections={this.state.searches}
@@ -406,9 +407,10 @@ export class LHSBuildingSearchScreen extends React.Component {
                 )}
               </View>
             )}
-            renderItem={({ item, section }) => (
-              <View key={item}>{this._renderContent(item._id)}</View>
-            )}
+            renderItem={({ item, section }) => {
+              console.log(`item: ${JSON.stringify(item)}`);
+              return <View key={item}>{this._renderContent(item.searchNumber)}</View>
+            }}
           />
         </View>
       </View>
@@ -464,13 +466,9 @@ const styles = StyleSheet.create({
   }
 });
 
-const selector = formValueSelector('lhs');
-export default connectReduxForm(
-    'lhs',
-    LHSBuildingSearchScreen,
-    state => ({
-        dog: state.lhs.dog,
-        dogs: state.general.dogs,
-        handlers: state.general.handlers,
-    })
-)
+const selector = formValueSelector("lhs");
+export default connectReduxForm("lhs", LHSBuildingSearchScreen, state => ({
+  dog: state.lhs.dog,
+  dogs: state.general.dogs,
+  handlers: state.general.handlers
+}));
