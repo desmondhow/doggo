@@ -285,29 +285,32 @@ const parseTrainingData = (trainingData, handlers) => {
       searchInfo["handlerId"] = handler._id;
     }
 
-    Object.keys(searchInfo["performance"]).forEach(searchId => {
-      const performanceInfo = searchInfo["performance"][searchId];
-      Object.keys(performanceInfo).forEach(field => {
-        if (field === "fields") {
-          performanceInfo[field].forEach(f => {
-            f = f[0].toLowerCase() + f.replace(" ", "").substr(1);
-            console.log(f);
-            searchInfo["performance"][searchId][f] = true;
+    if (searchInfo["performance"]) {
+      Object.keys(searchInfo["performance"]).forEach(searchId => {
+        const performanceInfo = searchInfo["performance"][searchId];
+        if (performanceInfo) {
+          Object.keys(performanceInfo).forEach(field => {
+            if (field === "fields") {
+              performanceInfo[field].forEach(f => {
+                f = f[0].toLowerCase() + f.replace(" ", "").substr(1);
+                console.log(f);
+                searchInfo["performance"][searchId][f] = true;
+              });
+              delete performanceInfo[field];
+            } else if (field === "duration") {
+              searchInfo["performance"][searchId]["duration"] = `${
+                field.minutes
+              }:${field.seconds}`;
+            } else if (typeof performanceInfo[field] === "object") {
+              if (!!performanceInfo[field]["text"]) {
+                searchInfo["performance"][searchId][field] =
+                  performanceInfo[field]["text"];
+              }
+            }
           });
-          delete performanceInfo[field];
-        } else if (field === "duration") {
-          searchInfo["performance"][searchId]["duration"] = `${field.minutes}:${
-            field.seconds
-          }`;
-        } else if (typeof performanceInfo[field] === "object") {
-          if (!!performanceInfo[field]["text"]) {
-            searchInfo["performance"][searchId][field] =
-              performanceInfo[field]["text"];
-          }
         }
-
       });
-    });
+    }
   });
 
   return trainingData;

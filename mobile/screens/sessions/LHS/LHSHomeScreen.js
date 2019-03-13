@@ -119,7 +119,7 @@ import { request } from "../../../components/helpers";
             if (numSearches === undefined) {
                 numSearches = Object.keys( session.searches).length;
             }
-            const dogs = session.dogsTrained ? session.dogsTrained.length : 0;
+            const dogs = session.dogsTrained && session.dogsTrained.length ? session.dogsTrained.length : 0;
             const rowData = [createdAt, numSearches, dogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
