@@ -28,7 +28,7 @@ export const SAVE_LHS_DOG_TRAINING = "SAVE_LHS_DOG_TRAINING";
 export const getAllLHS = () => {
   console.log("Getting all lhs sessions");
   return (dispatch, getState) => {
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.LHSCurrentSessionsURL.then(url => {
         request(url, null, "GET")
           .then(res => res.json())
@@ -69,7 +69,7 @@ export const saveLHSSession = ({ sessionInfo }) => {
       dispatch({ type: SAVE_LHS_SESSION, sessionInfo: sessionInfo });
     }
 
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.LHSSaveSessionURL.then(url => {
         request(url, JSON.stringify(sessionInfo))
           .then(res => {})
@@ -115,7 +115,7 @@ export const deleteLHSSession = ({ sessionId }) => {
   return (dispatch, getState) => {
     //We first delete it locally
     dispatch({ type: DELETE_LHS_SESSION, sessionId: sessionId });
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.LHSDeleteSessionURL(sessionId).then(url => {
         request(url, JSON.stringify({ sessionId: sessionId }))
           .then(res => {})
@@ -172,7 +172,7 @@ export const saveLHSTraining = ({sessionInfo, handlers}) => {
       console.log('session info after edit', sessionInfo);
       //We save it locally first
       dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
-      if (isOnline()) {
+      if (isOnline(getState)) {
           API.LHSTrainURL.then(url => {
               console.log(url);
               request(url, JSON.stringify({

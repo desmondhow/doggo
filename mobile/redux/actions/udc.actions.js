@@ -6,7 +6,7 @@ import {
     ActionQueueTypes,
     ADD_TO_ACTION_QUEUE,
     SERVER_STATE,
-    isOnline,
+    isOnline, guidGenerator,
 } from "./connection.actions";
 import {request} from "../../components/helpers";
 
@@ -27,7 +27,7 @@ export const SAVE_UDC_DOG = 'SAVE_UDC_DOG';
 export const getAllUDC = () => {
     console.log('Getting all udc sessions');
     return (dispatch, getState) => {
-        if (isOnline()) {
+        if (isOnline(getState)) {
             API.UDCCurrentSessionsURL
                 .then(url => {
                     request(url, null, 'GET')
@@ -72,7 +72,7 @@ export const saveUDCSession = ({sessionInfo}) => {
             dispatch({type: SAVE_UDC_SESSION, sessionInfo: sessionInfo});
         }
 
-        if (isOnline()) {
+        if (isOnline(getState)) {
             API.UDCSaveSessionURL.then(url => {
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
@@ -118,7 +118,7 @@ export const deleteUDCSession = ({sessionId}) => {
     return (dispatch, getState) => {
         //We first delete it locally
         dispatch({type: DELETE_UDC_SESSION, sessionId: sessionId});
-        if (isOnline()) {
+        if (isOnline(getState)) {
             API.UDCDeleteSessionURL(sessionId).then(url => {
                 request(url, JSON.stringify({sessionId: sessionId}))
                     .then(res => {
@@ -177,7 +177,7 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
         console.log('session info after edit', sessionInfo);
         //We save it locally first
         dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
-        if (isOnline()) {
+        if (isOnline(getState)) {
             API.UDCTrainURL.then(url => {
                 console.log(url);
                 request(url, JSON.stringify({
@@ -243,7 +243,7 @@ const parseHides = hidesData => {
         let placementArea = h.placementArea;
         let placementHeight = h.placementHeight;
         let hideType = h.hideType;
-
+        let id = guidGenerator();
         hides.push({
             roomNumber,
             concentration: Number(concentration),
@@ -255,6 +255,7 @@ const parseHides = hidesData => {
             hideType
         });
     });
+    console.log(hides);
     return hides;
 };
 

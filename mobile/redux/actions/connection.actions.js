@@ -43,8 +43,7 @@ export const pingServer = ({url}) => {
             .then((res) => {
                 dispatch({type: SERVER_STATE, isServerOnline: true});
             }).catch(function (error) {
-                console.log(error);
-                dispatch({type: SERVER_STATE, isServerOnline: false});
+            dispatch({type: SERVER_STATE, isServerOnline: false});
         });
     };
 };
@@ -57,16 +56,16 @@ export const dispatchActionQueueElt = ({elts}) => {
     return (dispatch) => {
         for (let i = 0; i < elts.length; i++) {
             if (elts[i].type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
-                    dispatch({
-                        type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                            type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
-                            data: elts[i].data
-                        }
-                    });
-                    dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
 
             }
-            else if(elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
+            else if (elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
                 dispatch({
                     type: REMOVE_FROM_ACTION_QUEUE, payload: {
                         type: ActionQueueTypes.DELETE_UDC_LATER,
@@ -87,7 +86,6 @@ export const dispatchActionQueueElt = ({elts}) => {
             }
 
 
-
             else {
                 console.log('error action queue', elts[i].type);
             }
@@ -96,19 +94,15 @@ export const dispatchActionQueueElt = ({elts}) => {
 };
 
 
-
-
 /**
  * Checks if both server and internet connection are working
  * @param getState
  * @returns {*|boolean}
  */
-export function isOnline() {
-    return (getState) => {
-        const isConnected = getState().connection.isConnected;
-        const isServerOnline = getState().connection.isServerOnline;
-        return isConnected && isServerOnline;
-    }
+export function isOnline(getState) {
+    const isConnected = getState().connection.isConnected;
+    const isServerOnline = getState().connection.isServerOnline;
+    return isConnected && isServerOnline;
 }
 
 export function guidGenerator() {
@@ -118,5 +112,5 @@ export function guidGenerator() {
     let S4 = function () {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }

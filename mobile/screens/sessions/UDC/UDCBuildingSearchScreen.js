@@ -46,7 +46,7 @@ export class UDCBuildingSearchScreen extends React.Component {
         dogs: [],
         handlers: [],
         hides: hideSections,
-        sessionId: sessionInfo._id,
+        sessionId: sessionInfo.sessionId,
         createdAt: sessionInfo.createdAt,
         stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
         interval: null

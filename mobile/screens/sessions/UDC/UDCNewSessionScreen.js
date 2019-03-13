@@ -547,6 +547,7 @@ class UDCNewSessionScreen extends React.Component {
 
     // reset Add Hide section state
     this.setState({ addHideRoomNumber: 0, addHideType: "" });
+    console.log('reset fields');
     this._resetFields([
       `Hides[null]concentration`,
       `Hides[null]size`,
@@ -556,7 +557,7 @@ class UDCNewSessionScreen extends React.Component {
       `Hides[null]placementHeight`,
       `Hides[null]notes`
     ]);
-    console.log(this.state.addHideRoomNumber);
+    console.log('room number', this.state.addHideRoomNumber);
     // store new hide
     this.setState(prevState => ({
       showAddHideModal: false,
