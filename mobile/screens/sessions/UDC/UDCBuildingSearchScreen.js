@@ -297,7 +297,7 @@ export class UDCBuildingSearchScreen extends React.Component {
   _renderStopwatch = () => (
     <Field
       name={`${this.props.dog._id}.performance.${
-        this.state.activeSection._id
+        this.state.activeSection.id
       }.time`}
       component={inputProps => {
         const { input } = inputProps;

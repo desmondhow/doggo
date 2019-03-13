@@ -90,6 +90,7 @@ export const saveUDCSession = ({sessionInfo}) => {
             }).catch(err => {
             })
         } else {
+            console.log('dispatching save new ud later');
             dispatch({type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_NEW_UDC_LATER, data: sessionInfo});
         }
     };
@@ -247,6 +248,7 @@ const parseHides = hidesData => {
         let hideType = h.hideType;
         let id = guidGenerator();
         hides.push({
+            id,
             roomNumber,
             concentration: Number(concentration),
             size,

@@ -9,6 +9,7 @@ import {
     saveUDCSessionLater,
     saveUDCTrainingLater
 } from "./udc.actions";
+import {deleteLHSSessionLater, saveLHSSessionLater, saveLHSTrainingLater} from "./lhs.actions";
 
 
 /**
@@ -22,8 +23,11 @@ export const RESET_STATE = 'RESET_STATE';
 
 export const ActionQueueTypes = {
     SAVE_NEW_UDC_LATER: 'SAVE_NEW_UDC_LATER',
+    SAVE_NEW_LHS_LATER: 'SAVE_NEW_LHS_LATER',
     DELETE_UDC_LATER: 'DELETE_UDC_LATER',
-    SAVE_UDC_TRAINING_LATER: 'SAVE_UDC_TRAINING_LATER'
+    DELETE_LHS_LATER: 'DELETE_LHS_LATER',
+    SAVE_UDC_TRAINING_LATER: 'SAVE_UDC_TRAINING_LATER',
+    SAVE_LHS_TRAINING_LATER: 'SAVE_LHS_TRAINING_LATER'
 
 };
 
@@ -65,6 +69,16 @@ export const dispatchActionQueueElt = ({elts}) => {
                 dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
 
             }
+            else if (elts[i].type === ActionQueueTypes.SAVE_NEW_LHS_LATER) {
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(saveLHSSessionLater({sessionInfo: elts[i].data}));
+
+            }
             else if (elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
                 dispatch({
                     type: REMOVE_FROM_ACTION_QUEUE, payload: {
@@ -74,7 +88,18 @@ export const dispatchActionQueueElt = ({elts}) => {
                 });
                 dispatch(deleteUDCSessionLater({sessionId: elts[i].data}));
             }
-            if (elts[i].type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
+
+            else if (elts[i].type === ActionQueueTypes.DELETE_LHS_LATER) {
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.DELETE_LHS_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(deleteLHSSessionLater({sessionId: elts[i].data}));
+            }
+
+            else if (elts[i].type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
                 dispatch({
                     type: REMOVE_FROM_ACTION_QUEUE, payload: {
                         type: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
@@ -82,6 +107,17 @@ export const dispatchActionQueueElt = ({elts}) => {
                     }
                 });
                 dispatch(saveUDCTrainingLater({sessionInfo: elts[i].data}));
+
+            }
+
+            else if (elts[i].type === ActionQueueTypes.SAVE_LHS_TRAINING_LATER) {
+                dispatch({
+                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                        type: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+                        data: elts[i].data
+                    }
+                });
+                dispatch(saveLHSTrainingLater({sessionInfo: elts[i].data}));
 
             }
 
