@@ -36,33 +36,32 @@ class OBDNewSessionScreen extends React.Component {
     super(props);
 
     this.state = {
-      addedSearches: {},
-      addSearchNumber: null
+      addedDogs: {}
     };
 
-    let previousSearches = {};
+    let previousDogs = {};
 
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
 
-    const addSearchState = {
-      addSearchNumber: null
+    const addDogState = {
+      addDogNumber: 1
     };
 
     // If data comes from server
     if (sessionInfo) {
-      sessionInfo.searches.forEach(search => {
-        previousSearches[search.searchNumber] = {
-          location: search.location,
-          placements: search.placements,
-          notes: search.notes
+      sessionInfo.dogs.forEach(dog => {
+        previousDogs[dog.dogNumber] = {
+          handler: dog.handler,
+          familiar: dog.familiar,
+          notes: dog.notes
         };
       });
       this.state = {
-        ...addSearchState,
-        addedSearches: previousSearches,
+        ...addDogState,
+        addedDogs: previousDogs,
         isNew: false,
         sessionId: sessionInfo.sessionId,
-        showAddSearchModal: false,
+        showAddDogModal: false,
         isEditing: this.props.navigation.getParam("isEditing", false),
         createdAt: sessionInfo.createdAt,
         temperature: sessionInfo.temperature,
@@ -74,12 +73,12 @@ class OBDNewSessionScreen extends React.Component {
       //We are creating a new session
       const localID = guidGenerator();
       this.state = {
-        ...addSearchState,
-        addedSearches: {},
+        ...addDogState,
+        addedDogs: {},
         isNew: true,
         sessionId: localID,
         isEditing: false,
-        showAddSearchModal: false,
+        showAddDogModal: false,
         createdAt: new Date(),
         temperature: null,
         humidity: null,
@@ -100,7 +99,7 @@ class OBDNewSessionScreen extends React.Component {
       complete: false,
       sessionId: this.state.sessionId,
       createdAt: this.state.createdAt,
-      searches: this.state.addedSearches
+      dogs: this.state.addedDogs
     };
     console.log("On SUbmit");
     console.log(JSON.stringify(session));
@@ -116,7 +115,9 @@ class OBDNewSessionScreen extends React.Component {
         center,
         ...styles.fieldsContainer,
         marginTop: 30,
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-evenly"
       }}
     >
       {Object.keys(OBDInfo.General).map(name => (
@@ -145,25 +146,21 @@ class OBDNewSessionScreen extends React.Component {
     </View>
   );
 
-  _renderAddedSearches = () => (
+  _renderAddedDogs = () => (
     <View>
-      {Object.keys(this.state.addedSearches).map(searchNumber => {
-        console.log(JSON.stringify(this.state.addedSearches[searchNumber]));
+      {Object.keys(this.state.addedDogs).map(dogNumber => {
+        console.log(JSON.stringify(this.state.addedDogs[dogNumber]));
         return (
           <View style={{ marginTop: 20 }}>
             <View style={{ flexDirection: "row", marginBottom: 20 }}>
-              <Text
-                style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}
-              >
-                Search #:
-              </Text>
-              <Text style={{ fontSize: 22 }}>{searchNumber} | </Text>
-              <Text style={{ fontWeight: "bold", fontSize: 22 }}>
-                {this.state.addedSearches[searchNumber].location}
-              </Text>
+              <Text style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}>K9 Name: </Text>
+              <Text style={{ fontSize: 22 }}>{dogNumber} </Text>
+              <Text style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}>Handler: </Text>
+              <Text style={{ fontSize: 22 }}>{this.state.addedDogs[dogNumber].handler} </Text>
+              <Text style={{ marginLeft: 30, fontSize: 22, fontWeight: "bold" }}>Familiar: </Text>
+              <Text style={{ fontWeight: "bold", fontSize: 22 }}>{this.state.addedDogs[dogNumber].familiar}</Text>
             </View>
             <View style={center}>
-              {this._renderSearchFields(searchNumber)}
               <Divider
                 style={{
                   backgroundColor: "black",
@@ -179,28 +176,28 @@ class OBDNewSessionScreen extends React.Component {
     </View>
   );
 
-  _updateSearchState = (searchNumber, property, value) => {
+  _updateDogState = (dogNumber, property, value) => {
     this.setState(prevState => ({
-      addedSearches: {
-        ...prevState.addedSearches,
-        [searchNumber]: {
-          ...prevState.addedSearches[searchNumber],
+      addedDogs: {
+        ...prevState.addedDogs,
+        [dogNumber]: {
+          ...prevState.addedDogs[dogNumber],
           [property]: value
         }
       }
     }));
   };
 
-  _renderAddSearchModal = () => {
-    let searchFields = (
-      <View style={center}>{this._renderSearchFields(null, true)}</View>
+  _renderAddDogModal = () => {
+    let dogFields = (
+      <View style={center}>{this._renderDogFields(null, true)}</View>
     );
 
     return (
-      this.state.showAddSearchModal && (
+      this.state.showAddDogModal && (
         <Modal
-          isVisible={this.state.showAddSearchModal}
-          onBackdropPress={() => this.setState({ showAddSearchModal: false })}
+          isVisible={this.state.showAddDogModal}
+          onBackdropPress={() => this.setState({ showAddDogModal: false })}
         >
           <View
             style={{
@@ -212,24 +209,9 @@ class OBDNewSessionScreen extends React.Component {
           >
             <View style={{ margin: 20, ...center }}>
               <View style={{ flexDirection: "row", marginBottom: 20 }}>
-                <Text h3>Adding a search</Text>
+                <Text h3>Adding a dog</Text>
               </View>
-              <View>
-                <View style={center}>
-                  <Text style={styles.labelStyle}>Search #:</Text>
-                  <FormInput
-                    containerStyle={{
-                      width: 150,
-                      marginBottom: 20
-                    }}
-                    value={this.state.addSearchNumber}
-                    onChangeText={searchNumber =>
-                      this.setState({ addSearchNumber: searchNumber })
-                    }
-                  />
-                </View>
-              </View>
-              {searchFields}
+              {dogFields}
               <Button
                 rounded
                 title="Add"
@@ -242,7 +224,7 @@ class OBDNewSessionScreen extends React.Component {
                   size: 26
                 }}
                 containerViewStyle={{ paddingBottom: 10, marginRight: 50 }}
-                onPress={() => this._addSearch()}
+                onPress={() => this._addDog()}
               />
             </View>
           </View>
@@ -251,7 +233,7 @@ class OBDNewSessionScreen extends React.Component {
     );
   };
 
-  _renderSearchFields = (searchNumber, userIsAddingSearch = false) => (
+  _renderDogFields = (dogNumber, userIsAddingDog = false) => (
     <View
       style={{
         flexDirection: "column",
@@ -260,62 +242,95 @@ class OBDNewSessionScreen extends React.Component {
         ...center
       }}
     >
-      {/* Location */}
-      <Text style={styles.labelStyle}>Location:</Text>
+      {/* K9 Name */}
+      <Text style={styles.labelStyle}>K9 Name:</Text>
       {renderReduxDropdown(
-        `Searches.${searchNumber}.location`,
-        OBDInfo.Locations,
+        `Dogs.${dogNumber}.dogName`,
+        ["Moxie"],
         styles.dropdown,
-        userIsAddingSearch
+        userIsAddingDog
           ? null
-          : searchNumber =>
-              this._updateSearchState(
-                searchNumber,
-                "searchNumber",
-                searchNumber
-              ),
-        userIsAddingSearch
+          : dogName =>
+            this._updateDogState(
+              dogNumber,
+              "dogName",
+              dogName
+            ),
+        userIsAddingDog
           ? null
-          : this.state.addedSearches[searchNumber].location
+          : this.state.addedDogs[dogNumber].dogName
       )}
-      {/* Subject Placement */}
-      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>Subject Placement:</Text>
-      {userIsAddingSearch && (
-        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          <CheckboxContainer
-            name={`Searches.${searchNumber}.placements`}
-            checkboxes={OBDInfo.Commands}
-          />
-        </View>
+      {/* Handler */}
+      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>Handler:</Text>
+      {renderReduxDropdown(
+        `Dogs.${dogNumber}.handlerName`,
+        ["Desmond"],
+        styles.dropdown,
+        userIsAddingDog
+          ? null
+          : handlerName =>
+            this._updateDogState(
+              dogNumber,
+              "handlerName",
+              handlerName
+            ),
+        userIsAddingDog
+          ? null
+          : this.state.addedDogs[dogNumber].handlerName
       )}
-      {!userIsAddingSearch &&
-        this.state.addedSearches[searchNumber].placements.map(p => (
-          <Text>{p}, </Text>
-        ))}
+      {/* Familiar */}
+      <Text style={styles.labelStyle}>Familiar:</Text>
+      <View>
+        <Field
+          name={`Dogs.${dogNumber}.isFamiliar`}
+          component={inputProps => (
+            <ButtonGroup
+              onPress={
+                userIsAddingDog
+                  ? inputProps.input.onChange
+                  : isFamiliar =>
+                    this._updateDogState(
+                      dogNumber,
+                      "isFamiliar",
+                      isFamiliar
+                    )
+              }
+              selectedIndex={
+                userIsAddingDog
+                  ? this.props.addDogIsFamiliar
+                  : this.state.addedDogs[dogNumber].isFamiliar
+              }
+              buttons={["No", "Yes"]}
+              textStyle={outlineButtonTextStyle}
+              containerStyle={{ height: 40, width: 100 }}
+            />
+          )}
+        />
+      </View>
       {/* Notes */}
       <View style={{ ...center, paddingTop: 10 }}>
         <Text style={styles.labelStyle}>Notes:</Text>
-        {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
+        {renderReduxFormInput(`Dogs.${dogNumber}.notes`, {
           containerStyle: { width: 400 },
           numberOfLine: 4,
           multiline: true,
-          placeholder: userIsAddingSearch
+          placeholder: userIsAddingDog
             ? null
-            : this.state.addedSearches[searchNumber].notes
+            : this.state.addedDogs[dogNumber].notes
         })}
       </View>
     </View>
   );
 
-  _toggleAddSearchModal = () =>
+  _toggleAddDogModal = () =>
     this.setState(prevState => ({
-      showAddSearchModal: !prevState.showAddSearchModal
+      showAddDogModal: !prevState.showAddDogModal
     }));
 
-  _renderAddSearchButton = () => (
+  _renderAddDogButton = () => (
     <Button
       rounded
-      title={`Add Search`}
+      title={`Add Dog`}
       buttonStyle={buttonStyle}
       textStyle={buttonTextStyle}
       fontSize={22}
@@ -325,7 +340,7 @@ class OBDNewSessionScreen extends React.Component {
         size: 26
       }}
       containerViewStyle={{ paddingBottom: 10 }}
-      onPress={() => this._toggleAddSearchModal()}
+      onPress={() => this._toggleAddDogModal()}
     />
   );
 
@@ -377,8 +392,8 @@ class OBDNewSessionScreen extends React.Component {
         {createBtn}
       </View>
     ) : (
-      createBtn
-    );
+        createBtn
+      );
   };
 
   _resetFields = fields => {
@@ -390,26 +405,26 @@ class OBDNewSessionScreen extends React.Component {
     });
   };
 
-  _addSearch = () => {
-    console.log("Search", this.state.addSearchNumber);
-    const placements = this.props.addSearchPlacements;
-    const location = this.props.addSearchLocation;
-    const notes = this.props.addSearchNotes;
-    const searchNumber = this.state.addSearchNumber;
+  _addDog = () => {
+    console.log("Dog", this.state.addDogNumber);
+    const placements = this.props.addDogPlacements;
+    const location = this.props.addDogLocation;
+    const notes = this.props.addDogNotes;
+    const dogNumber = this.state.addDogNumber;
 
     // reset Add Hide section state
-    this.setState({ addSearchNumber: 0 });
+    this.setState({ addDogNumber: null });
     this._resetFields([
-      `Searches[null]placements`,
-      `Searches[null]location`,
-      `Searches[null]notes`
+      `Dogs[null]placements`,
+      `Dogs[null]location`,
+      `Dogs[null]notes`
     ]);
     // store new hide
     this.setState(prevState => ({
-      showAddSearchModal: false,
-      addedSearches: {
-        ...prevState.addedSearches,
-        [searchNumber]: {
+      showAddDogModal: false,
+      addedDogs: {
+        ...prevState.addedDogs,
+        [dogNumber]: {
           location,
           placements,
           notes
@@ -418,7 +433,7 @@ class OBDNewSessionScreen extends React.Component {
     }));
   };
 
-  _renderSearchesForm = () => (
+  _renderDogsForm = () => (
     <View style={{ ...center, width: "100%" }}>
       <View
         style={{
@@ -428,16 +443,16 @@ class OBDNewSessionScreen extends React.Component {
           padding: 20
         }}
       >
-        <Text h3>Added Searches</Text>
+        <Text h3>Added Dogs</Text>
         <ScrollView
           style={{ width: "100%" }}
           keyboardShouldPersistTaps={"handled"}
         >
-          {Object.keys(this.state.addedSearches).length > 0
-            ? this._renderAddedSearches()
+          {Object.keys(this.state.addedDogs).length > 0
+            ? this._renderAddedDogs()
             : null}
         </ScrollView>
-        {this._renderAddSearchButton()}
+        {this._renderAddDogButton()}
       </View>
       {this._renderSubmitBtn()}
     </View>
@@ -446,8 +461,8 @@ class OBDNewSessionScreen extends React.Component {
   render = () => (
     <View style={styles.container}>
       <View>{this._renderGeneralForm()}</View>
-      <View style={{}}>{this._renderSearchesForm()}</View>
-      {this._renderAddSearchModal()}
+      <View style={{}}>{this._renderDogsForm()}</View>
+      {this._renderAddDogModal()}
     </View>
   );
 }
@@ -475,7 +490,7 @@ const styles = StyleSheet.create({
 
 const selector = formValueSelector("obd");
 export default connectReduxForm("obd", OBDNewSessionScreen, state => ({
-  addSearchLocation: selector(state, `Searches.null.location`),
-  addSearchNotes: selector(state, `Searches.null.notes`),
-  addSearchPlacements: selector(state, `Searches.null.placements`)
+  addDogLocation: selector(state, `Dogs.null.location`),
+  addDogNotes: selector(state, `Dogs.null.notes`),
+  addDogPlacements: selector(state, `Dogs.null.placements`)
 }));

@@ -671,21 +671,21 @@ export const OBDInfo = {
     timeOfDay: [
       'Daylight',
       'Nighttime'
+    ],
+    location: [
+      'Training Room',
+      'Agility Area',
+      'Brick Area',
+      'Free Run',
+      'White Fence Area',
+      'Building',
+      'Rubble Yard',
+      'Parking Lot',
+      'Grass',
+      'Offsite',
+      'Other'
     ]
   },
-  Locations: [
-    'Training Room',
-    'Agility Area',
-    'Brick Area',
-    'Free Run',
-    'White Fence Area',
-    'Building',
-    'Rubble Yard',
-    'Parking Lot',
-    'Grass',
-    'Offsite',
-    'Other'
-  ],
   Function: {
     // need all the options, made these up
     HandlerPosition: [
