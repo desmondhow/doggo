@@ -47,7 +47,7 @@ import { request } from "../../../components/helpers";
     _continueTrainingSession(i) {
         const { navigate } = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('OBDTrainDog', { sessionInfo: sessionData });
+        navigate('OBDFunction', { sessionInfo: sessionData });
     }
 
     _editTrainingSession(i) {

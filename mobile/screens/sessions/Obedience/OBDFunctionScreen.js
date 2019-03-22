@@ -43,7 +43,7 @@ export class OBDBuildingSearchScreen extends React.Component {
       const functions = [
         {
           title: "Basic Sit",
-          data: []
+          data: [""]
         }
       ];
 
@@ -135,7 +135,7 @@ export class OBDBuildingSearchScreen extends React.Component {
 
   _renderContent = functionName => {
     const scrollViewContainerStyle = { height: 300 };
-    sectionId = this.state.sectionId.toString();
+    // sectionId = this.state.sectionId.toString();
     // const dogId = this.props.dog._id;
     const OBDFunctionInfo = OBDInfo.Function;
     return (
@@ -147,7 +147,7 @@ export class OBDBuildingSearchScreen extends React.Component {
       >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {this._renderLabeledButtonGroup(
-            "K9 Position",
+            "K9\nPosition",
             `${this.state.sessionId}.${functionName}.k9Position`,
             OBDFunctionInfo.K9Position,
             {
@@ -158,7 +158,7 @@ export class OBDBuildingSearchScreen extends React.Component {
             }
           )}
           {this._renderLabeledButtonGroup(
-            "Handler Position",
+            "Handler\nPosition",
             `${this.state.sessionId}.${functionName}.handlerPosition`,
             OBDFunctionInfo.HandlerPosition,
             {
@@ -169,7 +169,7 @@ export class OBDBuildingSearchScreen extends React.Component {
             }
           )}
           {this._renderLabeledButtonGroup(
-            "Handler Radius",
+            "Handler\nRadius",
             `${this.state.sessionId}.${functionName}.handlerRadius`,
             OBDFunctionInfo.HandlerRadius,
             {
@@ -180,9 +180,9 @@ export class OBDBuildingSearchScreen extends React.Component {
             }
           )}
           {this._renderLabeledButtonGroup(
-            "Sit Position",
+            "Sit\nPosition",
             `${this.state.sessionId}.${functionName}.sitPosition`,
-            ['Voice', 'Hand', 'Response'], // what to add to constants?
+            OBDFunctionInfo.SitPosition,
             {
               flexDirection: "column",
               justifyContent: "flex-between",
@@ -193,7 +193,7 @@ export class OBDBuildingSearchScreen extends React.Component {
           <View>
             <Text h4>Duration</Text>
             <View style={{ flexDirection: "col" }}>
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "row", alignItems: "baseline"}}>
                 {renderReduxDropdown(
                   `${this.state.sessionId}.${functionName}.duration.minutes`,
                   OBDFunctionInfo.Time,
@@ -204,7 +204,7 @@ export class OBDBuildingSearchScreen extends React.Component {
                 )}
                 <Text h6>mins</Text>
               </View>
-              <View style={{ flexDirection: "row" }}>
+              <View style={{ flexDirection: "row", alignItems: "baseline"}}>
                 {renderReduxDropdown(
                   `${this.state.sessionId}.${functionName}.duration.seconds`,
                   OBDFunctionInfo.Time,
@@ -345,7 +345,6 @@ export class OBDBuildingSearchScreen extends React.Component {
                 <Text h3 style={{ paddingLeft: 10 }}>
                   {section.title}
                 </Text>
-                {/* what is this */}
                 {!!section.notes && (
                   <Button
                     icon={
@@ -390,7 +389,6 @@ export class OBDBuildingSearchScreen extends React.Component {
   render = () => (
     <View style={container}>
       {this._renderPage()}
-      {this._renderContent("Basic Sit")}
       {this._renderSubmitBtn()}
     </View>
   );
