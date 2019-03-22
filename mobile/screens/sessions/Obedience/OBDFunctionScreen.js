@@ -369,7 +369,6 @@ export class OBDBuildingSearchScreen extends React.Component {
   };
 
   // this is never used anywhere?
-  
   // _renderAddDogNameField(inputProps) {
   //   return (
   //     <FormInput
