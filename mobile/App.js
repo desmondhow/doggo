@@ -59,7 +59,7 @@ export default class App extends React.Component {
         store.dispatch(connectionState({status: isConnected}));
         // Once the app connects, dispatch all requests
         if (isConnected && isServerOnline && actionQueue.length > 0) {
-            store.dispatch(dispatchActionQuezueElt({elts: actionQueue}));
+            store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
         }
 
     };

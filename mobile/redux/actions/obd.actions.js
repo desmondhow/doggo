@@ -28,7 +28,7 @@ export const SAVE_OBD_DOG_TRAINING = "SAVE_OBD_DOG_TRAINING";
 export const getAllOBD = () => {
   console.log("Getting all obd sessions");
   return (dispatch, getState) => {
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.OBDCurrentSessionsURL.then(url => {
         request(url, null, "GET")
           .then(res => res.json())
@@ -59,7 +59,9 @@ export const getAllOBD = () => {
 export const saveOBDSession = ({ sessionInfo }) => {
   return (dispatch, getState) => {
     //Transform session info
-    sessionInfo.searches = parseSearches(sessionInfo.searches);
+      console.log('Data that is being saved', sessionInfo);
+      //Todo: implement custom method to parse the data, in the meantime it will be just an obj
+    // sessionInfo.searches = parseSearches(sessionInfo.searches);
     //We save it locally first
     if (!sessionInfo.isNew) {
       console.log("Updating session");
@@ -68,7 +70,7 @@ export const saveOBDSession = ({ sessionInfo }) => {
       console.log("Creating new session");
       dispatch({ type: SAVE_OBD_SESSION, sessionInfo: sessionInfo });
     }
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.OBDSaveSessionURL.then(url => {
         console.log(url);
         console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
@@ -117,7 +119,7 @@ export const deleteOBDSession = ({ sessionId }) => {
   return (dispatch, getState) => {
     //We first delete it locally
     dispatch({ type: DELETE_OBD_SESSION, sessionId: sessionId });
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.OBDDeleteSessionURL(sessionId).then(url => {
         request(url, JSON.stringify({ sessionId: sessionId }))
           .then(res => {})
@@ -177,7 +179,7 @@ export const saveOBDTraining = ({ sessionInfo, handlers }) => {
     console.log("session info after edit", sessionInfo);
     //We save it locally first
     dispatch({ type: UPDATE_OBD_SESSION, sessionInfo: sessionInfo });
-    if (isOnline()) {
+    if (isOnline(getState)) {
       API.OBDTrainURL.then(url => {
         console.log(url);
         request(
@@ -250,6 +252,7 @@ const PLACEMENTS = {
   "Distance 3-6ft": "distanceLow",
   "Distance >7ft": "distanceHigh"
 };
+
 
 const parseSearches = searchesData => {
   let searches = [];
