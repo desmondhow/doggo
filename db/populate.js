@@ -15,8 +15,11 @@ csv
   .fromPath("./udc.csv", { headers: true })
   .on("data", function(data) {
     const k9Name = data.k9name;
-    console.log(k9Name);
     const handler = data.handler;
+
+    if (k9Name.length === 0 || handler.length === 0) {
+      return;
+    }
 
     dogs.add(k9Name);
     handlers.add(handler);
@@ -55,7 +58,7 @@ csv
   })
   .on("end", function() {
     console.log("done");
-    createUserWithData("wdc3@gmail.com", "123456");
+    createUserWithData("des@gmail.com", "123");
   });
 
 const createUserWithData = (email, pass) => {

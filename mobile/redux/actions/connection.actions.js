@@ -142,7 +142,7 @@ export function isOnline(getState) {
     console.log(`isConnected: ${isConnected}`);
     console.log(`isServerOnline: ${isServerOnline}`);
 
-    return isConnected && isServerOnline;
+    return isServerOnline;
 }
 
 export function guidGenerator() {

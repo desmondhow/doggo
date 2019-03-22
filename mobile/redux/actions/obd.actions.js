@@ -34,6 +34,7 @@ export const getAllOBD = () => {
           .then(res => res.json())
           .then(res => {
             let sessionData = [];
+            console.log(`sessions: ${JSON.stringify(res.sessions)}`);
             res.sessions.map((key, i) => {
               sessionData.push(key.data);
             });
@@ -46,7 +47,6 @@ export const getAllOBD = () => {
           .done();
       })
       .catch(err => {
-        System.out.println(err);
       });
     } else {
       console.log("No connection");

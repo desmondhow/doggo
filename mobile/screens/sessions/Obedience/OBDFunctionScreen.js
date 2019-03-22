@@ -34,24 +34,25 @@ export class OBDBuildingSearchScreen extends React.Component {
 
     if (sessionInfo) {
       const searchSections = [];
-      sessionInfo.searches.forEach(hide => {
-        searchSections.push({
-          title: this._renderSectionTitle(hide),
-          data: [hide]
-        });
-      });
-      this.state = {
-        sessionInfo: sessionInfo,
-        activeSection: "",
-        dog: dog,
-        dogs: [],
-        handlers: [],
-        searches: searchSections,
-        sessionId: sessionInfo._id,
-        createdAt: sessionInfo.createdAt,
-        stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
-        interval: null
-      };
+      // sess
+      // sessionInfo.searches.forEach(hide => {
+      //   searchSections.push({
+      //     title: this._renderSectionTitle(hide),
+      //     data: [hide]
+      //   });
+      // });
+      // this.state = {
+      //   sessionInfo: sessionInfo,
+      //   activeSection: "",
+      //   dog: dog,
+      //   dogs: [],
+      //   handlers: [],
+      //   searches: searchSections,
+      //   sessionId: sessionInfo._id,
+      //   createdAt: sessionInfo.createdAt,
+      //   stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
+      //   interval: null
+      // };
     }
   }
 

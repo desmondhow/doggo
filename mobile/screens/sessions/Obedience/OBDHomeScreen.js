@@ -41,7 +41,7 @@ class OBDHomeScreen extends React.Component {
   _continueTrainingSession(i) {
     const { navigate } = this.props.navigation;
     const sessionData = this.props.currSessionsData[i];
-    navigate("OBDTrainDog", { sessionInfo: sessionData });
+    navigate("OBDFunction", { sessionInfo: sessionData });
   }
 
   _editTrainingSession(i) {
@@ -115,7 +115,7 @@ class OBDHomeScreen extends React.Component {
             return (
               <Cell
                 key={i + j}
-                data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
+                data={j == 1 ? `\t\t ${cellData}` : cellData}
                 style={[
                   {
                     borderColor: "transparent",
@@ -150,7 +150,7 @@ class OBDHomeScreen extends React.Component {
                 width = j < 3 ? 150 : 100;
                 return (
                   <Cell
-                    key={j}
+                    key={j} 
                     data={cellData}
                     style={{
                       borderColor: "transparent",
