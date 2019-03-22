@@ -53,7 +53,6 @@ export class OBDBuildingSearchScreen extends React.Component {
         dog: dog, // do we need this?
         dogs: [],
         handlers: [],
-        searches: searchSections, // this?
         functions: functions,
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
@@ -136,8 +135,8 @@ export class OBDBuildingSearchScreen extends React.Component {
 
   _renderContent = functionName => {
     const scrollViewContainerStyle = { height: 300 };
-    sectionId = sectionId.toString();
-    const dogId = this.props.dog._id;
+    sectionId = this.state.sectionId.toString();
+    // const dogId = this.props.dog._id;
     const OBDFunctionInfo = OBDInfo.Function;
     return (
       <View
@@ -146,7 +145,6 @@ export class OBDBuildingSearchScreen extends React.Component {
           justifyContent: "center"
         }}
       >
-
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {this._renderLabeledButtonGroup(
             "K9 Position",
@@ -330,7 +328,7 @@ export class OBDBuildingSearchScreen extends React.Component {
             }}
           >
             <Text h3>Functions</Text>
-            {this._renderStopwatch()}
+            {/* {this._renderStopwatch()} */}
           </View>
           <SectionList
             sections={this.state.functions}
@@ -392,6 +390,7 @@ export class OBDBuildingSearchScreen extends React.Component {
   render = () => (
     <View style={container}>
       {this._renderPage()}
+      {this._renderContent("Basic Sit")}
       {this._renderSubmitBtn()}
     </View>
   );
