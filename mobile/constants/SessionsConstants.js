@@ -706,6 +706,11 @@ export const OBDInfo = {
       '>21ft',
       'Out of Sight'
     ],
+    SitPosition: [
+      'Voice', 
+      'Hand', 
+      'Response'
+    ],
     // need all the options, made these up
     Response: [
       'Where do I find what options there are for this'

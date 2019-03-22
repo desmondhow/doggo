@@ -34,10 +34,6 @@ class OBDHomeScreen extends React.Component {
     this.props.dispatch(getAllOBD());
   }
 
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
   _continueTrainingSession(i) {
     const { navigate } = this.props.navigation;
     const sessionData = this.props.currSessionsData[i];
