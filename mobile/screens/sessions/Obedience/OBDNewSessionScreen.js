@@ -54,7 +54,7 @@ class OBDNewSessionScreen extends React.Component {
                     handler: sessionInfo.dogs[e].handler,
                     familiar: sessionInfo.dogs[e].familiar,
                     notes: sessionInfo.dogs[e].notes,
-                    dogName: sessionInfo.dogs[e].name
+                    name: sessionInfo.dogs[e].name
                 };
             });
 
