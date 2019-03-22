@@ -29,25 +29,23 @@ import {
   saveOBDSession
 } from "../../../redux/actions/obd.actions";
 import { guidGenerator } from "../../../redux/actions/connection.actions";
-import CheckboxContainer from "../../../components/CheckboxContainer";
 
 class OBDNewSessionScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      addedDogs: {}
+      addedDogs: {},
     };
-
-    let previousDogs = {};
 
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
 
     const addDogState = {
-      addDogNumber: 1
+      addDogNumber: null
     };
 
     // If data comes from server
+    let previousDogs = {};
     if (sessionInfo) {
       sessionInfo.dogs.forEach(dog => {
         previousDogs[dog.dogNumber] = {
@@ -89,7 +87,6 @@ class OBDNewSessionScreen extends React.Component {
   }
 
   _onSubmit = () => {
-    console.log(JSON.stringify(this.state));
     let session = {
       isNew: this.state.isNew,
       temperature: this.state.temperature,
@@ -101,6 +98,7 @@ class OBDNewSessionScreen extends React.Component {
       createdAt: this.state.createdAt,
       dogs: this.state.addedDogs
     };
+    // 
     console.log("On SUbmit");
     console.log(JSON.stringify(session));
     this.props.dispatch(saveOBDSession({ sessionInfo: session }));
@@ -178,6 +176,7 @@ class OBDNewSessionScreen extends React.Component {
 
   _updateDogState = (dogNumber, property, value) => {
     this.setState(prevState => ({
+      ...prevState,
       addedDogs: {
         ...prevState.addedDogs,
         [dogNumber]: {
@@ -185,7 +184,9 @@ class OBDNewSessionScreen extends React.Component {
           [property]: value
         }
       }
-    }));
+    }), () => {
+      console.log(JSON.stringify("DOGS: " + this.state.addedDogs));
+    });
   };
 
   _renderAddDogModal = () => {
@@ -204,7 +205,7 @@ class OBDNewSessionScreen extends React.Component {
               ...center,
               flexDirection: "column",
               backgroundColor: "white",
-              borderRadius: 5
+              borderRadius: 5,
             }}
           >
             <View style={{ margin: 20, ...center }}>
@@ -246,7 +247,7 @@ class OBDNewSessionScreen extends React.Component {
       <Text style={styles.labelStyle}>K9 Name:</Text>
       {renderReduxDropdown(
         `Dogs.${dogNumber}.dogName`,
-        ["Moxie"],
+        this.props.dogs.map(dog => `${dog.name} (${dog._id})`),
         styles.dropdown,
         userIsAddingDog
           ? null
@@ -264,7 +265,7 @@ class OBDNewSessionScreen extends React.Component {
       <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>Handler:</Text>
       {renderReduxDropdown(
         `Dogs.${dogNumber}.handlerName`,
-        ["Desmond"],
+        this.props.handlers.map(handler => handler.name),
         styles.dropdown,
         userIsAddingDog
           ? null
@@ -406,30 +407,35 @@ class OBDNewSessionScreen extends React.Component {
   };
 
   _addDog = () => {
-    console.log("Dog", this.state.addDogNumber);
-    const placements = this.props.addDogPlacements;
-    const location = this.props.addDogLocation;
+    const name = this.props.addDogName;
+    const handlerName = this.props.addDogHandlerName;
+    const isFamiliar = this.props.addDogIsFamiliar;
     const notes = this.props.addDogNotes;
-    const dogNumber = this.state.addDogNumber;
+
+    // TODO: parse name to get id (only way i could figure out how to know which dog was selected)
 
     // reset Add Hide section state
     this.setState({ addDogNumber: null });
     this._resetFields([
-      `Dogs[null]placements`,
-      `Dogs[null]location`,
+      `Dogs[null]name`,
+      `Dogs[null]handlerName`,
+      `Dogs[null]isFamiliar`,
       `Dogs[null]notes`
     ]);
     // store new hide
+    console.log(`added dogs: ${JSON.stringify(this.state.addedDogs)}`);
     this.setState(prevState => ({
+      ...prevState,
       showAddDogModal: false,
-      addedDogs: {
-        ...prevState.addedDogs,
-        [dogNumber]: {
-          location,
-          placements,
-          notes
-        }
-      }
+      // addedDogs: {
+      //   ...prevState.addedDogs,
+      //   1: {
+      //     name,
+      //     handlerName,
+      //     isFamiliar,
+      //     notes
+      //   }
+      // }
     }));
   };
 
@@ -439,8 +445,9 @@ class OBDNewSessionScreen extends React.Component {
         style={{
           ...center,
           ...styles.fieldsContainer,
-          height: "84%",
-          padding: 20
+          height: "78%",
+          padding: 20,
+          width: '80%'
         }}
       >
         <Text h3>Added Dogs</Text>
@@ -490,7 +497,10 @@ const styles = StyleSheet.create({
 
 const selector = formValueSelector("obd");
 export default connectReduxForm("obd", OBDNewSessionScreen, state => ({
-  addDogLocation: selector(state, `Dogs.null.location`),
+  dogs: state.general.dogs,
+  handlers: state.general.handlers,
+  addDogName: selector(state, `Dogs.null.dogName`),
+  addDogHandlerName: selector(state, `Dogs.null.handlerName`),
+  addDogIsFamiliar: selector(state, `Dogs.null.isFamiliar`),
   addDogNotes: selector(state, `Dogs.null.notes`),
-  addDogPlacements: selector(state, `Dogs.null.placements`)
 }));

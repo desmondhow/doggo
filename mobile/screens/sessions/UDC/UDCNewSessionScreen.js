@@ -95,7 +95,6 @@ class UDCNewSessionScreen extends React.Component {
   }
 
   _onSubmit = () => {
-    console.log(`state: ${JSON.stringify(this.state)}`);
     let session = {
       isNew: this.state.isNew,
       temperature: this.state.temperature,
