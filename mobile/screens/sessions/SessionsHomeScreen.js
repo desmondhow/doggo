@@ -16,6 +16,13 @@ const HomeScreen = class extends React.Component {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
+    const names = {
+      'Obedience': 'OBD',
+      'Live Human Search': 'LHS',
+      'UDC': 'UDC',
+      'Agility': 'Agility',
+      'Noise': 'Noise',
+    }
 
     return (
       <View style={styles.container}>
@@ -33,12 +40,12 @@ const HomeScreen = class extends React.Component {
                   buttonStyle={buttonStyle}
                   title='Create New Session'
                   textStyle={{...buttonTextStyle, fontSize: 20 }}
-                  onPress={() => navigate(`${rowData}NewSession`)} />
+                  onPress={() => navigate(`${names[rowData]}NewSession`)} />
                 <Button
                   buttonStyle={buttonStyle}
                   title='View Current Sessions' 
                   textStyle={{...buttonTextStyle, fontSize: 20 }}
-                  onPress={() => navigate(rowData)} />
+                  onPress={() => navigate(names[rowData])} />
               </View>
             </Card>
           )}

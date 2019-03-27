@@ -22,7 +22,7 @@ export const RESET_STATE = 'RESET_STATE';
 export const getProfileData = () => {
     console.log('Getting all data ');
     return (dispatch, getState) => {
-        if (isOnline()) {
+        if (isOnline(getState)) {
             API.loadProfileURL
                 .then(url => {
                         request(url, null, 'GET')

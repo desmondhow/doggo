@@ -2,9 +2,10 @@ const arrayOfLengthN = ((n, sort) => ( Array.apply(null, { length: n+1 }).map(Fu
 
 export const Sessions = [
   'UDC',
-  'LHS',
+  'Live Human Search',
   'Agility',
-  'Noise'
+  'Noise',
+  'Obedience'
 ]
 
 export const UDCInfo = {
@@ -649,5 +650,177 @@ export const LHSInfo = {
         value: '44'
       },
     ]
+  }
+}
+
+export const OBDInfo = {
+  General: {
+    temperature: arrayOfLengthN(100),
+    humidity: arrayOfLengthN(100),
+    wind: arrayOfLengthN(10),
+    windDirection: [
+      'N',
+      'NE',
+      'E',
+      'SE',
+      'S',
+      'SW',
+      'W',
+      'NW'
+    ],
+    timeOfDay: [
+      'Daylight',
+      'Nighttime'
+    ],
+    location: [
+      'Training Room',
+      'Agility Area',
+      'Brick Area',
+      'Free Run',
+      'White Fence Area',
+      'Building',
+      'Rubble Yard',
+      'Parking Lot',
+      'Grass',
+      'Offsite',
+      'Other'
+    ]
+  },
+  Function: {
+    // need all the options, made these up
+    HandlerPosition: [
+      'In Front',
+      'At Side',
+      'Behind',
+    ],
+    K9Position: [
+      'Ground',
+      'Obstacle',
+      'Vehicle',
+      'On Target',
+    ],
+    HandlerRadius: [
+      '0-3ft',
+      '4-10ft',
+      '11-20ft',
+      '>21ft',
+      'Out of Sight'
+    ],
+    SitPosition: [
+      'Voice', 
+      'Hand', 
+      'Response'
+    ],
+    // need all the options, made these up
+    Response: [
+      'Where do I find what options there are for this'
+    ],
+    Criteria: [
+      'Where do I find what options there are for this'
+    ],
+    Commands: [
+      {
+        label: 'Voice',
+        value: '1,'
+      },
+      {
+        label: 'Hand',
+        value: '2'
+      },
+    ],
+    // are these all the options?
+    ReinforcementType: [
+      'Food',
+      'Toy',
+      'None'
+    ],
+    Figure8: [
+      {
+        label: 'Cones',
+        value: '1,'
+      },
+      {
+        label: 'People',
+        value: '2'
+      },
+      {
+        label: 'Dogs',
+        value: '3'
+      },
+    ],
+    Pace: [
+      'Stationary',
+      'Normal',
+      'Slow',
+      'Fast',
+    ],
+    // need all the options
+    Direction: [
+      'Mixed Pattern',
+    ],
+    EmergencyStop: [
+      'No',
+      'On Target',
+      'Without Target',
+    ],
+    EmergencyStopPosition: [
+      'N/A',
+      'Sit',
+      'Down',
+      'Stand',
+    ],
+    // need all the options
+    RecallK9Position: [
+      'Sit Stay',
+      'Down Stay',
+    ],
+    Time: arrayOfLengthN(60, true), 
+    Control: [
+      'On Lead',
+      'Off Lead',
+      'Long Line',
+    ],
+    Distractions: [
+      {
+        label: 'Humans, Workers',
+        value: '1,'
+      },
+      {
+        label: 'Other K9',
+        value: '2'
+      },
+      {
+        label: 'Toys',
+        value: '3'
+      },
+      {
+        label: 'Food',
+        value: '4'
+      },
+      {
+        label: 'Noise/Machines',
+        value: '5'
+      },
+      {
+        label: 'Live Animals',
+        value: '6'
+      },
+      {
+        label: 'Human Remains',
+        value: '7'
+      },
+      {
+        label: 'Deceased Animals',
+        value: '8'
+      },
+      {
+        label: 'Clothing',
+        value: '9'
+      },
+      {
+        label: 'Other',
+        value: '99'
+      },
+    ],
   }
 }
