@@ -9,21 +9,19 @@ const formatAPILink = url => {
   return LOCAL_API_URL + url;
 }
 
-// const getUserID = () => {
-//   return sessionStorage.getItem("userId");
-// }
-// const formatUsersRoute = route => (
-//     new Promise((res, rej) => (
-//         getUserID()
-//             .then((id) => (
-//                 res(formatAPILink(`${USERS_ROUTE}/${id}/${route}`))
-//             ))
-//             .catch((err) => rej(err))
-//     ))
-// );
+const getUserID = () => {
+  return sessionStorage.getItem("userId");
+}
+const formatUsersRoute = route => (
+  new Promise((res, rej) => {
+    const id = getUserID()
+    res(formatAPILink(`${USERS_ROUTE}/${id}/${route}`))
+      .catch((err) => rej(err))
+  })
+);
 const formatSessionsRoute = route => (
   new Promise((res, rej) => {
-    const id = sessionStorage.getItem("userId");
+    const id = getUserID()
     res(formatAPILink(`${USERS_ROUTE}/${id}/${SESSIONS_ROUTE}/${route}`))
       .catch((err) => rej(err))
   })
@@ -35,7 +33,7 @@ const routes = {
   registerURL: formatAPILink(USERS_ROUTE + '/register'),
   logoutURL: formatAPILink(USERS_ROUTE + '/logout'),
   // // profile
-  // loadProfileURL: formatUsersRoute('profile'),
+  loadProfileURL: formatUsersRoute('profile'),
   // addTrainerURL: formatUsersRoute('profile/add-trainer'),
   // deleteTrainerURL: trainerId => formatUsersRoute(`profile/delete-trainer/${trainerId}`),
   // addDogURL: formatUsersRoute('profile/add-dog'),

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import routes from '../Api';
+import routes from '../assets/api/Api';
 import { request } from '../assets/helpers';
 import '../assets/stylesheets/Form.css';
 import Form from 'react-bootstrap/Form';
@@ -16,7 +16,8 @@ class Signup extends Component {
         this.state = {
             email: "",
             password: "",
-            passwordConf: ""
+            passwordConf: "",
+            signedIn: false
         };
     }
 
@@ -40,7 +41,7 @@ class Signup extends Component {
             .then((res) => {
                 if (res.status === 200) {
                     sessionStorage.setItem("userId", res.message);
-                    return <Redirect to={"/"} />
+                    this.setState({signedIn: true})
                 }
                 else {
                     alert(res.message);
@@ -50,6 +51,9 @@ class Signup extends Component {
     };
 
     render() {
+        if (this.state.signedIn) {
+            return <Redirect to={"/"} />
+        }
         return (
             <div>
                 <Form onSubmit={this.handleSubmit} className="my-form">

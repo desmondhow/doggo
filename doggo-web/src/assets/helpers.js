@@ -7,3 +7,10 @@ export const request = (url, body, method = "POST") =>
     },
     body: body
   });
+
+  export const isSignedIn = () => {
+    if (sessionStorage.getItem("userId")) {
+      return true;
+    }
+    return false;
+  }

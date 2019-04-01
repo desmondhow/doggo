@@ -2,21 +2,18 @@ import React, { Component } from 'react';
 import logo from './assets/images/doggo.png';
 import {
   Route,
-  Switch
+  Switch,
+  Redirect
 } from 'react-router-dom';
 import './assets/stylesheets/App.css';
 import Login from './pages/Login';
 import SignUp from './pages/Signup';
 import Home from './pages/Home';
+import DogProfile from './pages/DogProfile';
 import Container from 'react-bootstrap/Container';
+import { isSignedIn } from './assets/helpers'
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      signedIn: false
-    }
-  }
 
   testDB = () => {
 
@@ -32,7 +29,8 @@ class App extends Component {
           <Switch>
             <Route path='/login' component={Login} />
             <Route path='/signup' component={SignUp} />
-            <Route path='/' component={Home} />
+            <PrivateRoute path='/dog/:id' component={DogProfile} />
+            <PrivateRoute path='/' component={Home} />
           </Switch>
         </div>
       </Container>
@@ -42,18 +40,17 @@ class App extends Component {
         <App />
       </Switch>
     );
-    // if (this.state.signedIn) {
-    //   return (
-    //     <div className="app">
-    //       <header className="app-header">
-    //         <img src={logo} alt="logo" />
-    //       </header>
-    //       <button onClick={() => this.testDB}>Test DB</button>
-    //     </div>
-    //   );
-    // }
-
   }
 }
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => (
+    isSignedIn() === true
+      ? <Component {...props} />
+      : <Redirect to={{
+          pathname: '/login',
+          state: { from: props.location }
+        }} />
+  )} />
+)
 
 export default App;

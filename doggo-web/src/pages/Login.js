@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import routes from '../Api';
+import routes from '../assets/api/Api';
 import { request } from '../assets/helpers';
 import '../assets/stylesheets/Form.css';
 import Form from 'react-bootstrap/Form';
@@ -16,7 +16,8 @@ class Login extends Component {
         this.state = {
             email: "",
             password: "",
-            signedIn: false
+            signedIn: false,
+            redirectToReferrer: false
         };
     }
 
@@ -35,25 +36,27 @@ class Login extends Component {
                 'password': this.state.password
             })
         )
-        .then((res) => res.json())
-        .then((res) => {
-            if (res.status === 200) {
-                sessionStorage.setItem("userId", res.message);
-                this.setState({signedIn : true});
-            }
-            else {
-                alert(res.message);
-            }
-        })
-        .catch(err => {
-            alert('There was an issue connecting to the server. Please try again.');
-        })
+            .then((res) => res.json())
+            .then((res) => {
+                if (res.status === 200) {
+                    sessionStorage.setItem("userId", res.message);
+                    this.setState({ signedIn: true, redirectToReferrer: true });
+                }
+                else {
+                    alert(res.message);
+                }
+            })
+            .catch(err => {
+                alert('There was an issue connecting to the server. Please try again.');
+            })
 
     }
     render() {
-        if (this.state.signedIn) {
-            return <Redirect to={"/"} />
-        }
+        let { from } = this.props.location.state || { from: { pathname: "/" } };
+        let { redirectToReferrer } = this.state;
+
+        if (redirectToReferrer) return <Redirect to={from} />;
+        
         return (
             <div>
                 <Form onSubmit={this.handleSubmit} className="my-form">
