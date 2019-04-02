@@ -3,36 +3,30 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Table from 'react-bootstrap/Table';
-
-// import { request } from '../assets/helpers';
-// import routes from '../assets/api/Api';
-import { getUDC } from '../assets/api/udcAPI';
 import { getDogs } from '../assets/api/generalAPI';
 import {
     Redirect
 } from 'react-router-dom';
-import { isSignedIn } from '../assets/helpers';
 
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            signedIn: isSignedIn(),
             searchValue: "",
-            dogs: null
+            dogs: null,
+            dogId: null,
+            dogName: null
         };
     }
 
     componentDidMount() {
         getDogs()
             .then(dogs => this.setState({ dogs: dogs }))
-
     }
 
-    viewDogProfile = dogId => {
+    viewDogProfile = (dogId, dogName) => {
         // API call
-        this.props.history.push("/dog/"+dogId)
-        // return <Redirect to={"/dog?id={dogId}"} />
+        this.props.history.push({pathname: "/dogProfile", state: {dogId: dogId, dogName: dogName}})
     }
 
     handleChange = event => {
@@ -54,9 +48,6 @@ class Home extends Component {
     );
 
     render() {
-        if (!this.state.signedIn) {
-            return <Redirect to={"/login"} />
-        }
         let dogRows = [];
         if (this.state.dogs) {
             this.state.dogs.map((dog, i) => {
@@ -70,7 +61,7 @@ class Home extends Component {
                     dogRows.push(
                         <tr key={dogId}>
                             <td>{dogName}</td>
-                            <td><Button onClick={(event)=>this.viewDogProfile(dogId)}>View Profile</Button></td>
+                            <td><Button onClick={(event)=>this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
                         </tr>
                     );
                 }

@@ -29,7 +29,7 @@ class App extends Component {
           <Switch>
             <Route path='/login' component={Login} />
             <Route path='/signup' component={SignUp} />
-            <PrivateRoute path='/dog/:id' component={DogProfile} />
+            <PrivateRoute path='/dogProfile' component={DogProfile} />
             <PrivateRoute path='/' component={Home} />
           </Switch>
         </div>

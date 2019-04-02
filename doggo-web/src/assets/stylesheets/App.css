@@ -21,3 +21,7 @@
 .app-header img {
   width: 25%;
 }
+
+.bold {
+  font-weight: 600;
+}

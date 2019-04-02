@@ -9,15 +9,59 @@ const formatAPILink = url => {
   return LOCAL_API_URL + url;
 }
 
+// const checkForUserID = (promise) => {
+//   promise = promise || new Promise(()=> {})
+//   const userId = sessionStorage.getItem("userId")
+//   if (userId) {
+//     promise.resolve(userId)
+//   } else {
+//     setTimeout(function () {
+//       checkForUserID(promise);
+//     }, 500);
+//   }
+// };
+
+const checkForUserID = () => {
+  return new Promise(resolve => {
+    const userId = sessionStorage.getItem("userId")
+    if (userId) {
+      console.log("resolving", userId)
+      resolve(userId)
+    } else {
+      setTimeout(function () {
+        console.log("inside timeout")
+        checkForUserID();
+      }, 500);
+    }
+  })
+};
+
+// const getUserID = () => {
+//   return new Promise(resolve => {
+//     checkForUserID()
+//       .then(() => {
+//         // do something
+//         console.log("about to resolve get")
+//         resolve()
+//       })
+//   })
+
+// }
+
 const getUserID = () => {
-  return sessionStorage.getItem("userId");
+  return sessionStorage.getItem("userId")
 }
+
 const formatUsersRoute = route => (
   new Promise((res, rej) => {
-    const id = getUserID()
+    // getUserID()
+    //   .then(id => {
+    //     console.log("id found", id)
+    const id = getUserID();
     res(formatAPILink(`${USERS_ROUTE}/${id}/${route}`))
-      .catch((err) => rej(err))
+    .catch((err) => rej(err))
   })
+    
 );
 const formatSessionsRoute = route => (
   new Promise((res, rej) => {
@@ -39,7 +83,7 @@ const routes = {
   // addDogURL: formatUsersRoute('profile/add-dog'),
   // deleteDogURL: dogId => formatUsersRoute(`profile/delete-dog/${dogId}`),
   // // UDC
-  UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
+  //UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
   // UDCSaveSessionURL: formatSessionsRoute('udc/create'),
   // UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
   // UDCTrainURL: formatSessionsRoute(`udc/train`),

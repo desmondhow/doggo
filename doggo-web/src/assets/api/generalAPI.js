@@ -2,7 +2,9 @@ import routes from './Api';
 import { request } from '../helpers';
 
 export const getDogs = () => {
-    return new Promise((resolve, reject) => {
+    // console.log("get dogs")
+    return new Promise((resolve) => {
+        // console.log(routes.loadProfileURL)
         routes.loadProfileURL
         .then(url => {
             request(url, null, 'GET')
@@ -12,5 +14,9 @@ export const getDogs = () => {
             })
         })
     })
+    
+}
+
+export const getDogSessions = (dogId) => {
     
 }

@@ -56,7 +56,6 @@ class Login extends Component {
         let { redirectToReferrer } = this.state;
 
         if (redirectToReferrer) return <Redirect to={from} />;
-        
         return (
             <div>
                 <Form onSubmit={this.handleSubmit} className="my-form">
