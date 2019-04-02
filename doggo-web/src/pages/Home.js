@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Table from 'react-bootstrap/Table';
-import { getDogs } from '../assets/api/generalAPI';
+import { getDogs, getDogSessions, getSessionData } from '../assets/api/generalAPI';
 import {
     Redirect
 } from 'react-router-dom';
@@ -14,19 +14,34 @@ class Home extends Component {
         this.state = {
             searchValue: "",
             dogs: null,
-            dogId: null,
-            dogName: null
+            sessionData: {
+                "UDC": null,
+                "LHS": null,
+                "OBD": null
+            }
         };
     }
 
     componentDidMount() {
+        // get all dogs
         getDogs()
             .then(dogs => this.setState({ dogs: dogs }))
+
+        // get all sessions, to be passed later for DogProfile or other screens
+        Object.keys(this.state.sessionData).forEach(key => {
+            getSessionData(key)
+            .then(data => this.setState(prevState => ({ 
+                sessionData: {
+                    ...prevState.sessionData,
+                    [key]: data 
+                }
+            })))
+        }) 
     }
 
     viewDogProfile = (dogId, dogName) => {
         // API call
-        this.props.history.push({pathname: "/dogProfile", state: {dogId: dogId, dogName: dogName}})
+        this.props.history.push({ pathname: "/dogProfile", state: { dogId: dogId, dogName: dogName, sessionData: this.state.sessionData } })
     }
 
     handleChange = event => {
@@ -61,7 +76,7 @@ class Home extends Component {
                     dogRows.push(
                         <tr key={dogId}>
                             <td>{dogName}</td>
-                            <td><Button onClick={(event)=>this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
+                            <td><Button onClick={(event) => this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
                         </tr>
                     );
                 }

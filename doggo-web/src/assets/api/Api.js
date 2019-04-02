@@ -83,17 +83,17 @@ const routes = {
   // addDogURL: formatUsersRoute('profile/add-dog'),
   // deleteDogURL: dogId => formatUsersRoute(`profile/delete-dog/${dogId}`),
   // // UDC
-  //UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
+  UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
   // UDCSaveSessionURL: formatSessionsRoute('udc/create'),
   // UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
   // UDCTrainURL: formatSessionsRoute(`udc/train`),
   // // LHS
-  // LHSCurrentSessionsURL: formatSessionsRoute('lhs/get-current-sessions'),
+  LHSCurrentSessionsURL: formatSessionsRoute('lhs/get-current-sessions'),
   // LHSSaveSessionURL: formatSessionsRoute('lhs/create'),
   // LHSDeleteSessionURL: sessionId => formatSessionsRoute(`lhs/${sessionId}`),
   // LHSTrainURL: formatSessionsRoute(`lhs/train`),
   // // OBD
-  // OBDCurrentSessionsURL: formatSessionsRoute('obd/get-current-sessions'),
+  OBDCurrentSessionsURL: formatSessionsRoute('obd/get-current-sessions'),
   // OBDSaveSessionURL: formatSessionsRoute('obd/create'),
   // OBDDeleteSessionURL: sessionId => formatSessionsRoute(`obd/${sessionId}`),
   // OBDTrainURL: formatSessionsRoute(`obd/train`),
