@@ -3,10 +3,7 @@ import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import Table from 'react-bootstrap/Table';
-import { getDogs, getDogSessions, getSessionData } from '../assets/api/generalAPI';
-import {
-    Redirect
-} from 'react-router-dom';
+import { getDogs, getSessionData } from '../assets/api/generalAPI';
 
 class Home extends Component {
     constructor(props) {
@@ -65,7 +62,7 @@ class Home extends Component {
     render() {
         let dogRows = [];
         if (this.state.dogs) {
-            this.state.dogs.map((dog, i) => {
+            this.state.dogs.forEach(dog => {
                 const dogId = dog._id;
                 const dogName = dog.name;
 

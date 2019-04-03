@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import '../assets/stylesheets/Profile.css';
 import paw from '../assets/images/paw_print.png';
-import Button from 'react-bootstrap/Button';
-import { getSessionData } from '../assets/api/generalAPI';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
+import { Link } from 'react-router-dom';
+
+import { sessionTypeToName } from '../assets/helpers';
 
 class DogProfile extends Component {
     constructor(props) {
         super(props)
-        console.log(props.location.state.sessionData)
         // temporary state variables, potential characteristics to store in DB
         this.state = {
             dogId: props.location.state.dogId,
@@ -30,9 +33,8 @@ class DogProfile extends Component {
 
     }
 
-    filterDataByDog() {
+    setDogData() {
         // LHS is not storing dogs TODO
-        //UDC
         Object.keys(this.state.dogData).forEach(sessionType => {
             if (sessionType === "UDC") {
                 this.setUDCData()
@@ -41,7 +43,7 @@ class DogProfile extends Component {
                 this.setOBDData()
             }
         })
-        console.log(this.state.dogData)
+        // console.log(this.state.dogData)
     }
 
     setUDCData() {
@@ -78,14 +80,55 @@ class DogProfile extends Component {
     }
     componentDidMount() {
         // get dog session info
-
+        this.setDogData()
     }
     render() {
+        const sessionTypes = Object.keys(this.state.dogData)
+
+        const tables = []
+        sessionTypes.forEach(type => {
+            const colName = sessionTypeToName[type];
+            const data = this.state.dogData[type];
+            const dataRows = []
+            if (data === "No sessions") {
+                dataRows.push(
+                    <tr key={type+"None"}>
+                        <td colSpan="2">No sessions</td>
+                    </tr>
+                )
+            } else {
+                data.forEach(session => {
+                    const date = new Date(session.createdAt)
+                    const createdAt = date.toLocaleString();
+                    dataRows.push(
+                        <tr key={session.sessionId}>
+                            <td>{createdAt}</td>
+                            <td><Link to={{pathname: "/view"+type+"Session", state: {session: session}}}>View</Link></td>
+                        </tr>
+                    )
+                })
+            }
+            tables.push(
+                <Col key={type}>
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th colSpan="2">{colName}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dataRows}
+                        </tbody>
+                    </Table>
+                </Col>
+            )
+        })
+
         return (
             <div>
                 <div className="dog-profile">
                     <div className="profile-photo">
-                        <img src={paw}></img>
+                        <img src={paw} alt=""></img>
                     </div>
                     <div className="profile-info">
                         <div><span className="bold">Name:</span> {this.state.dogName} </div>
@@ -95,7 +138,9 @@ class DogProfile extends Component {
                     </div>
                 </div>
                 <div className="session-data">
-                    <Button onClick={() => this.filterDataByDog()}>Test</Button>
+                    <Row>
+                        {tables}
+                    </Row>
                 </div>
             </div>
         )

@@ -31,7 +31,7 @@ export const getSessionData = (sessionType) => {
                     .then(res => res.json())
                     .then(res => {
                         let sessionData = [];
-                        res.sessions.filter(obj => obj.sessionType === sessionType).map((key, i) => {
+                        res.sessions.filter(obj => obj.sessionType === sessionType).forEach(key => {
                             sessionData.push(key.data)
                         });
                         // // get dogs
