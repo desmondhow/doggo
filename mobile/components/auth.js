@@ -36,6 +36,7 @@ export async function isSignedIn() {
         AsyncStorage.getItem(USER_KEY)
             .then(res => {
                 if (res !== null) {
+                    console.log('USER ID', res);
                     resolve(true);
                 } else {
                     resolve(false);

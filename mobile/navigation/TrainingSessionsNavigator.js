@@ -28,7 +28,7 @@ export default createStackNavigator({
   UDC: { 
     screen: UDCHomeScreen,
     navigationOptions: { 
-      title: 'UDC'
+      title: 'UDC',
     }
   },
   UDCBuildingSearch: {

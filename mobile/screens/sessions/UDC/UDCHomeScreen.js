@@ -21,6 +21,7 @@ import { getAllUDC} from "../../../redux/actions/udc.actions";
 const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
 import API from "../../../constants/Api";
 import { request } from "../../../components/helpers";
+import {getUserID} from "../../../components/auth";
 
 @withMappedNavigationProps()
  class UDCHomeScreen extends React.Component {

@@ -39,7 +39,7 @@ export default class SignupScreen extends React.Component {
      */
     handleEmail = (email) => {
         this.setState({
-            email: email,
+            email: email.toLowerCase(),
         })
     };
 

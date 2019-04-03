@@ -33,6 +33,7 @@ export const getAllUDC = () => {
                     request(url, null, 'GET')
                         .then(res => res.json())
                         .then(res => {
+                            console.log('RESPONSE FROM SERVER', res);
                             let sessionData = [];
                             res.sessions.map((key, i) => {
                                 sessionData.push(key.data)
