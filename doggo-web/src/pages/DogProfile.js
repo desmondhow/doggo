@@ -6,7 +6,7 @@ import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router-dom';
 
-import { sessionTypeToName } from '../assets/helpers';
+import { sessionTypeToName } from '../assets/constants';
 
 class DogProfile extends Component {
     constructor(props) {
@@ -24,9 +24,7 @@ class DogProfile extends Component {
                 LHS: "No sessions",    // dogs for LHS not being stored in DB
                 OBD: "No sessions"
             }
-
         }
-
     }
 
     formatSessionData() {
@@ -49,8 +47,8 @@ class DogProfile extends Component {
     setUDCData() {
         let dogUDC = []
         this.state.sessionData.UDC.forEach(session => {
-            session.dogsTrained.forEach(dogObj => {
-                if (dogObj.dogId === this.state.dogId) {
+            Object.keys(session.dogsTrained).forEach(dogId => {
+                if (dogId === this.state.dogId) {
                     dogUDC.push(session)
                 }
             })
@@ -78,10 +76,12 @@ class DogProfile extends Component {
             this.setState({ dogData: data })
         }
     }
+
     componentDidMount() {
         // get dog session info
         this.setDogData()
     }
+
     render() {
         const sessionTypes = Object.keys(this.state.dogData)
 
@@ -93,7 +93,7 @@ class DogProfile extends Component {
             if (data === "No sessions") {
                 dataRows.push(
                     <tr key={type+"None"}>
-                        <td colSpan="2">No sessions</td>
+                        <td colSpan="3">No sessions</td>
                     </tr>
                 )
             } else {
@@ -104,6 +104,7 @@ class DogProfile extends Component {
                         <tr key={session.sessionId}>
                             <td>{createdAt}</td>
                             <td><Link to={{pathname: "/view"+type+"Session", state: {session: session}}}>View</Link></td>
+                            <td><Link to={{pathname: "/edit"+type+"Session", state: {session: session}}}>Edit</Link></td>
                         </tr>
                     )
                 })
@@ -113,7 +114,7 @@ class DogProfile extends Component {
                     <Table>
                         <thead>
                             <tr>
-                                <th colSpan="2">{colName}</th>
+                                <th colSpan="3">{colName}</th>
                             </tr>
                         </thead>
                         <tbody>

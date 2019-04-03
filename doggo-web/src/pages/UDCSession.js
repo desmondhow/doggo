@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import '../assets/stylesheets/Profile.css';
+import GeneralInfo from '../components/GeneralInfo';
 
 class UDCSession extends Component {
     constructor(props) {
@@ -7,12 +7,17 @@ class UDCSession extends Component {
         this.state = {
             session: this.props.location.state.session
         }
-        console.log(this.state)
+    }
+
+    renderGeneral(session) {
+        
     }
 
     render() {
         return (
-            <div></div>
+            <div>
+                <GeneralInfo session={this.state.sessions}/>
+            </div>
         )
     }
 }

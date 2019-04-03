@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import SignUp from './pages/Signup';
 import Home from './pages/Home';
 import DogProfile from './pages/DogProfile';
+import UDCSessionForm from './pages/UDCSessionForm';
 import UDCSession from './pages/UDCSession';
 import Container from 'react-bootstrap/Container';
 import { isSignedIn } from './assets/helpers';
@@ -32,6 +33,7 @@ class App extends Component {
             <Route path='/signup' component={SignUp} />
             <PrivateRoute path='/dogProfile' component={DogProfile} />
             <PrivateRoute path='/viewUDCSession' component={UDCSession} />
+            <PrivateRoute path='/editUDCSession' component={UDCSessionForm} />
             <PrivateRoute path='/' component={Home} />
           </Switch>
         </div>

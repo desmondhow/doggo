@@ -73,7 +73,7 @@ class Home extends Component {
                     dogRows.push(
                         <tr key={dogId}>
                             <td>{dogName}</td>
-                            <td><Button onClick={(event) => this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
+                            <td><Button onClick={() => this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
                         </tr>
                     );
                 }

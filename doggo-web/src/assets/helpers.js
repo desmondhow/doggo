@@ -15,8 +15,7 @@ export const request = (url, body, method = "POST") =>
     return false;
   }
 
-  export const sessionTypeToName = {
-    "UDC": "UDC",
-    "LHS": "Live Human Search",
-    "OBD": "Obedience"
+  export const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    return date.toLocaleString();
   }
