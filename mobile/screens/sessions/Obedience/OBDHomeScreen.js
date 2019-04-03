@@ -14,8 +14,6 @@ import {
 import { connect } from "react-redux";
 import { getAllOBD } from "../../../redux/actions/obd.actions";
 // const currentSessionsTableHeaderText = ["Created At", "# Searches", "\tDogs", '', ''];
-import API from "../../../constants/Api";
-import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
 class OBDHomeScreen extends React.Component {

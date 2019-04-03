@@ -7,7 +7,6 @@ import { isParamEmpty, errors } from './helpers';
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
 
-
 /**
  * Creates a new UDC session
  */

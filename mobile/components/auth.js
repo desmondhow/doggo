@@ -38,7 +38,7 @@ export async function isSignedIn() {
                 if (res !== null) {
                     resolve(true);
                 } else {
-                    resolve(false);
+                    resolve(true);
                 }
             })
             .catch(err => {

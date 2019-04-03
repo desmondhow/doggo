@@ -139,8 +139,6 @@ export function isOnline(getState) {
 
     const isConnected = getState().connection.isConnected;
     const isServerOnline = getState().connection.isServerOnline;
-    console.log(`isConnected: ${isConnected}`);
-    console.log(`isServerOnline: ${isServerOnline}`);
 
     return isServerOnline;
 }

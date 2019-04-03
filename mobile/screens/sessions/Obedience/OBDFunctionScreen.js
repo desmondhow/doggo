@@ -9,16 +9,11 @@ import {
   container,
   center,
   buttonStyle,
-  outlineButtonTextStyle,
-  buttonTextStyle,
-  outlineButtonStyle
+  buttonTextStyle
 } from "../../../constants/Styles";
 import {
   connectReduxForm,
-  renderDropdown,
-  renderReduxDropdown,
-  renderReduxFormInput,
-  request
+  renderReduxDropdown
 } from "../../../components/helpers";
 import { OBDInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
@@ -26,11 +21,10 @@ import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
 import { saveOBDTraining } from "../../../redux/actions/obd.actions";
 
-export class OBDBuildingSearchScreen extends React.Component {
+export class OBDFunctionScreen extends React.Component {
   constructor(props) {
     super(props);
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
-    const dog = this.props.navigation.getParam("dog", false);
 
     if (sessionInfo) {
       // const searchSections = [];
@@ -40,20 +34,11 @@ export class OBDBuildingSearchScreen extends React.Component {
       //     data: [hide]
       //   });
       // });
-      const functions = [
-        {
-          title: "Basic Sit",
-          data: [""]
-        }
-      ];
 
       this.state = {
         sessionInfo: sessionInfo,
         activeSection: "",
-        dog: dog, // do we need this?
-        dogs: [],
-        handlers: [],
-        functions: functions,
+        functions: [],
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
         stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
@@ -73,16 +58,15 @@ export class OBDBuildingSearchScreen extends React.Component {
     if (dogTrainingData.length === 0) {
       alert("Please fill the training session.");
     } else {
-
       const sessionInfo = this.state.sessionInfo;
       sessionInfo.dogsTrained = dogTrainingData;
 
-      this.props.dispatch(
-        saveOBDTraining({
-          sessionInfo: sessionInfo,
-          handlers: this.state.handlers
-        })
-      );
+      // this.props.dispatch(
+      //   saveOBDTraining({
+      //     sessionInfo: sessionInfo,
+      //     handlers: this.state.handlers
+      //   })
+      // );
       this.props.navigation.navigate("OBD");
     }
   };
@@ -193,7 +177,7 @@ export class OBDBuildingSearchScreen extends React.Component {
           <View>
             <Text h4>Duration</Text>
             <View style={{ flexDirection: "col" }}>
-              <View style={{ flexDirection: "row", alignItems: "baseline"}}>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
                 {renderReduxDropdown(
                   `${this.state.sessionId}.${functionName}.duration.minutes`,
                   OBDFunctionInfo.Time,
@@ -204,7 +188,7 @@ export class OBDBuildingSearchScreen extends React.Component {
                 )}
                 <Text h6>mins</Text>
               </View>
-              <View style={{ flexDirection: "row", alignItems: "baseline"}}>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
                 {renderReduxDropdown(
                   `${this.state.sessionId}.${functionName}.duration.seconds`,
                   OBDFunctionInfo.Time,
@@ -257,7 +241,7 @@ export class OBDBuildingSearchScreen extends React.Component {
     <Field
       name={`${this.props.dog._id}.performance.${
         this.state.activeSection._id
-        }.time`}
+      }.time`}
       component={inputProps => {
         const { input } = inputProps;
 
@@ -266,20 +250,20 @@ export class OBDBuildingSearchScreen extends React.Component {
           time.hours === 0
             ? "00"
             : time.hours < 10
-              ? "0" + time.hours
-              : time.hours;
+            ? "0" + time.hours
+            : time.hours;
         const minutes =
           time.minutes === 0
             ? "00"
             : time.minutes < 10
-              ? "0" + time.minutes
-              : time.minutes;
+            ? "0" + time.minutes
+            : time.minutes;
         const seconds =
           time.seconds === 0
             ? "00"
             : time.seconds < 10
-              ? "0" + time.seconds
-              : time.seconds;
+            ? "0" + time.seconds
+            : time.seconds;
 
         return (
           <View style={{ flexDirection: "row" }}>
@@ -309,6 +293,13 @@ export class OBDBuildingSearchScreen extends React.Component {
   );
 
   _renderPage = () => {
+    const sections = [];
+    OBDInfo.Function.FunctionNames.map(functionName => {
+      sections.push({
+        title: functionName,
+        data: [""]
+      });
+    });
     return (
       <View
         style={{
@@ -331,7 +322,7 @@ export class OBDBuildingSearchScreen extends React.Component {
             {/* {this._renderStopwatch()} */}
           </View>
           <SectionList
-            sections={this.state.functions}
+            sections={sections}
             keyExtractor={a => a}
             style={{ marginTop: 15 }}
             renderSectionHeader={({ section }) => (
@@ -362,8 +353,10 @@ export class OBDBuildingSearchScreen extends React.Component {
               </View>
             )}
             renderItem={({ item, section }) => {
-              console.log(`item: ${JSON.stringify(item)}`);
-              return <View key={item}>{this._renderContent(section.title)}</View>
+              console.log(`section.title: ${JSON.stringify(section.title)}`);
+              return (
+                <View key={item}>{this._renderContent(section.title)}</View>
+              );
             }}
           />
         </View>
@@ -422,7 +415,7 @@ const styles = StyleSheet.create({
 });
 
 const selector = formValueSelector("obd");
-export default connectReduxForm("obd", OBDBuildingSearchScreen, state => ({
+export default connectReduxForm("obd", OBDFunctionScreen, state => ({
   dog: state.obd.dog,
   dogs: state.general.dogs,
   handlers: state.general.handlers

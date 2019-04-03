@@ -30,6 +30,7 @@ import {
 } from "../../../redux/actions/lhs.actions";
 import { guidGenerator } from "../../../redux/actions/connection.actions";
 import CheckboxContainer from "../../../components/CheckboxContainer";
+import ReduxFormInput from "../../../components/ReduxFormInput";
 
 class LHSNewSessionScreen extends React.Component {
   constructor(props) {
@@ -279,7 +280,9 @@ class LHSNewSessionScreen extends React.Component {
           : this.state.addedSearches[searchNumber].location
       )}
       {/* Subject Placement */}
-      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>Subject Placement:</Text>
+      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>
+        Subject Placement:
+      </Text>
       {userIsAddingSearch && (
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
           <CheckboxContainer
@@ -303,6 +306,17 @@ class LHSNewSessionScreen extends React.Component {
             ? null
             : this.state.addedSearches[searchNumber].notes
         })}
+        <ReduxFormInput
+          name={`Searches.${searchNumber}.notes`}
+          containerStyle={{ width: 400 }}
+          numberOfLines={4}
+          multiline={true}
+          placeholder={
+            userIsAddingSearch
+              ? null
+              : this.state.addedSearches[searchNumber].notes
+          }
+        />
       </View>
     </View>
   );
