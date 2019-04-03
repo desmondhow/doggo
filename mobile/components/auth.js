@@ -26,7 +26,7 @@ export async function onSignOut() {
 export async function getUserID() {
   return new Promise((res, rej) => {
     AsyncStorage.getItem(USER_KEY)
-    .then(id => { res(id.split('"').join(''))}) 
+    .then(id => {res(id.split('"').join(''))}) 
     .catch(err => rej(err))
   })
 }
@@ -39,7 +39,7 @@ export async function isSignedIn() {
                     console.log('USER ID', res);
                     resolve(true);
                 } else {
-                    resolve(false);
+                    resolve(true);
                 }
             })
             .catch(err => {

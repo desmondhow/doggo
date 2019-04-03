@@ -34,6 +34,7 @@ export const getAllOBD = () => {
           .then(res => res.json())
           .then(res => {
             let sessionData = [];
+            console.log(`sessions: ${JSON.stringify(res.sessions)}`);
             res.sessions.map((key, i) => {
               sessionData.push(key.data);
             });
@@ -44,6 +45,8 @@ export const getAllOBD = () => {
             dispatch({ type: SERVER_STATE, isServerOnline: false });
           })
           .done();
+      })
+      .catch(err => {
       });
     } else {
       console.log("No connection");
@@ -59,8 +62,8 @@ export const getAllOBD = () => {
 export const saveOBDSession = ({ sessionInfo }) => {
   return (dispatch, getState) => {
     //Transform session info
-      console.log('Data that is being saved', sessionInfo);
-      //Todo: implement custom method to parse the data, in the meantime it will be just an obj
+    console.log("Data that is being saved", sessionInfo);
+    //Todo: implement custom method to parse the data, in the meantime it will be just an obj
     // sessionInfo.searches = parseSearches(sessionInfo.searches);
     //We save it locally first
     if (!sessionInfo.isNew) {
@@ -253,7 +256,6 @@ const PLACEMENTS = {
   "Distance >7ft": "distanceHigh"
 };
 
-
 const parseSearches = searchesData => {
   let searches = [];
   console.log(searchesData);
@@ -308,7 +310,6 @@ const parseTrainingData = (trainingData, handlers) => {
               performanceInfo[field]["text"];
           }
         }
-
       });
     });
   });

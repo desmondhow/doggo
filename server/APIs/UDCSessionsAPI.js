@@ -7,7 +7,6 @@ import { isParamEmpty, errors } from './helpers';
 const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`
 
-
 /**
  * Creates a new UDC session
  */
@@ -171,12 +170,12 @@ router.get(createSessionApiRoute('udc/get-current-sessions'), function (req, res
   const userId = req.params.id;
 
   User.findById(userId)
-  .where({sessions: { $elemMatch: { sessionType: 'UDC', 'data.complete': false }}})
   .then(data => {
+    data = data.sessions.filter(s => s.sessionType === 'UDC');
     if (!data) {
         return res.status(400).send(JSON.stringify({message: 'There are no current UDC sessions', sessions: []}));
     } else {
-      return res.status(200).send(JSON.stringify({sessions: data.sessions}));
+      return res.status(200).send(JSON.stringify({sessions: data}));
     }
   })
   .catch(err => {

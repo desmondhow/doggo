@@ -13,7 +13,7 @@ import LHSTrainDogScreen from '../screens/sessions/LHS/LHSTrainDogScreen';
 import OBDHomeScreen from '../screens/sessions/Obedience/OBDHomeScreen';
 import OBDNewSessionScreen from '../screens/sessions/Obedience/OBDNewSessionScreen';
 import OBDFunctionScreen from '../screens/sessions/Obedience/OBDFunctionScreen';
-import OBDTrainDogScreen from '../screens/sessions/Obedience/OBDTrainDogScreen';
+// import OBDTrainDogScreen from '../screens/sessions/Obedience/OBDTrainDogScreen';
 
 import { mainNavHeader } from './helpers';
 
@@ -90,11 +90,5 @@ export default createStackNavigator({
     navigationOptions: { 
       title: 'Obedience Training'
     }
-  },
-  OBDTrainDog: {
-    screen: OBDTrainDogScreen,
-    navigationOptions: { 
-      title: 'Obedience Training'
-    }
-  },
+  }
 });

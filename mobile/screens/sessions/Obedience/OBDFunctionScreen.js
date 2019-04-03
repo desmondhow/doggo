@@ -9,16 +9,11 @@ import {
   container,
   center,
   buttonStyle,
-  outlineButtonTextStyle,
-  buttonTextStyle,
-  outlineButtonStyle
+  buttonTextStyle
 } from "../../../constants/Styles";
 import {
   connectReduxForm,
-  renderDropdown,
-  renderReduxDropdown,
-  renderReduxFormInput,
-  request
+  renderReduxDropdown
 } from "../../../components/helpers";
 import { OBDInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
@@ -26,27 +21,24 @@ import Colors from "../../../constants/Colors";
 import CheckboxContainer from "../../../components/CheckboxContainer";
 import { saveOBDTraining } from "../../../redux/actions/obd.actions";
 
-export class OBDBuildingSearchScreen extends React.Component {
+export class OBDFunctionScreen extends React.Component {
   constructor(props) {
     super(props);
     const sessionInfo = this.props.navigation.getParam("sessionInfo", false);
-    const dog = this.props.navigation.getParam("dog", false);
 
     if (sessionInfo) {
-      const searchSections = [];
-      sessionInfo.searches.forEach(hide => {
-        searchSections.push({
-          title: this._renderSectionTitle(hide),
-          data: [hide]
-        });
-      });
+      // const searchSections = [];
+      // sessionInfo.searches.forEach(hide => {
+      //   searchSections.push({
+      //     title: this._renderSectionTitle(hide),
+      //     data: [hide]
+      //   });
+      // });
+
       this.state = {
         sessionInfo: sessionInfo,
         activeSection: "",
-        dog: dog,
-        dogs: [],
-        handlers: [],
-        searches: searchSections,
+        functions: [],
         sessionId: sessionInfo._id,
         createdAt: sessionInfo.createdAt,
         stopwatchTime: { seconds: 0, minutes: 0, hours: 0 },
@@ -66,16 +58,15 @@ export class OBDBuildingSearchScreen extends React.Component {
     if (dogTrainingData.length === 0) {
       alert("Please fill the training session.");
     } else {
-
       const sessionInfo = this.state.sessionInfo;
       sessionInfo.dogsTrained = dogTrainingData;
 
-      this.props.dispatch(
-        saveOBDTraining({
-          sessionInfo: sessionInfo,
-          handlers: this.state.handlers
-        })
-      );
+      // this.props.dispatch(
+      //   saveOBDTraining({
+      //     sessionInfo: sessionInfo,
+      //     handlers: this.state.handlers
+      //   })
+      // );
       this.props.navigation.navigate("OBD");
     }
   };
@@ -99,8 +90,8 @@ export class OBDBuildingSearchScreen extends React.Component {
     />
   );
 
-  _renderSectionTitle = section =>
-    `${section.searchNumber ? ` Search #${section.searchNumber}` : ""}`;
+  // _renderSectionTitle = section =>
+  //   `${section.searchNumber ? ` Search #${section.searchNumber}` : ""}`;
 
   _renderLabeledButtonGroup = (label, fieldName, buttons, containerStyle) => (
     <View style={{ flexDirection: "column" }}>
@@ -126,11 +117,11 @@ export class OBDBuildingSearchScreen extends React.Component {
     </View>
   );
 
-  _renderContent = sectionId => {
+  _renderContent = functionName => {
     const scrollViewContainerStyle = { height: 300 };
-    sectionId = sectionId.toString();
-    const dogId = this.props.dog._id;
-    const OBDFunctionInfo = OBDInfo.Search;
+    // sectionId = this.state.sectionId.toString();
+    // const dogId = this.props.dog._id;
+    const OBDFunctionInfo = OBDInfo.Function;
     return (
       <View
         style={{
@@ -138,11 +129,32 @@ export class OBDBuildingSearchScreen extends React.Component {
           justifyContent: "center"
         }}
       >
-        <Text h4>Handler Radius</Text>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           {this._renderLabeledButtonGroup(
-            "Alert",
-            `${dogId}.performance.${sectionId}.radiusAlert`,
+            "K9\nPosition",
+            `${this.state.sessionId}.${functionName}.k9Position`,
+            OBDFunctionInfo.K9Position,
+            {
+              flexDirection: "column",
+              justifyContent: "flex-between",
+              height: 250,
+              width: 125
+            }
+          )}
+          {this._renderLabeledButtonGroup(
+            "Handler\nPosition",
+            `${this.state.sessionId}.${functionName}.handlerPosition`,
+            OBDFunctionInfo.HandlerPosition,
+            {
+              flexDirection: "column",
+              justifyContent: "flex-between",
+              height: 250,
+              width: 125
+            }
+          )}
+          {this._renderLabeledButtonGroup(
+            "Handler\nRadius",
+            `${this.state.sessionId}.${functionName}.handlerRadius`,
             OBDFunctionInfo.HandlerRadius,
             {
               flexDirection: "column",
@@ -152,20 +164,9 @@ export class OBDBuildingSearchScreen extends React.Component {
             }
           )}
           {this._renderLabeledButtonGroup(
-            "Reward",
-            `${dogId}.performance.${sectionId}.radiusReward`,
-            OBDFunctionInfo.HandlerRadius,
-            {
-              flexDirection: "column",
-              justifyContent: "flex-between",
-              height: 250,
-              width: 125
-            }
-          )}
-          {this._renderLabeledButtonGroup(
-            "Search",
-            `${dogId}.performance.${sectionId}.radiusSearch`,
-            OBDFunctionInfo.HandlerRadius,
+            "Sit\nPosition",
+            `${this.state.sessionId}.${functionName}.sitPosition`,
+            OBDFunctionInfo.SitPosition,
             {
               flexDirection: "column",
               justifyContent: "flex-between",
@@ -174,84 +175,32 @@ export class OBDBuildingSearchScreen extends React.Component {
             }
           )}
           <View>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
-            >
-              {this._renderLabeledButtonGroup(
-                "Rewarder",
-                `${dogId}.performance.${sectionId}.rewarder`,
-                ["Handler", "Victim"],
-                {
-                  flexDirection: "column",
-                  justifyContent: "flex-start",
-                  height: 125
-                }
-              )}
-              <View>
-                <Text h4>Barks</Text>
-                <View>
-                  {renderReduxDropdown(
-                    `${dogId}.performance.${sectionId}.barks`,
-                    OBDFunctionInfo.Barks,
-                    { width: 100, height: 100 },
-                    null,
-                    null,
-                    20
-                  )}
-                </View>
+            <Text h4>Duration</Text>
+            <View style={{ flexDirection: "col" }}>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                {renderReduxDropdown(
+                  `${this.state.sessionId}.${functionName}.duration.minutes`,
+                  OBDFunctionInfo.Time,
+                  { width: 100, height: 100 },
+                  null,
+                  null,
+                  20
+                )}
+                <Text h6>mins</Text>
               </View>
-            </View>
-            <View>
-              <Text h4>Duration</Text>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ flexDirection: "row" }}>
-                  {renderReduxDropdown(
-                    `${dogId}.performance.${sectionId}.duration.minutes`,
-                    OBDFunctionInfo.Time,
-                    { width: 100, height: 100 },
-                    null,
-                    null,
-                    20
-                  )}
-                  <Text h6>mins</Text>
-                </View>
-                <View style={{ flexDirection: "row" }}>
-                  {renderReduxDropdown(
-                    `${dogId}.performance.${sectionId}.duration.seconds`,
-                    OBDFunctionInfo.Time,
-                    { width: 100, height: 100 },
-                    null,
-                    null,
-                    20
-                  )}
-                  <Text h6>secs</Text>
-                </View>
+              <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                {renderReduxDropdown(
+                  `${this.state.sessionId}.${functionName}.duration.seconds`,
+                  OBDFunctionInfo.Time,
+                  { width: 100, height: 100 },
+                  null,
+                  null,
+                  20
+                )}
+                <Text h6>secs</Text>
               </View>
             </View>
           </View>
-        </View>
-        <Text h4>Select all that apply:</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          <CheckboxContainer
-            name={`${dogId}.performance.${sectionId}.fields`}
-            checkboxes={OBDFunctionInfo.Fields}
-          />
-        </View>
-        <Text h4>Failure Codes</Text>
-        <ScrollView style={scrollViewContainerStyle}>
-          <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-            <CheckboxContainer
-              name={`${dogId}.performance.${sectionId}.failCodes`}
-              checkboxes={OBDFunctionInfo.FailCodes}
-            />
-          </View>
-        </ScrollView>
-        <Text h4>Distractions</Text>
-        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          <CheckboxContainer
-            name={`${dogId}.performance.${sectionId}.distractions`}
-            checkboxes={OBDFunctionInfo.Distractions}
-          />
         </View>
       </View>
     );
@@ -344,6 +293,13 @@ export class OBDBuildingSearchScreen extends React.Component {
   );
 
   _renderPage = () => {
+    const sections = [];
+    OBDInfo.Function.FunctionNames.map(functionName => {
+      sections.push({
+        title: functionName,
+        data: [""]
+      });
+    });
     return (
       <View
         style={{
@@ -362,22 +318,11 @@ export class OBDBuildingSearchScreen extends React.Component {
               alignItems: "center"
             }}
           >
-            <Text h3>Searches</Text>
-            {this._renderStopwatch()}
-            <Text
-              style={{
-                color: "red",
-                fontWeight: "bold",
-                marginBottom: 100,
-                marginLeft: 120,
-                fontSize: 20
-              }}
-            >
-              {this.state.dog.name}
-            </Text>
+            <Text h3>Functions</Text>
+            {/* {this._renderStopwatch()} */}
           </View>
           <SectionList
-            sections={this.state.searches}
+            sections={sections}
             keyExtractor={a => a}
             style={{ marginTop: 15 }}
             renderSectionHeader={({ section }) => (
@@ -408,8 +353,10 @@ export class OBDBuildingSearchScreen extends React.Component {
               </View>
             )}
             renderItem={({ item, section }) => {
-              console.log(`item: ${JSON.stringify(item)}`);
-              return <View key={item}>{this._renderContent(item.searchNumber)}</View>
+              console.log(`section.title: ${JSON.stringify(section.title)}`);
+              return (
+                <View key={item}>{this._renderContent(section.title)}</View>
+              );
             }}
           />
         </View>
@@ -417,19 +364,20 @@ export class OBDBuildingSearchScreen extends React.Component {
     );
   };
 
-  _renderAddDogNameField(inputProps) {
-    return (
-      <FormInput
-        placeholder="Name"
-        value={inputProps.input.value}
-        onChangeText={inputProps.input.onChange}
-        editable={true}
-        maxLength={35}
-        multiline={false}
-        containerStyle={{ width: "40%" }}
-      />
-    );
-  }
+  // this is never used anywhere?
+  // _renderAddDogNameField(inputProps) {
+  //   return (
+  //     <FormInput
+  //       placeholder="Name"
+  //       value={inputProps.input.value}
+  //       onChangeText={inputProps.input.onChange}
+  //       editable={true}
+  //       maxLength={35}
+  //       multiline={false}
+  //       containerStyle={{ width: "40%" }}
+  //     />
+  //   );
+  // }
 
   render = () => (
     <View style={container}>
@@ -467,7 +415,7 @@ const styles = StyleSheet.create({
 });
 
 const selector = formValueSelector("obd");
-export default connectReduxForm("obd", OBDBuildingSearchScreen, state => ({
+export default connectReduxForm("obd", OBDFunctionScreen, state => ({
   dog: state.obd.dog,
   dogs: state.general.dogs,
   handlers: state.general.handlers

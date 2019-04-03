@@ -12,36 +12,38 @@ const createSessionApiRoute = route => `/:id/sessions/${route}`;
  */
 router.post(createSessionApiRoute("obd/create"), function(req, res, next) {
   let temperature = req.body.temperature;
+
   let humidity = req.body.humidity;
   let wind = req.body.wind;
   let windDirection = req.body.windDirection;
   let complete = req.body.complete;
   let createdAt = req.body.createdAt;
-  let currSessionID = req.body.sessionId;
+  let sessionId = req.body.sessionId;
 
   if (isParamEmpty(req, "id")) {
     console.log(`UserId was not sent with request.`);
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
+  console.log('here4');
 
-  let searchesData = req.body.searches;
-  if (isParamEmpty(req, "searches", true)) {
-    return res
-      .status(400)
-      .send(
-        JSON.stringify({ message: "Session doesn't contain any searches." })
-      );
-  }
+  let dogs = req.body.dogs;
+  // if (isParamEmpty(req, "dogs", true)) {
+  //   return res
+  //     .status(400)
+  //     .send(
+  //       JSON.stringify({ message: "Session doesn't contain any dogs." })
+  //     );
+  // }
 
   let sessionData = {
     temperature,
     humidity,
     wind,
     windDirection,
-    complete: complete,
-    createdAt: createdAt,
-    searches: searchesData,
-    sessionId: currSessionID
+    complete,
+    createdAt,
+    dogs,
+    sessionId
   };
 
   console.log(`sessionData: ${JSON.stringify(sessionData)}\n`);
@@ -57,7 +59,7 @@ router.post(createSessionApiRoute("obd/create"), function(req, res, next) {
     }
 
     User.update(
-      { "sessions.data.sessionId": currSessionID },
+      { "sessions.data.sessionId": sessionId },
       updateObj,
       (err, updatedUser) => {
         if (err) {
@@ -186,10 +188,8 @@ router.get(createSessionApiRoute("obd/get-current-sessions"), function(
   const userId = req.params.id;
 
   User.findById(userId)
-    .where({
-      sessions: { $elemMatch: { sessionType: "OBD", "data.complete": false } }
-    })
     .then(data => {
+      data = data.sessions.filter(s => s.sessionType === 'OBD');
       if (!data) {
         return res
           .status(400)
@@ -200,6 +200,7 @@ router.get(createSessionApiRoute("obd/get-current-sessions"), function(
             })
           );
       } else {
+        console.log(`sessions: ${data.sessions}`);
         return res
           .status(200)
           .send(JSON.stringify({ sessions: data.sessions }));

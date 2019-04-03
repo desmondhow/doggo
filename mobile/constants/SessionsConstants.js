@@ -688,6 +688,12 @@ export const OBDInfo = {
   },
   Function: {
     // need all the options, made these up
+    FunctionNames: [
+      'Basic Down',
+      'Basic Sit',
+      'Basic Stand',
+      'Down Stay'
+    ],
     HandlerPosition: [
       'In Front',
       'At Side',
@@ -705,6 +711,11 @@ export const OBDInfo = {
       '11-20ft',
       '>21ft',
       'Out of Sight'
+    ],
+    SitPosition: [
+      'Voice', 
+      'Hand', 
+      'Response'
     ],
     // need all the options, made these up
     Response: [
