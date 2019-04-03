@@ -168,8 +168,8 @@ router.get(createSessionApiRoute('lhs/get-current-sessions'), function (req, res
   const userId = req.params.id;
 
   User.findById(userId)
-  .where({sessions: { $elemMatch: { sessionType: 'LHS', 'data.complete': false }}})
   .then(data => {
+    data = data.sessions.filter(s => s.sessionType === 'LHS');
     if (!data) {
         return res.status(400).send(JSON.stringify({message: 'There are no current LHS sessions', sessions: []}));
     } else {
