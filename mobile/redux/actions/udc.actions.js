@@ -33,7 +33,6 @@ export const getAllUDC = () => {
                     request(url, null, 'GET')
                         .then(res => res.json())
                         .then(res => {
-                            console.log('RESPONSE FROM SERVER', res);
                             let sessionData = [];
                             res.sessions.map((key, i) => {
                                 sessionData.push(key.data)
@@ -49,7 +48,6 @@ export const getAllUDC = () => {
                 .catch(err => {
                 })
         } else {
-            console.log('No connection');
         }
     };
 };
@@ -65,8 +63,9 @@ export const saveUDCSession = ({sessionInfo}) => {
       console.log(`sessionInfo: ${sessionInfo}`);
         //Transform session info
         sessionInfo.hides = parseHides(sessionInfo.hides);
+        console.log('is new session', sessionInfo.isNewSession);
         //We save it locally first
-        if (!sessionInfo.isNew) {
+        if (!sessionInfo.isNewSession) {
             console.log('Updating session');
             dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
         } else {
@@ -79,6 +78,8 @@ export const saveUDCSession = ({sessionInfo}) => {
               console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
+                        sessionInfo.isNewToServer = false;
+                        dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
                     })
                     .catch(err => {
                         console.log('error save now', err);
@@ -99,6 +100,7 @@ export const saveUDCSession = ({sessionInfo}) => {
 
 
 export const saveUDCSessionLater = ({sessionInfo}) => {
+    console.log('Saving UDC LAter');
     return (dispatch) => {
         API.UDCSaveSessionURL.then(url =>
             request(url, JSON.stringify(sessionInfo))
@@ -178,7 +180,6 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
     return (dispatch, getState) => {
 
         sessionInfo.dogsTrained = parseTrainingData(sessionInfo.dogsTrained, handlers);
-        console.log('session info after edit', sessionInfo);
         //We save it locally first
         dispatch({type: UPDATE_UDC_SESSION, sessionInfo: sessionInfo});
         if (isOnline(getState)) {
@@ -186,7 +187,7 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
                 console.log(url);
                 request(url, JSON.stringify({
                     sessionId: sessionInfo.sessionId,
-                    sessionInfo: sessionInfo.dogsTrained
+                    sessionInfo: sessionInfo
                 }), 'POST')
                     .then(res => {
                     })
@@ -211,11 +212,13 @@ export const saveUDCTraining = ({sessionInfo, handlers}) => {
 
 
 export const saveUDCTrainingLater = ({sessionInfo}) => {
+    console.log('Saving Training LAter');
+
     return (dispatch) => {
         API.UDCTrainURL.then(url =>
             request(url, JSON.stringify({
                 sessionId: sessionInfo.sessionId,
-                sessionInfo: sessionInfo.dogsTrained
+                sessionInfo: sessionInfo
             }), 'POST')
                 .then(res => {
                 })
@@ -308,3 +311,14 @@ const parseTrainingData = (trainingData, handlers) => {
 
 };
 
+
+
+
+
+function wait(ms){
+    var start = new Date().getTime();
+    var end = start;
+    while(end < start + ms) {
+        end = new Date().getTime();
+    }
+}

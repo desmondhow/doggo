@@ -49,7 +49,6 @@ export const getAllOBD = () => {
       .catch(err => {
       });
     } else {
-      console.log("No connection");
     }
   };
 };

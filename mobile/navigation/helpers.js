@@ -5,7 +5,6 @@ import store from '../redux/reduxConfig'
 
 import {onSignOut} from '../components/auth';
 import {View, StyleSheet, Text} from "react-native";
-import {isOnline} from "../redux/actions/connection.actions";
 
 
 export const mainNavHeader = navigation => ({
@@ -20,7 +19,9 @@ export const mainNavHeader = navigation => ({
     ,
     headerRight:
     <View style={ styles.container}>
-        {!isOnline(store.getState) && <Text style={styles.textNoConnection}>{'Offline'}</Text>}
+        {!navigation.getParam('isConnected', true) && <Text style={styles.textNoConnection}>{'Offline'}</Text>}
+        {navigation.getParam('isConnected', true) && <Text style={styles.text}>{'Online'}</Text>}
+
         <Button
             transparent
             title='Logout'
@@ -38,6 +39,9 @@ export const mainNavHeader = navigation => ({
 
 });
 
+
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -53,12 +57,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 12,
         marginRight: 10,
-        color: 'blue'
+        color: 'blue',
+        fontFamily: 'montserrat',
+
     },
     textNoConnection: {
         fontSize: 18,
         marginTop: 12,
         marginRight: 10,
-        color: 'red'
+        color: 'red',
+        fontFamily: 'montserrat',
+
     }
 });
