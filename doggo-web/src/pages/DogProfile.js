@@ -37,9 +37,9 @@ class DogProfile extends Component {
             if (sessionType === "UDC") {
                 this.setUDCData()
             }
-            if (sessionType === "OBD") {
-                this.setOBDData()
-            }
+            // if (sessionType === "OBD") {
+            //     this.setOBDData()
+            // }
         })
         // console.log(this.state.dogData)
     }
@@ -47,8 +47,10 @@ class DogProfile extends Component {
     setUDCData() {
         let dogUDC = []
         this.state.sessionData.UDC.forEach(session => {
-            Object.keys(session.dogsTrained).forEach(dogId => {
-                if (dogId === this.state.dogId) {
+            Object.keys(session.dogsTrained).forEach(key => {
+                const udcSession = session.dogsTrained[key];
+                if (udcSession.dogId === this.state.dogId) {
+                    this.setState({dogSessionData :udcSession})
                     dogUDC.push(session)
                 }
             })
@@ -89,6 +91,7 @@ class DogProfile extends Component {
         sessionTypes.forEach(type => {
             const colName = sessionTypeToName[type];
             const data = this.state.dogData[type];
+            console.log(data)
             const dataRows = []
             if (data === "No sessions") {
                 dataRows.push(
@@ -97,14 +100,15 @@ class DogProfile extends Component {
                     </tr>
                 )
             } else {
+                console.log(type)
                 data.forEach(session => {
+                    console.log(session)
                     const date = new Date(session.createdAt)
                     const createdAt = date.toLocaleString();
                     dataRows.push(
                         <tr key={session.sessionId}>
                             <td>{createdAt}</td>
-                            <td><Link to={{pathname: "/view"+type+"Session", state: {session: session}}}>View</Link></td>
-                            <td><Link to={{pathname: "/edit"+type+"Session", state: {session: session}}}>Edit</Link></td>
+                            <td><Link to={{pathname: "/view"+type+"Session", state: {session: session, dogData: this.state.dogSessionData, dogName: this.state.dogName}}}>View</Link></td>
                         </tr>
                     )
                 })
@@ -131,8 +135,8 @@ class DogProfile extends Component {
                     <div className="profile-photo">
                         <img src={paw} alt=""></img>
                     </div>
-                    <div className="profile-info">
-                        <div><span className="bold">Name:</span> {this.state.dogName} </div>
+                    <div className="info-list">
+                        <div><span className="bold">K9 Name:</span> {this.state.dogName} </div>
                         <div><span className="bold">Age:</span> {this.state.age}</div>
                         <div><span className="bold">Weight:</span> {this.state.weight}</div>
                         <div><span className="bold">Reward Type:</span> {this.state.rewardType}</div>
@@ -143,6 +147,7 @@ class DogProfile extends Component {
                         {tables}
                     </Row>
                 </div>
+                <Link to={"/"}>Back to All Profiles</Link>
             </div>
         )
     }

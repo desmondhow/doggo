@@ -323,14 +323,15 @@ class OBDNewSessionScreen extends React.Component {
       {/* Notes */}
       <View style={{ ...center, paddingTop: 10 }}>
         <Text style={styles.labelStyle}>Notes:</Text>
-        {renderReduxFormInput(`Dogs.${dogNumber}.notes`, {
-          containerStyle: { width: 400 },
-          numberOfLine: 4,
-          multiline: true,
-          placeholder: userIsAddingDog
-            ? null
-            : this.state.addedDogs[dogNumber].notes
-        })}
+        <ReduxFormInput
+          name={`Dogs.${dogNumber}.notes`}
+          containerStyle={{ width: 400 }}
+          numberOfLines={4}
+          multiline={true}
+          placeholder={
+            userIsAddingDog ? null : this.state.addedDogs[dogNumber].notes
+          }
+        />
       </View>
     </View>
   );

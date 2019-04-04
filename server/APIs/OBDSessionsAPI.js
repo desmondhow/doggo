@@ -188,10 +188,8 @@ router.get(createSessionApiRoute("obd/get-current-sessions"), function(
   const userId = req.params.id;
 
   User.findById(userId)
-    .where({
-      sessions: { $elemMatch: { sessionType: "OBD", "data.complete": false } }
-    })
     .then(data => {
+      data = data.sessions.filter(s => s.sessionType === 'OBD');
       if (!data) {
         return res
           .status(400)

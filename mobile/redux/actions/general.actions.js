@@ -20,7 +20,7 @@ export const RESET_STATE = 'RESET_STATE';
  * Action Creators
  */
 export const getProfileData = () => {
-    console.log('Getting all data ');
+    // console.log('Getting all data ');
     return (dispatch, getState) => {
         if (isOnline(getState)) {
             API.loadProfileURL

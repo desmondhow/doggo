@@ -32,8 +32,8 @@ class App extends Component {
             <Route path='/login' component={Login} />
             <Route path='/signup' component={SignUp} />
             <PrivateRoute path='/dogProfile' component={DogProfile} />
-            <PrivateRoute path='/viewUDCSession' component={UDCSession} />
-            <PrivateRoute path='/editUDCSession' component={UDCSessionForm} />
+            <PrivateRoute exact path='/viewUDCSession' component={UDCSession} />
+            <PrivateRoute exact path='/editUDCSession' component={UDCSession} params={{isEditing: true}}/>
             <PrivateRoute path='/' component={Home} />
           </Switch>
         </div>

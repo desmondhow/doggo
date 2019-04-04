@@ -84,7 +84,7 @@ const routes = {
   // deleteDogURL: dogId => formatUsersRoute(`profile/delete-dog/${dogId}`),
   // // UDC
   UDCCurrentSessionsURL: formatSessionsRoute('udc/get-current-sessions'),
-  // UDCSaveSessionURL: formatSessionsRoute('udc/create'),
+  UDCSaveSessionURL: formatSessionsRoute('udc/create'),
   // UDCDeleteSessionURL: sessionId => formatSessionsRoute(`udc/${sessionId}`),
   // UDCTrainURL: formatSessionsRoute(`udc/train`),
   // // LHS

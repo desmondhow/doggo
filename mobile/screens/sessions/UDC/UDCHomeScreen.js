@@ -114,9 +114,9 @@ import { request } from "../../../components/helpers";
                 1})`
                 }`;
 
-            console.log(JSON.stringify(session));
-            let numHides = session.hides.length
-            if (numHides === undefined) {
+            console.log(JSON.stringify(`SESSION: ${JSON.stringify(session)}`));
+            let numHides = session.hides && session.hides.length;
+            if (numHides != undefined) {
                 numHides = Object.keys( session.hides).length;
             }
             const dogs = session.dogsTrained ? session.dogsTrained.length : 0;

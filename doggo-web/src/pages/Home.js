@@ -27,13 +27,17 @@ class Home extends Component {
         // get all sessions, to be passed later for DogProfile or other screens
         Object.keys(this.state.sessionData).forEach(key => {
             getSessionData(key)
-            .then(data => this.setState(prevState => ({ 
-                sessionData: {
-                    ...prevState.sessionData,
-                    [key]: data 
-                }
-            })))
-        }) 
+                .then(data => {
+                    this.setState(prevState => ({
+                        sessionData: {
+                            ...prevState.sessionData,
+                            [key]: data
+                        }
+                    }))
+                    console.log(this.state);
+
+                })
+        })
     }
 
     viewDogProfile = (dogId, dogName) => {
