@@ -129,7 +129,7 @@ export class LHSBuildingSearchScreen extends React.Component {
   _renderContent = sectionId => {
     const scrollViewContainerStyle = { height: 300 };
     sectionId = sectionId.toString();
-    const dogId = this.props.dog._id;
+    const dogId = this.state.dog._id;
     const LHSSearchInfo = LHSInfo.Search;
     return (
       <View
@@ -290,7 +290,7 @@ export class LHSBuildingSearchScreen extends React.Component {
 
   _renderStopwatch = () => (
     <Field
-      name={`${this.props.dog._id}.performance.${
+      name={`${this.state.dog._id}.performance.${
         this.state.activeSection.id
       }.time`}
       component={inputProps => {

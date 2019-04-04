@@ -18,8 +18,7 @@ import {
 } from "../../../constants/Styles";
 import {
   connectReduxForm,
-  renderReduxDropdown,
-  renderReduxFormInput
+  renderReduxDropdown
 } from "../../../components/helpers";
 import { LHSInfo } from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
@@ -298,23 +297,19 @@ class LHSNewSessionScreen extends React.Component {
       {/* Notes */}
       <View style={{ ...center, paddingTop: 10 }}>
         <Text style={styles.labelStyle}>Notes:</Text>
-        {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
-          containerStyle: { width: 400 },
-          numberOfLine: 4,
-          multiline: true,
-          placeholder: userIsAddingSearch
-            ? null
-            : this.state.addedSearches[searchNumber].notes
-        })}
         <ReduxFormInput
-          name={`Searches.${searchNumber}.notes`}
-          containerStyle={{ width: 400 }}
-          numberOfLines={4}
+          name={`Hides.${searchNumber}.notes`}
           multiline={true}
-          placeholder={
-            userIsAddingSearch
-              ? null
-              : this.state.addedSearches[searchNumber].notes
+          containerStyle={{ width: 500 }}
+          numberOfLines={4}
+          userIsAdding={userIsAddingSearch}
+          customValue={
+            this.state.addedSearches[searchNumber]
+              ? this.state.addedSearches[searchNumber].notes
+              : null
+          }
+          customOnChange={notes =>
+            this._updateSearchState(searchNumber, "notes", notes)
           }
         />
       </View>
@@ -396,12 +391,12 @@ class LHSNewSessionScreen extends React.Component {
   };
 
   _resetFields = fields => {
-    fields.forEach(field => {
-      //reset the field's value
-      this.props.dispatch(change("lhs", field, ""));
-      //reset the field's error
-      this.props.dispatch(untouch("lhs", field));
-    });
+    // fields.forEach(field => {
+    //   //reset the field's value
+    //   this.props.dispatch(change("lhs", field, ""));
+    //   //reset the field's error
+    //   this.props.dispatch(untouch("lhs", field));
+    // });
   };
 
   _addSearch = () => {

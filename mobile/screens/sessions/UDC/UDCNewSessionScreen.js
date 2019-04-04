@@ -439,11 +439,19 @@ class UDCNewSessionScreen extends React.Component {
         <View style={center}>
           <Text style={styles.labelStyle}>Notes:</Text>
           <ReduxFormInput
-            name={`Hides.${this.state.roomNumber}.notes`}
-            roomNumber={roomNumber}
+            name={`Hides.${roomNumber}.notes`}
             multiline={true}
             containerStyle={{ width: 500 }}
             numberOfLines={4}
+            userIsAdding={userIsAddingHide}
+            customValue={this.state.addedHides[roomNumber] ? this.state.addedHides[roomNumber].notes : null}
+            customOnChange={notes =>
+              this._updateHideState(
+                roomNumber,
+                "notes",
+                notes
+              )
+            }
           />
         </View>
       </View>

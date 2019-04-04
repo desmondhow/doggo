@@ -282,7 +282,6 @@ const parseTrainingData = (trainingData, handlers) => {
                     if (field === "fields") {
                         performanceInfo[field].forEach(f => {
                             f = f[0].toLowerCase() + f.replace(' ', '').substr(1);
-                            console.log(f);
                             hideInfo["performance"][hideId][f] = true;
                         });
                         delete performanceInfo[field];
