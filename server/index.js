@@ -19,8 +19,7 @@ const dataAnalysis = require('./APIs/dataAnalysisAPI');
 const app = express();
 
 // Connect to DB
-var dbUri = process.env.NODE && ~process.env.NODE.indexOf("heroku") ? process.env.DBURI : require('./secrets').getSecret('dbUri')
-console.log(dbUri);
+var dbUri = process.env.DBURI;
 mongoose.connect(dbUri, function(err, db) {
     if (err) {
         console.error(err);
