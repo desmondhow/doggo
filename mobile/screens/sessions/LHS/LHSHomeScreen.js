@@ -116,11 +116,15 @@ import { request } from "../../../components/helpers";
 
 
             let numSearches = session.searches.length
-            if (numSearches === undefined) {
+            if (numSearches === undefined || numSearches === null) {
                 numSearches = Object.keys( session.searches).length;
             }
-            const dogs = session.dogsTrained ? session.dogsTrained.length : 0;
-            const rowData = [createdAt, numSearches, dogs, ...this._renderSessionButtons(i)]
+            let numDogs = 0;
+            if (session.dogsTrained !== undefined &&  session.dogsTrained !== null) {
+                numDogs = Object.keys( session.dogsTrained).length;
+            }
+
+            const rowData = [createdAt, numSearches, numDogs, ...this._renderSessionButtons(i)]
 
       currSessionRows.push(
         <View style={{flexDirection: 'row', marginLeft: 20}}>

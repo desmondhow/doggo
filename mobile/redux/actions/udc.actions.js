@@ -60,10 +60,8 @@ export const getAllUDC = () => {
  */
 export const saveUDCSession = ({sessionInfo}) => {
     return (dispatch, getState) => {
-      console.log(`sessionInfo: ${sessionInfo}`);
         //Transform session info
         sessionInfo.hides = parseHides(sessionInfo.hides);
-        console.log('is new session', sessionInfo.isNewSession);
         //We save it locally first
         if (!sessionInfo.isNewSession) {
             console.log('Updating session');
@@ -85,7 +83,8 @@ export const saveUDCSession = ({sessionInfo}) => {
                         console.log('error save now', err);
                         dispatch({type: SERVER_STATE, isServerOnline: false});
                         dispatch({
-                            type: ADD_TO_ACTION_QUEUE, payload: ActionQueueTypes.SAVE_NEW_UDC_LATER,
+                            type: ADD_TO_ACTION_QUEUE,
+                            payload: ActionQueueTypes.SAVE_NEW_UDC_LATER,
                             data: sessionInfo
                         });
                     });

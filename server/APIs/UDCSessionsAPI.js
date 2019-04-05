@@ -14,6 +14,7 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     let temperature = req.body.temperature;
     let humidity = req.body.humidity;
     let wind = req.body.wind;
+    let windDirection = req.body.windDirection;
     let complete = req.body.complete;
     let createdAt = req.body.createdAt;
     let currSessionID = req.body.sessionId;
@@ -24,7 +25,6 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
     console.log(`body: ${JSON.stringify(req.body)}`);
 
 
-    let windDirection = req.body.windDirection;
 
     if (isParamEmpty(req, 'id')) {
         console.log(`UserId was not sent with request.`)
@@ -72,7 +72,6 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
             }));
     }
     else {
-        console.log('Creating session');
         sessionData.isNewSession = false;
         sessionData.dogsTrained = null;
         const newSession = {sessionType: 'UDC', data: sessionData};
@@ -85,7 +84,7 @@ router.post(createSessionApiRoute('udc/create'), function (req, res, next) {
                     console.log('error creating udc session', err);
                     return res.status(400).send(JSON.stringify({message: `Error creating UDC session.`}));
                 }
-                console.log(`updatedUser: ${JSON.stringify(updatedUser)}`)
+                console.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
                 return res.status(200).send({message: updatedUser, status: 200});
             }));
     }

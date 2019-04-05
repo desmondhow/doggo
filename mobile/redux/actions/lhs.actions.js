@@ -61,7 +61,7 @@ export const saveLHSSession = ({sessionInfo}) => {
         //Transform session info
         sessionInfo.searches = parseSearches(sessionInfo.searches);
         //We save it locally first
-        if (!sessionInfo.isNew) {
+        if (!sessionInfo.isNewSession) {
             console.log("Updating session");
             dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
         } else {
@@ -75,6 +75,8 @@ export const saveLHSSession = ({sessionInfo}) => {
                 console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
+                        sessionInfo.isNewToServer = false;
+                        dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
                     })
                     .catch(err => {
                         console.log("error save now", err);
@@ -87,7 +89,6 @@ export const saveLHSSession = ({sessionInfo}) => {
                     });
             });
         } else {
-            console.log("adding 2 quere");
             dispatch({
                 type: ADD_TO_ACTION_QUEUE,
                 payload: ActionQueueTypes.SAVE_NEW_LHS_LATER,
@@ -188,7 +189,7 @@ export const saveLHSTraining = ({sessionInfo, handlers}) => {
                     url,
                     JSON.stringify({
                         sessionId: sessionInfo.sessionId,
-                        sessionInfo: sessionInfo.dogsTrained
+                        sessionInfo: sessionInfo
                     }),
                     "POST"
                 )
@@ -222,7 +223,7 @@ export const saveLHSTrainingLater = ({sessionInfo}) => {
                 url,
                 JSON.stringify({
                     sessionId: sessionInfo.sessionId,
-                    sessionInfo: sessionInfo.dogsTrained
+                    sessionInfo: sessionInfo
                 }),
                 "POST"
             )
