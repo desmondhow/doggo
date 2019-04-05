@@ -333,125 +333,133 @@ class UDCNewSessionScreen extends React.Component {
         );
     };
 
-    _renderHideFields(roomNumber, userIsAddingHide = false) {
-        return (
-            <View
-                style={{
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    marginBottom: 100
-                }}
-            >
-                <View style={{flexDirection: "row", ...center}}>
-                    <View
-                        style={{
-                            flexDirection: "column",
-                            justifyContent: "space-between"
-                        }}
-                    >
-                        {/* Location */}
-                        <Text style={styles.labelStyle}>Location:</Text>
-                        {renderReduxDropdown(
-                            `Hides.${roomNumber}.location`,
-                            UDCInfo.Hides.Locations,
-                            styles.dropdown,
-                            userIsAddingHide
-                                ? null
-                                : location =>
-                                    this._updateHideState(roomNumber, "location", location),
-                            userIsAddingHide
-                                ? null
-                                : this.state.addedHides[roomNumber].location
-                        )}
-                    </View>
-                    <View
-                        style={{flexDirection: "column", ...center, marginBottom: 30}}
-                    >
-                        {/* Concealed */}
-                        <Text style={styles.labelStyle}>Concealed:</Text>
-                        <View>
-                            <Field
-                                name={`Hides.${roomNumber}.isConcealed`}
-                                component={inputProps => (
-                                    <ButtonGroup
-                                        onPress={
-                                            userIsAddingHide
-                                                ? inputProps.input.onChange
-                                                : isConcealed =>
-                                                    this._updateHideState(
-                                                        roomNumber,
-                                                        "isConcealed",
-                                                        isConcealed
-                                                    )
-                                        }
-                                        selectedIndex={
-                                            userIsAddingHide
-                                                ? this.props.addHideIsConcealed
-                                                : this.state.addedHides[roomNumber].isConcealed
-                                        }
-                                        buttons={["No", "Yes"]}
-                                        textStyle={outlineButtonTextStyle}
-                                        containerStyle={{height: 40, width: 100}}
-                                    />
-                                )}
-                            />
-                        </View>
-                    </View>
-                    {/* Placement Area */}
-                    <View style={{flexDirection: "column", ...center}}>
-                        <Text style={styles.labelStyle}>Placement Area:</Text>
-                        {renderReduxDropdown(
-                            `Hides.${roomNumber}.placementArea`,
-                            UDCInfo.Hides.PlacementAreas,
-                            styles.dropdown,
-                            userIsAddingHide
-                                ? null
-                                : placementArea =>
-                                    this._updateHideState(
-                                        roomNumber,
-                                        "placementArea",
-                                        placementArea
-                                    ),
-                            userIsAddingHide
-                                ? this.props.addHidePlacementArea
-                                : this.state.addedHides[roomNumber].placementArea
-                        )}
-                    </View>
-                    {/* Placement Height */}
-                    <View style={{flexDirection: "column", ...center}}>
-                        <Text style={styles.labelStyle}>Placement Height:</Text>
-                        {renderReduxDropdown(
-                            `Hides.${roomNumber}.placementHeight`,
-                            UDCInfo.Hides.PlacementHeights,
-                            styles.dropdown,
-                            userIsAddingHide
-                                ? null
-                                : placementHeight =>
-                                    this._updateHideState(
-                                        roomNumber,
-                                        "placementHeight",
-                                        placementHeight
-                                    ),
-                            userIsAddingHide
-                                ? this.props.addHidePlacementHeight
-                                : this.state.addedHides[roomNumber].placementHeight
-                        )}
-                    </View>
-                </View>
-                {/* Notes */}
-                <View style={center}>
-                    <Text style={styles.labelStyle}>Notes:</Text>
-                    <ReduxFormInput
-                        name={`Hides.${this.state.roomNumber}.notes`}
-                        roomNumber={roomNumber}
-                        multiline={true}
-                        containerStyle={{width: 500}}
-                        numberOfLines={4}
-                    />
-                </View>
+  _renderHideFields(roomNumber, userIsAddingHide = false) {
+    return (
+      <View
+        style={{
+          flexDirection: "column",
+          justifyContent: "space-between",
+          marginBottom: 100
+        }}
+      >
+        <View style={{ flexDirection: "row", ...center }}>
+          <View
+            style={{
+              flexDirection: "column",
+              justifyContent: "space-between"
+            }}
+          >
+            {/* Location */}
+            <Text style={styles.labelStyle}>Location:</Text>
+            {renderReduxDropdown(
+              `Hides.${roomNumber}.location`,
+              UDCInfo.Hides.Locations,
+              styles.dropdown,
+              userIsAddingHide
+                ? null
+                : location =>
+                    this._updateHideState(roomNumber, "location", location),
+              userIsAddingHide
+                ? null
+                : this.state.addedHides[roomNumber].location
+            )}
+          </View>
+          <View
+            style={{ flexDirection: "column", ...center, marginBottom: 30 }}
+          >
+            {/* Concealed */}
+            <Text style={styles.labelStyle}>Concealed:</Text>
+            <View>
+              <Field
+                name={`Hides.${roomNumber}.isConcealed`}
+                component={inputProps => (
+                  <ButtonGroup
+                    onPress={
+                      userIsAddingHide
+                        ? inputProps.input.onChange
+                        : isConcealed =>
+                            this._updateHideState(
+                              roomNumber,
+                              "isConcealed",
+                              isConcealed
+                            )
+                    }
+                    selectedIndex={
+                      userIsAddingHide
+                        ? this.props.addHideIsConcealed
+                        : this.state.addedHides[roomNumber].isConcealed
+                    }
+                    buttons={["No", "Yes"]}
+                    textStyle={outlineButtonTextStyle}
+                    containerStyle={{ height: 40, width: 100 }}
+                  />
+                )}
+              />
             </View>
-        );
-    }
+          </View>
+          {/* Placement Area */}
+          <View style={{ flexDirection: "column", ...center }}>
+            <Text style={styles.labelStyle}>Placement Area:</Text>
+            {renderReduxDropdown(
+              `Hides.${roomNumber}.placementArea`,
+              UDCInfo.Hides.PlacementAreas,
+              styles.dropdown,
+              userIsAddingHide
+                ? null
+                : placementArea =>
+                    this._updateHideState(
+                      roomNumber,
+                      "placementArea",
+                      placementArea
+                    ),
+              userIsAddingHide
+                ? this.props.addHidePlacementArea
+                : this.state.addedHides[roomNumber].placementArea
+            )}
+          </View>
+          {/* Placement Height */}
+          <View style={{ flexDirection: "column", ...center }}>
+            <Text style={styles.labelStyle}>Placement Height:</Text>
+            {renderReduxDropdown(
+              `Hides.${roomNumber}.placementHeight`,
+              UDCInfo.Hides.PlacementHeights,
+              styles.dropdown,
+              userIsAddingHide
+                ? null
+                : placementHeight =>
+                    this._updateHideState(
+                      roomNumber,
+                      "placementHeight",
+                      placementHeight
+                    ),
+              userIsAddingHide
+                ? this.props.addHidePlacementHeight
+                : this.state.addedHides[roomNumber].placementHeight
+            )}
+          </View>
+        </View>
+        {/* Notes */}
+        <View style={center}>
+          <Text style={styles.labelStyle}>Notes:</Text>
+          <ReduxFormInput
+            name={`Hides.${roomNumber}.notes`}
+            multiline={true}
+            containerStyle={{ width: 500 }}
+            numberOfLines={4}
+            userIsAdding={userIsAddingHide}
+            customValue={this.state.addedHides[roomNumber] ? this.state.addedHides[roomNumber].notes : null}
+            customOnChange={notes =>
+              this._updateHideState(
+                roomNumber,
+                "notes",
+                notes
+              )
+            }
+          />
+        </View>
+      </View>
+    );
+  }
 
     _toggleAddHideModal = type =>
         this.setState(prevState => ({

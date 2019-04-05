@@ -17,9 +17,8 @@ import {
     outlineButtonTextStyle
 } from "../../../constants/Styles";
 import {
-    connectReduxForm,
-    renderReduxDropdown,
-    renderReduxFormInput
+  connectReduxForm,
+  renderReduxDropdown
 } from "../../../components/helpers";
 import {LHSInfo} from "../../../constants/SessionsConstants";
 import API from "../../../constants/Api";
@@ -262,74 +261,70 @@ class LHSNewSessionScreen extends React.Component {
         );
     };
 
-    _renderSearchFields = (searchNumber, userIsAddingSearch = false) => (
-        <View
-            style={{
-                flexDirection: "column",
-                justifyContent: "space-between",
-                marginBottom: 100,
-                ...center
-            }}
-        >
-            {/* Location */}
-            <Text style={styles.labelStyle}>Location:</Text>
-            {renderReduxDropdown(
-                `Searches.${searchNumber}.location`,
-                LHSInfo.SearchSetup.Locations,
-                styles.dropdown,
-                userIsAddingSearch
-                    ? null
-                    : searchNumber =>
-                        this._updateSearchState(
-                            searchNumber,
-                            "searchNumber",
-                            searchNumber
-                        ),
-                userIsAddingSearch
-                    ? null
-                    : this.state.addedSearches[searchNumber].location
-            )}
-            {/* Subject Placement */}
-            <Text style={{...styles.labelStyle, paddingBottom: 10}}>
-                Subject Placement:
-            </Text>
-            {userIsAddingSearch && (
-                <View style={{flexDirection: "row", flexWrap: "wrap"}}>
-                    <CheckboxContainer
-                        name={`Searches.${searchNumber}.placements`}
-                        checkboxes={LHSInfo.SearchSetup.Placements}
-                    />
-                </View>
-            )}
-            {!userIsAddingSearch &&
-            this.state.addedSearches[searchNumber].placements.map(p => (
-                <Text>{p}, </Text>
-            ))}
-            {/* Notes */}
-            <View style={{...center, paddingTop: 10}}>
-                <Text style={styles.labelStyle}>Notes:</Text>
-                {renderReduxFormInput(`Searches.${searchNumber}.notes`, {
-                    containerStyle: {width: 400},
-                    numberOfLine: 4,
-                    multiline: true,
-                    placeholder: userIsAddingSearch
-                        ? null
-                        : this.state.addedSearches[searchNumber].notes
-                })}
-                <ReduxFormInput
-                    name={`Searches.${searchNumber}.notes`}
-                    containerStyle={{width: 400}}
-                    numberOfLines={4}
-                    multiline={true}
-                    placeholder={
-                        userIsAddingSearch
-                            ? null
-                            : this.state.addedSearches[searchNumber].notes
-                    }
-                />
-            </View>
+  _renderSearchFields = (searchNumber, userIsAddingSearch = false) => (
+    <View
+      style={{
+        flexDirection: "column",
+        justifyContent: "space-between",
+        marginBottom: 100,
+        ...center
+      }}
+    >
+      {/* Location */}
+      <Text style={styles.labelStyle}>Location:</Text>
+      {renderReduxDropdown(
+        `Searches.${searchNumber}.location`,
+        LHSInfo.SearchSetup.Locations,
+        styles.dropdown,
+        userIsAddingSearch
+          ? null
+          : searchNumber =>
+              this._updateSearchState(
+                searchNumber,
+                "searchNumber",
+                searchNumber
+              ),
+        userIsAddingSearch
+          ? null
+          : this.state.addedSearches[searchNumber].location
+      )}
+      {/* Subject Placement */}
+      <Text style={{ ...styles.labelStyle, paddingBottom: 10 }}>
+        Subject Placement:
+      </Text>
+      {userIsAddingSearch && (
+        <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+          <CheckboxContainer
+            name={`Searches.${searchNumber}.placements`}
+            checkboxes={LHSInfo.SearchSetup.Placements}
+          />
         </View>
-    );
+      )}
+      {!userIsAddingSearch &&
+        this.state.addedSearches[searchNumber].placements.map(p => (
+          <Text>{p}, </Text>
+        ))}
+      {/* Notes */}
+      <View style={{ ...center, paddingTop: 10 }}>
+        <Text style={styles.labelStyle}>Notes:</Text>
+        <ReduxFormInput
+          name={`Hides.${searchNumber}.notes`}
+          multiline={true}
+          containerStyle={{ width: 500 }}
+          numberOfLines={4}
+          userIsAdding={userIsAddingSearch}
+          customValue={
+            this.state.addedSearches[searchNumber]
+              ? this.state.addedSearches[searchNumber].notes
+              : null
+          }
+          customOnChange={notes =>
+            this._updateSearchState(searchNumber, "notes", notes)
+          }
+        />
+      </View>
+    </View>
+  );
 
     _toggleAddSearchModal = () =>
         this.setState(prevState => ({
@@ -405,14 +400,14 @@ class LHSNewSessionScreen extends React.Component {
         );
     };
 
-    _resetFields = fields => {
-        fields.forEach(field => {
-            //reset the field's value
-            this.props.dispatch(change("lhs", field, ""));
-            //reset the field's error
-            this.props.dispatch(untouch("lhs", field));
-        });
-    };
+  _resetFields = fields => {
+    // fields.forEach(field => {
+    //   //reset the field's value
+    //   this.props.dispatch(change("lhs", field, ""));
+    //   //reset the field's error
+    //   this.props.dispatch(untouch("lhs", field));
+    // });
+  };
 
     _addSearch = () => {
         console.log("Search", this.state.addSearchNumber);
