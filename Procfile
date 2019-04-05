@@ -1,1 +1,1 @@
-web: node server/index.js
+web: babel-node --presets es2015 --plugins transform-object-rest-spread ./server/index.js
