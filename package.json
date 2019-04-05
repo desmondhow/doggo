@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "Doggo Server",
-  "main": "index.js",
+  "main": "./server/index.js",
   "dependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
