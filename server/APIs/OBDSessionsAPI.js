@@ -1,6 +1,6 @@
 import express from "express";
 
-import UDCSession from "../../db/schemas/UDCSchema";
+import OBDSession from "../../db/schemas/OBDSchema";
 import User from "../../db/schemas/userSchema";
 import { isParamEmpty, errors } from "./helpers";
 
@@ -8,42 +8,49 @@ const router = express.Router();
 const createSessionApiRoute = route => `/:id/sessions/${route}`;
 
 /**
- * Creates a new UDC session
+ * Creates a new OBD session
  */
-router.post(createSessionApiRoute("udc/create"), function(req, res, next) {
+router.post(createSessionApiRoute("obd/create"), function(req, res, next) {
   let temperature = req.body.temperature;
+
   let humidity = req.body.humidity;
   let wind = req.body.wind;
+  let windDirection = req.body.windDirection;
   let complete = req.body.complete;
   let createdAt = req.body.createdAt;
-  let currSessionID = req.body.sessionId;
-
-  let windDirection = req.body.windDirection;
+  let sessionId = req.body.sessionId;
 
   if (isParamEmpty(req, "id")) {
     console.log(`UserId was not sent with request.`);
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
   }
+  console.log('here4');
 
-  let hidesData = req.body.hides;
-  if (isParamEmpty(req, "hides", true)) {
-    return res
-      .status(400)
-      .send(JSON.stringify({ message: "Session doesn't contain any hides." }));
-  }
+  let dogs = req.body.dogs;
+  // if (isParamEmpty(req, "dogs", true)) {
+  //   return res
+  //     .status(400)
+  //     .send(
+  //       JSON.stringify({ message: "Session doesn't contain any dogs." })
+  //     );
+  // }
+
   let sessionData = {
     temperature,
     humidity,
     wind,
     windDirection,
-    complete: complete,
-    createdAt: createdAt,
-    hides: hidesData,
-    sessionId: currSessionID
+    complete,
+    createdAt,
+    dogs,
+    sessionId
   };
+
+  console.log(`sessionData: ${JSON.stringify(sessionData)}\n`);
 
   // if user is editing session, isNew will be false
   const isNewSession = req.body.isNew;
+  console.log(`isNewSession: ${isNewSession}`);
   if (!isNewSession) {
     // only update the fields that the user edited
     let updateObj = { $set: {} };
@@ -52,21 +59,21 @@ router.post(createSessionApiRoute("udc/create"), function(req, res, next) {
     }
 
     User.update(
-      { "sessions.data.sessionId": currSessionID },
+      { "sessions.data.sessionId": sessionId },
       updateObj,
       (err, updatedUser) => {
         if (err) {
           console.log(err);
           return res
             .status(400)
-            .send(JSON.stringify({ message: `Error editing UDC session.` }));
+            .send(JSON.stringify({ message: `Error editing OBD session.` }));
         }
         console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`);
         return res.status(200).send({ message: updatedUser, status: 200 });
       }
     );
   } else {
-    const newSession = { sessionType: "UDC", data: sessionData };
+    const newSession = { sessionType: "OBD", data: sessionData };
     const userId = req.params.id;
 
     User.findByIdAndUpdate(
@@ -77,9 +84,9 @@ router.post(createSessionApiRoute("udc/create"), function(req, res, next) {
           console.log(err);
           return res
             .status(400)
-            .send(JSON.stringify({ message: `Error creating UDC session.` }));
+            .send(JSON.stringify({ message: `Error creating OBD session.` }));
         }
-        // console.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
+        console.log(`updatedUser: ${JSON.stringify(updatedUser)}`);
         return res.status(200).send({ message: updatedUser, status: 200 });
       }
     );
@@ -87,9 +94,9 @@ router.post(createSessionApiRoute("udc/create"), function(req, res, next) {
 });
 
 /**
- * Trains dogs under a UDC session
+ * Trains dogs under a OBD session
  */
-router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
+router.post(createSessionApiRoute("obd/train"), function(req, res, next) {
   if (isParamEmpty(req, "id") || isParamEmpty(req, "sessionId", true)) {
     console.log(`UserId or sessionId was not sent with request.`);
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -99,7 +106,6 @@ router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
       .status(400)
       .send(JSON.stringify({ message: errors.sessionInfo }));
   }
-  console.log('HIT TRAIN REQUEST')
   const sessionInfo = req.body.sessionInfo;
 
   const dogsTrained = [];
@@ -110,9 +116,9 @@ router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
       handlerId: sessionInfo[dogId].handlerId,
       trainer: sessionInfo[dogId].trainer,
       recorder: sessionInfo[dogId].recorder,
-      hides: Object.keys(sessionInfo[dogId].performance).map(hideId => ({
-        hideId,
-        performance: sessionInfo[dogId].performance[hideId]
+      searches: Object.keys(sessionInfo[dogId].performance).map(searchId => ({
+        searchId,
+        performance: sessionInfo[dogId].performance[searchId]
       }))
     });
   });
@@ -121,14 +127,14 @@ router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
   const sessionId = req.body.sessionId;
   User.update(
     { "sessions.data.sessionId": sessionId },
-    { $push: { "sessions.$.data.dogsTrained": dogsTrained } },
+    { $set: { "sessions.$.data.dogsTrained": dogsTrained } },
     { upsert: true },
     (err, updatedUser) => {
       if (err) {
         console.log(err);
         return res
           .status(400)
-          .send(JSON.stringify({ message: `Error updating UDC session.` }));
+          .send(JSON.stringify({ message: `Error updating OBD session.` }));
       }
       console.log(`updatedSessionResult: ${JSON.stringify(updatedUser)}`);
       return res
@@ -138,8 +144,8 @@ router.post(createSessionApiRoute("udc/train"), function(req, res, next) {
   );
 });
 
-// Deletes a udc session
-router.post(createSessionApiRoute("udc/:sessionId"), function(req, res, next) {
+// Deletes a OBD session
+router.post(createSessionApiRoute("obd/:sessionId"), function(req, res, next) {
   if (isParamEmpty(req, "id") || isParamEmpty(req, "sessionId")) {
     console.log(`UserId or sessionId was not sent with request.`);
     return res.status(400).send(JSON.stringify({ message: errors.userId }));
@@ -169,9 +175,9 @@ router.post(createSessionApiRoute("udc/:sessionId"), function(req, res, next) {
 });
 
 /**
- * Returns all the non complete UDC sessions
+ * Returns all the non complete OBD sessions
  */
-router.get(createSessionApiRoute("udc/get-current-sessions"), function(
+router.get(createSessionApiRoute("obd/get-current-sessions"), function(
   req,
   res
 ) {
@@ -182,20 +188,19 @@ router.get(createSessionApiRoute("udc/get-current-sessions"), function(
   const userId = req.params.id;
 
   User.findById(userId)
-    .where({
-      sessions: { $elemMatch: { sessionType: "UDC", "data.complete": false } }
-    })
     .then(data => {
+      data = data.sessions.filter(s => s.sessionType === 'OBD');
       if (!data) {
         return res
           .status(400)
           .send(
             JSON.stringify({
-              message: "There are no current UDC sessions",
+              message: "There are no current OBD sessions",
               sessions: []
             })
           );
       } else {
+        console.log(`sessions: ${data.sessions}`);
         return res
           .status(200)
           .send(JSON.stringify({ sessions: data.sessions }));
@@ -210,7 +215,7 @@ router.get(createSessionApiRoute("udc/get-current-sessions"), function(
 });
 
 /**
- * Get a specific UDC session by its uniquide ID
+ * Get a specific OBD session by its uniquide ID
  */
 router.get(createSessionApiRoute("/get-session/:sessionId"), (req, res) => {
   const id = req.params.sessionId;
@@ -220,14 +225,14 @@ router.get(createSessionApiRoute("/get-session/:sessionId"), (req, res) => {
       .status(400)
       .send(JSON.stringify({ status: false, message: "Please add an ID" }));
   }
-  UDCSession.findById(id, function(err, session) {
+  OBDSession.findById(id, function(err, session) {
     if (err || session === undefined || session.length === 0) {
       return res
         .status(400)
         .send(
           JSON.stringify({
             status: false,
-            message: "Could not find any UDC sessions" + " with that ID"
+            message: "Could not find any OBD sessions" + " with that ID"
           })
         );
     }

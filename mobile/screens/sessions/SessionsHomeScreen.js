@@ -8,14 +8,34 @@ import { Card, Button, Icon,  } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Sessions } from '../../constants/SessionsConstants';
 import { buttonStyle, buttonTextStyle } from '../../constants/Styles';
+import {isOnline} from "../../redux/actions/connection.actions";
+import store from "../../redux/reduxConfig";
 
 const HomeScreen = class extends React.Component {
+    componentDidMount() {
+        this.interval = setInterval(() => {
+            let isConnected = isOnline(store.getState);
+            this.props.navigation.setParams({isConnected: isConnected})
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
   render() { 
     console.disableYellowBox = true;
     const { navigate } = this.props.navigation;
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2
     });
+    const names = {
+      'Obedience': 'OBD',
+      'Live Human Search': 'LHS',
+      'UDC': 'UDC',
+      'Agility': 'Agility',
+      'Noise': 'Noise',
+    }
 
     return (
       <View style={styles.container}>
@@ -33,12 +53,12 @@ const HomeScreen = class extends React.Component {
                   buttonStyle={buttonStyle}
                   title='Create New Session'
                   textStyle={{...buttonTextStyle, fontSize: 20 }}
-                  onPress={() => navigate(`${rowData}NewSession`)} />
+                  onPress={() => navigate(`${names[rowData]}NewSession`)} />
                 <Button
                   buttonStyle={buttonStyle}
                   title='View Current Sessions' 
                   textStyle={{...buttonTextStyle, fontSize: 20 }}
-                  onPress={() => navigate(rowData)} />
+                  onPress={() => navigate(names[rowData])} />
               </View>
             </Card>
           )}
@@ -47,6 +67,7 @@ const HomeScreen = class extends React.Component {
     );
   }
 }
+
 
 const mapStateToProps = (state) => ({
   state

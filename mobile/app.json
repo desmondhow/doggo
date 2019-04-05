@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "doggo",
+    "name": "doggo1",
     "description": "An app for dogs, made by dogs",
-    "slug": "doggo",
+    "slug": "doggo1",
     "privacy": "public",
     "sdkVersion": "31.0.0",
     "platforms": [
@@ -21,10 +21,14 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": [
-      "**/*"
+      "assets/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.doggoinc.doggo"
+    },
+    "android": {
+      "package": "com.doggoinc.doggo"
     }
   }
 }

@@ -4,6 +4,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import UDCSchema from './UDCSchema';
+import LHSSchema from './LHSSchema';
 
 export const UserSchema = new mongoose.Schema({
     email: {
@@ -18,7 +19,7 @@ export const UserSchema = new mongoose.Schema({
     },
     sessions: [{
       sessionType: String,
-      data: UDCSchema
+      data: UDCSchema | LHSSchema
     }],
     handlers: [{
       name: String

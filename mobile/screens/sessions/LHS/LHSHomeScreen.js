@@ -17,24 +17,26 @@ import {
   oddTableRow
 } from "../../../constants/Styles";
 import {connect} from "react-redux";
-import { getAllUDC} from "../../../redux/actions/udc.actions";
-const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
+import { getAllLHS} from "../../../redux/actions/lhs.actions";
+// const currentSessionsTableHeaderText = ["Created At", "# Searches", "\tDogs", '', ''];
+import API from "../../../constants/Api";
+import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
- class UDCHomeScreen extends React.Component {
+ class LHSHomeScreen extends React.Component {
     constructor(props) {
         super(props);
     }
 
     componentDidMount() {
-        //Get all UDCs whenever user opens this screen
-        this.props.dispatch(getAllUDC());
+        //Get all LHSs whenever user opens this screen
+        this.props.dispatch(getAllLHS());
         //Keep fetching for data every minute.
-        this.interval = setInterval(() => this.getAllUDCs, 5000);
+        this.interval = setInterval(() => this.getAllLHSs, 5000);
     }
 
-    getAllUDCs(){
-        this.props.dispatch(getAllUDC());
+    getAllLHSs(){
+        this.props.dispatch(getAllLHS());
     }
 
     componentWillUnmount() {
@@ -45,13 +47,13 @@ const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', '
     _continueTrainingSession(i) {
         const { navigate } = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCTrainDog', { sessionInfo: sessionData });
+        navigate('LHSTrainDog', { sessionInfo: sessionData });
     }
 
     _editTrainingSession(i) {
         const {navigate} = this.props.navigation;
         const sessionData  =  this.props.currSessionsData[i];
-        navigate('UDCNewSession', { isEditing: true, sessionInfo: sessionData })
+        navigate('LHSNewSession', { isEditing: true, sessionInfo: sessionData })
     }
 
     _renderTableButtons = (continueButtons) => (
@@ -92,65 +94,65 @@ const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', '
         const {navigate} = this.props.navigation;
 
         const currSessionRows = [];
-        if (this.props.currSessionsData != null) {
-            this.props.currSessionsData.map((session, i) => {
-                let creationDate = new Date(Date.parse(session.createdAt));
-                let todaysDate = new Date();
+        this.props.currSessionsData.map((session, i) => {
+            let creationDate = new Date(Date.parse(session.createdAt));
+            let todaysDate = new Date();
 
-                let createdToday = true;
-                let copyCreationDate = creationDate.toString();
-                if (
-                    creationDate.setHours(0, 0, 0, 0) !=
-                    todaysDate.setHours(0, 0, 0, 0)
-                ) {
-                    createdToday = false;
-                }
+            let createdToday = true;
+            let copyCreationDate = creationDate.toString();
+            if (
+                creationDate.setHours(0, 0, 0, 0) !=
+                todaysDate.setHours(0, 0, 0, 0)
+            ) {
+                createdToday = false;
+            }
 
-                // show date if not created today
-                let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
-                    ? ""
-                    : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
-                    1})`
-                    }`;
+            // show date if not created today
+            let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
+                ? ""
+                : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+                1})`
+                }`;
 
-                let numHides = session.hides && session.hides.length;
-                if (numHides !== undefined) {
-                    numHides = Object.keys( session.hides).length;
-                }
-                let numDogs = 0;
-                if (session.dogsTrained !== undefined &&  session.dogsTrained !== null) {
-                    numDogs = Object.keys( session.dogsTrained).length;
-                }
-                const rowData = [createdAt, numHides, numDogs, ...this._renderSessionButtons(i)]
 
-                currSessionRows.push(
-                    <View style={{flexDirection: 'row', marginLeft: 20}}>
-                        {rowData.map((cellData, j) => {
-                            width = j < 3 ? 150 : 110;
-                            marginLeft = j == 4 ? -20 : 0;
-                            return (
-                                <Cell
-                                    key={i + j}
-                                    data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
-                                    style={[{
-                                        borderColor: 'transparent',
-                                        width: width,
-                                        height: 50,
-                                        marginLeft: marginLeft
-                                    }, i % 2 == 0 ? null : oddTableRow]}
-                                    textStyle={{
-                                        fontSize: 18,
-                                        fontFamily: "montserrat"
-                                    }}
-                                />
-                            )
-                        })}
-                    </View>
-                );
-            });
-        }
+            let numSearches = session.searches.length
+            if (numSearches === undefined || numSearches === null) {
+                numSearches = Object.keys( session.searches).length;
+            }
+            let numDogs = 0;
+            if (session.dogsTrained !== undefined &&  session.dogsTrained !== null) {
+                numDogs = Object.keys( session.dogsTrained).length;
+            }
 
-    const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\t# Dogs", '', ''];
+            const rowData = [createdAt, numSearches, numDogs, ...this._renderSessionButtons(i)]
+
+      currSessionRows.push(
+        <View style={{flexDirection: 'row', marginLeft: 20}}>
+          {rowData.map((cellData, j) => {
+            width = j < 3 ? 150 : 110;
+            marginLeft = j == 4 ? -20 : 0;
+            return (
+              <Cell
+                key={i + j}
+                data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
+                style={[{
+                  borderColor: 'transparent',
+                  width: width,
+                  height: 50,
+                  marginLeft: marginLeft
+                }, i % 2 == 0 ? null : oddTableRow]}
+                textStyle={{
+                  fontSize: 18,
+                  fontFamily: "montserrat"
+                }}
+              />    
+            )      
+          })}
+        </View>
+      );
+    });
+
+    const currentSessionsTableHeaderText = ["Created At", "\t# Searches", "\t# Dogs", '', ''];
     return (
       <View style={container}>
         <View style={styles.sessionsContainer}>
@@ -230,7 +232,7 @@ const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', '
             title="Start New Session"
             rightIcon={{ name: "create", type: "montserrat" }}
             onPress={() =>
-              navigate("UDCNewSession", { onSubmit: this._handleGeneralSubmit })
+              navigate("LHSNewSession", { onSubmit: this._handleGeneralSubmit })
             }
             buttonStyle={styles.newSessionButton}
             textStyle={buttonTextStyle}
@@ -244,13 +246,13 @@ const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', '
 
 mapStateToProps = (state) => {
     return {
-        currSessionsData: state.udc.currSessionsData,
+        currSessionsData: state.lhs.currSessionsData,
         actionQueue: state.connection.actionQueue,
         isConnected: state.connection.isConnected,
         isServerOnline: state.connection.isServerOnline
     };
 };
-export default connect(mapStateToProps)(UDCHomeScreen)
+export default connect(mapStateToProps)(LHSHomeScreen)
 
 
 

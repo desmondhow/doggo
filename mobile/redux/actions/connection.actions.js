@@ -2,7 +2,14 @@
 import Constants from "../../constants/Api";
 import fetch from 'cross-fetch'
 import 'babel-polyfill'
-import {deleteUDCSessionLater, getAllUDCLater, saveUDCSession, saveUDCSessionLater} from "./udc.actions";
+import {
+    deleteUDCSessionLater,
+    getAllUDCLater,
+    saveUDCSession,
+    saveUDCSessionLater,
+    saveUDCTrainingLater
+} from "./udc.actions";
+import {deleteLHSSessionLater, saveLHSSessionLater, saveLHSTrainingLater} from "./lhs.actions";
 
 
 /**
@@ -16,7 +23,11 @@ export const RESET_STATE = 'RESET_STATE';
 
 export const ActionQueueTypes = {
     SAVE_NEW_UDC_LATER: 'SAVE_NEW_UDC_LATER',
-    DELETE_UDC_LATER: 'DELETE_UDC_LATER'
+    SAVE_NEW_LHS_LATER: 'SAVE_NEW_LHS_LATER',
+    DELETE_UDC_LATER: 'DELETE_UDC_LATER',
+    DELETE_LHS_LATER: 'DELETE_LHS_LATER',
+    SAVE_UDC_TRAINING_LATER: 'SAVE_UDC_TRAINING_LATER',
+    SAVE_LHS_TRAINING_LATER: 'SAVE_LHS_TRAINING_LATER'
 
 };
 
@@ -36,8 +47,7 @@ export const pingServer = ({url}) => {
             .then((res) => {
                 dispatch({type: SERVER_STATE, isServerOnline: true});
             }).catch(function (error) {
-                console.log(error);
-                dispatch({type: SERVER_STATE, isServerOnline: false});
+            dispatch({type: SERVER_STATE, isServerOnline: false});
         });
     };
 };
@@ -49,34 +59,85 @@ export const pingServer = ({url}) => {
 export const dispatchActionQueueElt = ({elts}) => {
     return (dispatch) => {
         for (let i = 0; i < elts.length; i++) {
-            if (elts[i].type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
-                    dispatch({
-                        type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                            type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
-                            data: elts[i].data
-                        }
-                    });
-                    dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
-
-            }
-            else if(elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.DELETE_UDC_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(deleteUDCSessionLater({sessionId: elts[i].data}));
-            }
-
-            else {
-                console.log('error action queue', elts[i].type);
-            }
+            //Dispatch an action but with a delay of i*2 seconds
+            setDelay(i, elts[i], dispatch)
         }
     }
 };
 
 
+function setDelay(i, elts, dispatch) {
+    setTimeout(function(){
+        console.log('About to dispatch action ', elts);
+        if (elts.type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveUDCSessionLater({sessionInfo: elts.data}));
+
+        }
+        else if (elts.type === ActionQueueTypes.SAVE_NEW_LHS_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveLHSSessionLater({sessionInfo: elts.data}));
+
+        }
+        else if (elts.type === ActionQueueTypes.DELETE_UDC_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.DELETE_UDC_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(deleteUDCSessionLater({sessionId: elts.data}));
+        }
+
+        else if (elts.type === ActionQueueTypes.DELETE_LHS_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.DELETE_LHS_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(deleteLHSSessionLater({sessionId: elts.data}));
+        }
+
+        else if (elts.type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveUDCTrainingLater({sessionInfo: elts.data}));
+
+        }
+
+        else if (elts.type === ActionQueueTypes.SAVE_LHS_TRAINING_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveLHSTrainingLater({sessionInfo: elts.data}));
+
+        }
+
+
+        else {
+            console.log('error action queue', elts.type);
+        }
+
+    }, i* 10000);
+}
 
 
 /**
@@ -84,12 +145,12 @@ export const dispatchActionQueueElt = ({elts}) => {
  * @param getState
  * @returns {*|boolean}
  */
-export function isOnline() {
-    return (getState) => {
-        const isConnected = getState().connection.isConnected;
-        const isServerOnline = getState().connection.isServerOnline;
-        return isConnected && isServerOnline;
-    }
+export function isOnline(getState) {
+
+    const isConnected = getState().connection.isConnected;
+    const isServerOnline = getState().connection.isServerOnline;
+
+    return isServerOnline && isConnected;
 }
 
 export function guidGenerator() {
@@ -99,5 +160,5 @@ export function guidGenerator() {
     let S4 = function () {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
     };
-    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+    return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }

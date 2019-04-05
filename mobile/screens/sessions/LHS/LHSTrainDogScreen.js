@@ -1,101 +1,98 @@
-import React from "react";
-import {StyleSheet, View, ScrollView, SectionList} from "react-native";
+import React from 'react';
 import {
-    Text,
-    Icon,
-    Button,
-    ButtonGroup,
-    FormInput
-} from "react-native-elements";
-import Collapsible from "react-native-collapsible/Collapsible";
-import {Field, formValueSelector} from "redux-form";
+    StyleSheet,
+    View,
+    ScrollView,
+    SectionList
+} from 'react-native';
+import {Text, Icon, Button, ButtonGroup, FormInput} from 'react-native-elements';
+import Collapsible from 'react-native-collapsible/Collapsible';
+import {Field, formValueSelector} from 'redux-form';
 
 import {
     container,
     center,
-    buttonStyle
-} from "../../../constants/Styles";
-import {
-    connectReduxForm,
-    renderDropdown,
-    renderReduxFormInput,
-    renderReduxDropdown
-} from "../../../components/helpers";
-import {BuildingSearch} from "../../../constants/SessionsConstants";
-import Colors from "../../../constants/Colors";
-import {SAVE_UDC_DOG} from "../../../redux/actions/udc.actions";
+    buttonStyle,
+    outlineButtonTextStyle,
+    buttonTextStyle,
+    outlineButtonStyle,
+    formContainer
+} from '../../../constants/Styles';
+import {connectReduxForm, renderDropdown, renderReduxFormInput, renderReduxDropdown} from '../../../components/helpers';
+import {BuildingSearch, LHSInfo} from '../../../constants/SessionsConstants';
+import API from '../../../constants/Api';
+import Colors from '../../../constants/Colors';
+import {SAVE_LHS_DOG} from "../../../redux/actions/lhs.actions";
 
-export class UDCTrainDogScreen extends React.Component {
+export class LHSTrainDogScreen extends React.Component {
     constructor(props) {
         super(props);
+        // this._renderPage = this._renderPage.bind(this);
 
         this.state = {
-            dog: {name: "", _id: -1},
+            dog: {name: '', _id: -1},
             dogs: [],
             handlers: [],
             sessionInfo: this.props.navigation.getParam("sessionInfo", false)
+
         };
     }
 
     componentDidMount() {
-        this.setState({
-            handlers: this.props.handlers,
-            dogs: this.props.dogs
-        });
+        this.setState(
+            {
+                handlers: this.props.handlers,
+                dogs: this.props.dogs
+            },
+        );
+
     }
 
-    _onSubmit = initialInfo => {
-        this.props.saveDog(this.state.dog);
 
-        // Dispatch action to store the current dog being trained in the state to be grabbed in the next'
-        this.props.navigation.navigate("UDCBuildingSearch", {
+    _onSubmit = (initialInfo) => {
+        this.props.navigation.navigate('LHSSearch', {
             sessionInfo: this.state.sessionInfo,
             dog: this.state.dog
         });
     };
 
+
     _renderSubmitBtn = () => (
         <Button
             raised
             rounded
-            title="Start Training"
+            title='Start Training'
             onPress={this.props.handleSubmit(this._onSubmit)}
             fontSize={26}
             buttonStyle={{
                 ...center,
                 ...buttonStyle,
-                marginTop: 20
+                marginTop: 20,
             }}
             titleStyle={{
                 fontSize: 20,
-                fontWeight: "bold"
+                fontWeight: 'bold'
             }}
         />
-    );
+    )
 
     _renderPage = () => {
-        const labelFieldContainerStyle = {
-            flexDirection: "column",
-            width: "40%",
-            ...center
-        };
-        const dropdownStyle = {width: "60%", height: 100, marginTop: -30};
+        const labelFieldContainerStyle = {flexDirection: 'column', width: '40%', ...center}
+        const dropdownStyle = {width: '60%', height: 100, marginTop: -30};
         const dropdownFontSize = 16;
-        const labelStyle = {fontWeight: "bold", fontSize: 16};
-        const buttonGroupContainerStyle = {height: 50};
-        const yesNoButtons = ["No", "Yes"];
+        const labelStyle = {fontWeight: 'bold', fontSize: 16};
+        const buttonGroupContainerStyle = {height: 50}
+        const yesNoButtons = ['No', 'Yes'];
 
         return (
-            <View
-                style={{
-                    marginTop: 30,
-                    backgroundColor: "white",
-                    alignItems: "center",
-                    width: "70%",
-                    height: "89%",
-                    paddingTop: 50
-                }}
-            >
+            <View style={{
+                marginTop: 30,
+                backgroundColor: 'white',
+                alignItems: 'center',
+                width: '70%',
+                height: '89%',
+                paddingTop: 50,
+            }}>
                 <View style={labelFieldContainerStyle}>
                     <Text style={labelStyle}>K9 Name</Text>
                     {renderDropdown(
@@ -103,7 +100,7 @@ export class UDCTrainDogScreen extends React.Component {
                         (_, i) => this.setState({dog: this.state.dogs[i]}),
                         this.state.dogs.map(dog => dog.name),
                         dropdownStyle,
-                        dropdownFontSize
+                        dropdownFontSize,
                     )}
                 </View>
                 {/* <View style={labelFieldContainerStyle}>
@@ -128,40 +125,24 @@ export class UDCTrainDogScreen extends React.Component {
                         null,
                         dropdownFontSize
                     )}
+
                 </View>
                 <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
                     <Text style={labelStyle}>Recorder</Text>
-                    {renderReduxFormInput(`${this.state.dog._id}.recorder`, {
-                        containerStyle: {width: "60%", marginTop: 10}
-                    })}
-                </View>
-                <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
-                    <Text style={labelStyle}>Handler Knows</Text>
-                    <Field
-                        name={`${this.state.dog._id}.handlerKnows`}
-                        component={inputProps => {
-                            const {
-                                input: {value, onChange}
-                            } = inputProps;
-                            return (
-                                <ButtonGroup
-                                    onPress={i => onChange({i: i, text: yesNoButtons[i]})}
-                                    selectedIndex={value.i}
-                                    buttons={yesNoButtons}
-                                    containerStyle={buttonGroupContainerStyle}
-                                />
-                            );
-                        }}
-                    />
+                    {renderReduxFormInput(
+                        `${this.state.dog._id}.recorder`,
+                        {
+                            containerStyle: {
+                                width: '60%', marginTop: 10
+                            }
+                        })}
                 </View>
                 <View style={{paddingTop: 30, ...labelFieldContainerStyle}}>
                     <Text style={labelStyle}>On Lead</Text>
                     <Field
                         name={`${this.state.dog._id}.onLead`}
                         component={inputProps => {
-                            const {
-                                input: {value, onChange}
-                            } = inputProps;
+                            const {input: {value, onChange}} = inputProps;
                             return (
                                 <ButtonGroup
                                     onPress={i => onChange({i: i, text: yesNoButtons[i]})}
@@ -174,24 +155,24 @@ export class UDCTrainDogScreen extends React.Component {
                     />
                 </View>
             </View>
-        );
-    };
+        )
+    }
 
     render = () => (
         <View style={container}>
             {this._renderPage()}
             {this._renderSubmitBtn()}
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "white"
+        backgroundColor: 'white',
     },
     hideContainer: {
-        flexDirection: "column",
+        flexDirection: 'column',
         paddingLeft: 65,
         paddingRight: 65,
         ...center
@@ -199,7 +180,7 @@ const styles = StyleSheet.create({
     fieldsContainer: {
         borderColor: Colors.darkGrey,
         borderRadius: 10,
-        borderWidth: 8
+        borderWidth: 8,
     },
     dropdown: {
         width: 150,
@@ -208,18 +189,19 @@ const styles = StyleSheet.create({
     },
     input: {
         height: 40,
-        width: 100
+        width: 100,
     }
 });
 
 export default connectReduxForm(
-    "udc",
-    UDCTrainDogScreen,
+    'lhs',
+    LHSTrainDogScreen,
     state => ({
         dogs: state.general.dogs,
-        handlers: state.general.handlers
+        handlers: state.general.handlers,
     }),
     dispatch => ({
-        saveDog: dogInfo => dispatch({type: SAVE_UDC_DOG, dog: dogInfo})
+        saveDog: dogInfo =>
+            dispatch({type: SAVE_LHS_DOG, dog: dogInfo})
     })
-);
+)
