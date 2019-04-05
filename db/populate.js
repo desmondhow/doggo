@@ -1,4 +1,4 @@
-import mongoose from "../server/node_modules/mongoose";
+import mongoose from 'mongoose';
 import XLSX from "xlsx";
 import csv from "fast-csv";
 import "isomorphic-fetch";

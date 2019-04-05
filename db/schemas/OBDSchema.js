@@ -1,4 +1,4 @@
-import { Schema, ObjectId } from "../../server/node_modules/mongoose";
+import { Schema, ObjectId } from 'mongoose';
 
 export default new Schema({
   /*
