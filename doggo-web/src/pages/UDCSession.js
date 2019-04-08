@@ -73,7 +73,7 @@ class UDCSession extends Component {
     }
 
     getPerformance(hideId) {
-        const dogObj = this.state.session.dogsTrained.find(obj => obj.dogId === this.state.dogData.dogId)
+        const dogObj = Object.keys(this.state.session.dogsTrained).find(key => key === this.state.dogData.dogId)
         const hide = dogObj.hides.find(hide => hide.hideId === hideId)
         const performance = hide.performance;
         return performance;
@@ -333,6 +333,7 @@ class UDCSession extends Component {
             // hideTables.push(this.renderHide(hide))
             // hideRoomNumbers.push(hide.roomNumber)
             tables.push(this.renderHide(hide))
+            console.log(this.state.dogData)
             const performance = this.state.dogData.hides[hide.roomNumber].performance
             // if (this.state.isEditing) {
             //     tables.push(this.renderPerformanceForm(performance, hide.roomNumber))

@@ -6,11 +6,11 @@ import {
   Redirect
 } from 'react-router-dom';
 import './assets/stylesheets/App.css';
+import './assets/stylesheets/Form.css';
 import Login from './pages/Login';
 import SignUp from './pages/Signup';
 import Home from './pages/Home';
 import DogProfile from './pages/DogProfile';
-import UDCSessionForm from './pages/UDCSessionForm';
 import UDCSession from './pages/UDCSession';
 import Container from 'react-bootstrap/Container';
 import { isSignedIn } from './assets/helpers';

@@ -25,6 +25,7 @@ class DogProfile extends Component {
                 OBD: "No sessions"
             }
         }
+        console.log(this.state)
     }
 
     formatSessionData() {
@@ -47,13 +48,17 @@ class DogProfile extends Component {
     setUDCData() {
         let dogUDC = []
         this.state.sessionData.UDC.forEach(session => {
-            Object.keys(session.dogsTrained).forEach(key => {
-                const udcSession = session.dogsTrained[key];
-                if (udcSession.dogId === this.state.dogId) {
-                    this.setState({dogSessionData :udcSession})
-                    dogUDC.push(session)
-                }
-            })
+            console.log(session)
+            if (session.dogsTrained) {
+                Object.keys(session.dogsTrained).forEach(key => {
+                    const udcSession = session.dogsTrained[key];
+                    if (key === this.state.dogId) {
+                        this.setState({dogSessionData :udcSession})
+                        dogUDC.push(session)
+                    }
+                })
+            }
+            
         })
         if (dogUDC.length !== 0) {
             let data = this.state.dogData;

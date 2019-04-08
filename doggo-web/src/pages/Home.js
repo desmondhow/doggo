@@ -28,6 +28,15 @@ class Home extends Component {
         Object.keys(this.state.sessionData).forEach(key => {
             getSessionData(key)
                 .then(data => {
+                    Object.values(data).forEach(session => {
+                        if (session.dogsTrained) {
+                            Object.keys(session.dogsTrained).forEach(dogId => {
+                                const dogs = this.state.dogs;
+                                console.log(dogs.find(dogObj => dogObj._id === dogId + ""));
+                            })
+                        }
+                    })
+
                     this.setState(prevState => ({
                         sessionData: {
                             ...prevState.sessionData,
@@ -70,14 +79,11 @@ class Home extends Component {
                 const dogId = dog._id;
                 const dogName = dog.name;
 
-                if (
-                    !this.state.searchValue ||
-                    dogName.toLowerCase().startsWith(this.state.searchValue)
-                ) {
+                if (!this.state.searchValue || dogName.toLowerCase().startsWith(this.state.searchValue)) {
                     dogRows.push(
                         <tr key={dogId}>
                             <td>{dogName}</td>
-                            <td><Button onClick={() => this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
+                            <td><Button className="form-btn" onClick={() => this.viewDogProfile(dogId, dogName)}>View Profile</Button></td>
                         </tr>
                     );
                 }
@@ -87,16 +93,18 @@ class Home extends Component {
         return (
             <div>
                 {this._renderSearchBar()}
-                <Table>
-                    <thead>
-                        <tr>
-                            <th colSpan="2">All Dogs</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {dogRows}
-                    </tbody>
-                </Table>
+                <div className="my-table">
+                    <Table>
+                        <thead>
+                            <tr>
+                                <th colSpan="2" style={{ border: "none" }}>All Dogs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {dogRows}
+                        </tbody>
+                    </Table>
+                </div>
             </div>
         );
     }

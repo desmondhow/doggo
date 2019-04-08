@@ -8,3 +8,11 @@
     border: solid 2px black;
     border-radius: 15px;
 }
+
+.session-data {
+    margin-top: 20px;
+}
+
+/* .session-data .table {
+    color: white;
+} */
