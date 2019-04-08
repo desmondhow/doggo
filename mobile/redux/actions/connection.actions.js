@@ -59,75 +59,85 @@ export const pingServer = ({url}) => {
 export const dispatchActionQueueElt = ({elts}) => {
     return (dispatch) => {
         for (let i = 0; i < elts.length; i++) {
-            if (elts[i].type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(saveUDCSessionLater({sessionInfo: elts[i].data}));
-
-            }
-            else if (elts[i].type === ActionQueueTypes.SAVE_NEW_LHS_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.SAVE_NEW_LHS_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(saveLHSSessionLater({sessionInfo: elts[i].data}));
-
-            }
-            else if (elts[i].type === ActionQueueTypes.DELETE_UDC_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.DELETE_UDC_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(deleteUDCSessionLater({sessionId: elts[i].data}));
-            }
-
-            else if (elts[i].type === ActionQueueTypes.DELETE_LHS_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.DELETE_LHS_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(deleteLHSSessionLater({sessionId: elts[i].data}));
-            }
-
-            else if (elts[i].type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(saveUDCTrainingLater({sessionInfo: elts[i].data}));
-
-            }
-
-            else if (elts[i].type === ActionQueueTypes.SAVE_LHS_TRAINING_LATER) {
-                dispatch({
-                    type: REMOVE_FROM_ACTION_QUEUE, payload: {
-                        type: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
-                        data: elts[i].data
-                    }
-                });
-                dispatch(saveLHSTrainingLater({sessionInfo: elts[i].data}));
-
-            }
-
-
-            else {
-                console.log('error action queue', elts[i].type);
-            }
+            //Dispatch an action but with a delay of i*2 seconds
+            setDelay(i, elts[i], dispatch)
         }
     }
 };
+
+
+function setDelay(i, elts, dispatch) {
+    setTimeout(function(){
+        console.log('About to dispatch action ', elts);
+        if (elts.type === ActionQueueTypes.SAVE_NEW_UDC_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_NEW_UDC_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveUDCSessionLater({sessionInfo: elts.data}));
+
+        }
+        else if (elts.type === ActionQueueTypes.SAVE_NEW_LHS_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_NEW_LHS_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveLHSSessionLater({sessionInfo: elts.data}));
+
+        }
+        else if (elts.type === ActionQueueTypes.DELETE_UDC_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.DELETE_UDC_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(deleteUDCSessionLater({sessionId: elts.data}));
+        }
+
+        else if (elts.type === ActionQueueTypes.DELETE_LHS_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.DELETE_LHS_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(deleteLHSSessionLater({sessionId: elts.data}));
+        }
+
+        else if (elts.type === ActionQueueTypes.SAVE_UDC_TRAINING_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_UDC_TRAINING_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveUDCTrainingLater({sessionInfo: elts.data}));
+
+        }
+
+        else if (elts.type === ActionQueueTypes.SAVE_LHS_TRAINING_LATER) {
+            dispatch({
+                type: REMOVE_FROM_ACTION_QUEUE, payload: {
+                    type: ActionQueueTypes.SAVE_LHS_TRAINING_LATER,
+                    data: elts.data
+                }
+            });
+            dispatch(saveLHSTrainingLater({sessionInfo: elts.data}));
+
+        }
+
+
+        else {
+            console.log('error action queue', elts.type);
+        }
+
+    }, i* 10000);
+}
 
 
 /**
@@ -140,7 +150,7 @@ export function isOnline(getState) {
     const isConnected = getState().connection.isConnected;
     const isServerOnline = getState().connection.isServerOnline;
 
-    return isServerOnline;
+    return isServerOnline && isConnected;
 }
 
 export function guidGenerator() {

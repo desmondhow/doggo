@@ -9,7 +9,7 @@ import {
 } from "react-native-elements";
 import { Field, formValueSelector, change, untouch } from "redux-form";
 import Modal from "react-native-modal";
-
+import ReduxFormInput from "../../../components/ReduxFormInput";
 import {
   center,
   buttonStyle,
@@ -324,12 +324,18 @@ class OBDNewSessionScreen extends React.Component {
       <View style={{ ...center, paddingTop: 10 }}>
         <Text style={styles.labelStyle}>Notes:</Text>
         <ReduxFormInput
-          name={`Dogs.${dogNumber}.notes`}
-          containerStyle={{ width: 400 }}
-          numberOfLines={4}
+          name={`Hides.${dogNumber}.notes`}
           multiline={true}
-          placeholder={
-            userIsAddingDog ? null : this.state.addedDogs[dogNumber].notes
+          containerStyle={{ width: 500 }}
+          numberOfLines={4}
+          userIsAdding={userIsAddingDog}
+          customValue={
+            this.state.addedDogs[dogNumber]
+              ? this.state.addedDogs[dogNumber].notes
+              : null
+          }
+          customOnChange={notes =>
+            this._updateDogState(dogNumber, "notes", notes)
           }
         />
       </View>
@@ -436,13 +442,17 @@ class OBDNewSessionScreen extends React.Component {
       `Dogs[null]notes`
     ]);
     // store new hide
-    console.log(`Added dogs: ${JSON.stringify(this.state.addedDogs)}`);
+    const indexOfParen = name.indexOf("(");
+    let id = "";
+    if (indexOfParen != -1) {
+      id = name.substring(0, indexOfParen).trim();
+    }
     this.setState(prevState => ({
       ...prevState,
       showAddDogModal: false,
       addedDogs: {
         ...prevState.addedDogs,
-        1: {
+        [id]: {
           name,
           handlerName,
           isFamiliar,
@@ -450,6 +460,7 @@ class OBDNewSessionScreen extends React.Component {
         }
       }
     }));
+    console.log(`Added dogs: ${JSON.stringify(this.state.addedDogs)}`);
   };
 
   _renderDogsForm = () => (

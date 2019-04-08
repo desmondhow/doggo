@@ -15,8 +15,8 @@ export default class ReduxFormInput extends Component {
     return (
       <FormInput
         containerStyle={this.state.containerStyle}
-        value={value}
-        onChangeText={onChange}
+        value={this.state.userIsAdding ? value : this.state.customValue}
+        onChangeText={this.state.userIsAdding ? onChange : this.state.customOnChange}
         numberOfLines={this.state.numberOfLines}
         multiline={this.state.multiline}
         inputStyle={this.state.inputStyle ? inputStyle : { width: 400 }}

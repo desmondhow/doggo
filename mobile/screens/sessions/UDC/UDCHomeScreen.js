@@ -19,8 +19,6 @@ import {
 import {connect} from "react-redux";
 import { getAllUDC} from "../../../redux/actions/udc.actions";
 const currentSessionsTableHeaderText = ["Created At", "# Hides", "\tDogs", '', ''];
-import API from "../../../constants/Api";
-import { request } from "../../../components/helpers";
 
 @withMappedNavigationProps()
  class UDCHomeScreen extends React.Component {
@@ -94,59 +92,63 @@ import { request } from "../../../components/helpers";
         const {navigate} = this.props.navigation;
 
         const currSessionRows = [];
-        this.props.currSessionsData.map((session, i) => {
-            let creationDate = new Date(Date.parse(session.createdAt));
-            let todaysDate = new Date();
+        if (this.props.currSessionsData != null) {
+            this.props.currSessionsData.map((session, i) => {
+                let creationDate = new Date(Date.parse(session.createdAt));
+                let todaysDate = new Date();
 
-            let createdToday = true;
-            let copyCreationDate = creationDate.toString();
-            if (
-                creationDate.setHours(0, 0, 0, 0) !=
-                todaysDate.setHours(0, 0, 0, 0)
-            ) {
-                createdToday = false;
-            }
+                let createdToday = true;
+                let copyCreationDate = creationDate.toString();
+                if (
+                    creationDate.setHours(0, 0, 0, 0) !=
+                    todaysDate.setHours(0, 0, 0, 0)
+                ) {
+                    createdToday = false;
+                }
 
-            // show date if not created today
-            let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
-                ? ""
-                : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
-                1})`
-                }`;
+                // show date if not created today
+                let createdAt = `${new Date(Date.parse(copyCreationDate)).toLocaleTimeString("en-US")}${createdToday
+                    ? ""
+                    : ` (${creationDate.getMonth() + 1}/${creationDate.getDate() +
+                    1})`
+                    }`;
 
-            console.log(JSON.stringify(`SESSION: ${JSON.stringify(session)}`));
-            let numHides = session.hides && session.hides.length;
-            if (numHides != undefined) {
-                numHides = Object.keys( session.hides).length;
-            }
-            const dogs = session.dogsTrained ? session.dogsTrained.length : 0;
-            const rowData = [createdAt, numHides, dogs, ...this._renderSessionButtons(i)]
+                let numHides = session.hides && session.hides.length;
+                if (numHides !== undefined) {
+                    numHides = Object.keys( session.hides).length;
+                }
+                let numDogs = 0;
+                if (session.dogsTrained !== undefined &&  session.dogsTrained !== null) {
+                    numDogs = Object.keys( session.dogsTrained).length;
+                }
+                const rowData = [createdAt, numHides, numDogs, ...this._renderSessionButtons(i)]
 
-      currSessionRows.push(
-        <View style={{flexDirection: 'row', marginLeft: 20}}>
-          {rowData.map((cellData, j) => {
-            width = j < 3 ? 150 : 110;
-            marginLeft = j == 4 ? -20 : 0;
-            return (
-              <Cell
-                key={i + j}
-                data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
-                style={[{
-                  borderColor: 'transparent',
-                  width: width,
-                  height: 50,
-                  marginLeft: marginLeft
-                }, i % 2 == 0 ? null : oddTableRow]}
-                textStyle={{
-                  fontSize: 18,
-                  fontFamily: "montserrat"
-                }}
-              />    
-            )      
-          })}
-        </View>
-      );
-    });
+                currSessionRows.push(
+                    <View style={{flexDirection: 'row', marginLeft: 20}}>
+                        {rowData.map((cellData, j) => {
+                            width = j < 3 ? 150 : 110;
+                            marginLeft = j == 4 ? -20 : 0;
+                            return (
+                                <Cell
+                                    key={i + j}
+                                    data={j == 1 || j == 2 ? `\t\t  ${cellData}` : cellData}
+                                    style={[{
+                                        borderColor: 'transparent',
+                                        width: width,
+                                        height: 50,
+                                        marginLeft: marginLeft
+                                    }, i % 2 == 0 ? null : oddTableRow]}
+                                    textStyle={{
+                                        fontSize: 18,
+                                        fontFamily: "montserrat"
+                                    }}
+                                />
+                            )
+                        })}
+                    </View>
+                );
+            });
+        }
 
     const currentSessionsTableHeaderText = ["Created At", "\t# Hides", "\t# Dogs", '', ''];
     return (

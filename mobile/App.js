@@ -36,33 +36,19 @@ export default class App extends React.Component {
 
         //Ping Our Server and check if the server is  working
         store.dispatch(pingServer({url: Constants.ping}));
-        store.dispatch(getProfileData());
-        //Add event listener for internet connection
-        NetInfo.isConnected.addEventListener('connectionChange', this.handleConnectionChange);
-        //Ping server every 10 sec
+        //Continue Pinging server every 10 sec
         setInterval(this.pingServerFunction,
             10 * 1000
-        )
+        );
+        //Get all trainers and dogs data
+        store.dispatch(getProfileData());
+
+        //Handle wifi/internet connectivity of the device
+        this.subscription();
+        this.isConnectedFetchInterval();
     }
 
-    /**
-     * If our server is working and the device has internet connection, this function dispatches every action in the
-     * offline actions queue
-     */
-    handleConnectionChange = (isConnected) => {
-        if (!isConnected) {
-            //Todo: Change to GUI symbol
-            alert('No internet connection. Everything will be stored locally.')
-        }
-        const {actionQueue, isServerOnline} = store.getState().connection;
-        //Update connection state
-        store.dispatch(connectionState({status: isConnected}));
-        // Once the app connects, dispatch all requests
-        if (isConnected && isServerOnline && actionQueue.length > 0) {
-            store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
-        }
 
-    };
 
     /**
      * Pings our server to make sure its working.
@@ -78,8 +64,40 @@ export default class App extends React.Component {
 
     }
 
+    isConnectedFetchInterval = () =>
+        setInterval(async () => {
+            await NetInfo.isConnected.fetch()
+        }, 1000);
+
+    subscription = () =>
+        NetInfo.isConnected.addEventListener(
+            'connectionChange',
+            this.handleConnectionChange
+        );
+
+    /**
+     * If our server is working and the device has internet connection, this function dispatches every action in the
+     * offline actions queue
+     */
+    handleConnectionChange = isConnected => {
+        if (!isConnected) {
+            //Todo: Change to GUI symbol
+            alert('No internet connection. Everything will be stored locally.')
+        }
+        const {actionQueue, isServerOnline} = store.getState().connection;
+        //Update connection state
+        store.dispatch(connectionState({status: isConnected}));
+        // Once the app connects, dispatch all requests
+        if (isConnected && isServerOnline && actionQueue.length > 0) {
+            store.dispatch(dispatchActionQueueElt({elts: actionQueue}));
+        }
+    };
+
     componentWillUnmount() {
-        NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectionChange);
+        if (this.subscription && typeof this.subscription.remove === 'function') {
+            this.subscription.remove()
+            clearInterval(this.isConnectedFetchInterval)
+        }
     }
 
 

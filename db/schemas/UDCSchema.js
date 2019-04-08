@@ -8,6 +8,7 @@ export default new Schema({
     createdAt: {type: Date, default: Date.now},
     sessionId: String,
     isNewSession: Boolean,
+    isNewToServer: Boolean,
     temperature: Number,
     humidity: Number,
     wind: Number,
@@ -61,101 +62,96 @@ export default new Schema({
             }
         }
     ],
-    dogsTrained: [
-        {
-            dogId: {
-                type: ObjectId,
-                required: true
-            },
-            handlerId: {
-                type: ObjectId,
-                required: false,
-            },
-            recorder: String,
-            handlerKnows: {
-                type: Boolean,
-                required: false,
-                default: false
-            },
-            onLead: {
-                type: Boolean,
-                required: false,
-                default: false
+    dogsTrained: {
+        handlerId: {
+            type: ObjectId,
+            required: false,
+        },
+        recorder: String,
+        handlerKnows: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        onLead: {
+            type: Boolean,
+            required: false,
+            default: false
 
-            },
-            hides: [
-                {
-                    hideId: ObjectId,
-                    performance: {
-                        radiusAlert: {
-                            type: String,
-                            required: false,
-                        },
-                        radiusReward: {
-                            type: String,
-                            required: false,
-                        },
-                        radiusSearch: {
-                            type: String,
-                            required: false,
-                        },
-                        rewarder: {
-                            type: String,
-                            required: false,
-                        },
-                        barks: {
-                            type: Number,
-                            required: false,
-                        },
-                        fringe: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        reset: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        falseAlert: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        falseIndication: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        detailSearch: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        successful: {
-                            type: Boolean,
-                            required: false,
-                            default: false
-                        },
-                        failCodes: [
-                            {
-                                type: String,
-                                required: false
-                            }
-                        ],
-                        distractions: [
-                            {
-                                type: String,
-                                required: false
-                            }
-                        ],
-                        duration: {
+        },
+        hides: [
+            {
+                hideId: ObjectId,
+                performance: {
+                    radiusAlert: {
+                        type: String,
+                        required: false,
+                    },
+                    radiusReward: {
+                        type: String,
+                        required: false,
+                    },
+                    radiusSearch: {
+                        type: String,
+                        required: false,
+                    },
+                    rewarder: {
+                        type: String,
+                        required: false,
+                    },
+                    barks: {
+                        type: Number,
+                        required: false,
+                    },
+                    fringe: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    reset: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    falseAlert: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    falseIndication: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    detailSearch: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    successful: {
+                        type: Boolean,
+                        required: false,
+                        default: false
+                    },
+                    failCodes: [
+                        {
                             type: String,
                             required: false
                         }
+                    ],
+                    distractions: [
+                        {
+                            type: String,
+                            required: false
+                        }
+                    ],
+                    duration: {
+                        type: String,
+                        required: false
                     }
                 }
-            ]
-        }
-    ]
+            }
+        ],
+        default: {},
+    }
 });

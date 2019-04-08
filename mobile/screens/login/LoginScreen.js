@@ -43,7 +43,7 @@ export default class LoginScreen extends React.Component {
      */
     handleEmail = (email) => {
         this.setState({
-            email: email,
+            email: email.toLowerCase(),
         })
     };
 

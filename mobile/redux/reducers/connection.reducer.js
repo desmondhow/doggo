@@ -1,7 +1,12 @@
 import {InitialValues} from '../../constants/SessionsConstants';
 import Constants from "../../constants/Api";
 import _ from 'lodash';
-import {ADD_TO_ACTION_QUEUE, CONNECTION_STATE, SERVER_STATE, REMOVE_FROM_ACTION_QUEUE} from "../actions/connection.actions";
+import {
+    ADD_TO_ACTION_QUEUE,
+    CONNECTION_STATE,
+    SERVER_STATE,
+    REMOVE_FROM_ACTION_QUEUE
+} from "../actions/connection.actions";
 import {RESET_STATE} from "../actions/udc.actions";
 
 /**
@@ -30,7 +35,7 @@ const reducer = (state = initialState, action) => {
             //Check if it already exist
             let eltExist = false;
             let obj;
-            if  (action.data !== undefined) {
+            if (action.data !== undefined) {
                 obj = {
                     type: action.payload,
                     data: action.data
@@ -41,7 +46,7 @@ const reducer = (state = initialState, action) => {
                 };
             }
 
-            for (let i =0; i < state.actionQueue.length; i++) {
+            for (let i = 0; i < state.actionQueue.length; i++) {
                 if (JSON.stringify(state.actionQueue[i]) === JSON.stringify(obj)) {
                     eltExist = true;
                     break;

@@ -8,8 +8,21 @@ import { Card, Button, Icon,  } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Sessions } from '../../constants/SessionsConstants';
 import { buttonStyle, buttonTextStyle } from '../../constants/Styles';
+import {isOnline} from "../../redux/actions/connection.actions";
+import store from "../../redux/reduxConfig";
 
 const HomeScreen = class extends React.Component {
+    componentDidMount() {
+        this.interval = setInterval(() => {
+            let isConnected = isOnline(store.getState);
+            this.props.navigation.setParams({isConnected: isConnected})
+        }, 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
   render() { 
     console.disableYellowBox = true;
     const { navigate } = this.props.navigation;
@@ -54,6 +67,7 @@ const HomeScreen = class extends React.Component {
     );
   }
 }
+
 
 const mapStateToProps = (state) => ({
   state

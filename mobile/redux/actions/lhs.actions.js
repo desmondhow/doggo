@@ -61,7 +61,7 @@ export const saveLHSSession = ({sessionInfo}) => {
         //Transform session info
         sessionInfo.searches = parseSearches(sessionInfo.searches);
         //We save it locally first
-        if (!sessionInfo.isNew) {
+        if (!sessionInfo.isNewSession) {
             console.log("Updating session");
             dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
         } else {
@@ -75,6 +75,8 @@ export const saveLHSSession = ({sessionInfo}) => {
                 console.log(`sessionInfo: ${JSON.stringify(sessionInfo)}`);
                 request(url, JSON.stringify(sessionInfo))
                     .then(res => {
+                        sessionInfo.isNewToServer = false;
+                        dispatch({type: UPDATE_LHS_SESSION, sessionInfo: sessionInfo});
                     })
                     .catch(err => {
                         console.log("error save now", err);
@@ -87,7 +89,6 @@ export const saveLHSSession = ({sessionInfo}) => {
                     });
             });
         } else {
-            console.log("adding 2 quere");
             dispatch({
                 type: ADD_TO_ACTION_QUEUE,
                 payload: ActionQueueTypes.SAVE_NEW_LHS_LATER,
@@ -188,7 +189,7 @@ export const saveLHSTraining = ({sessionInfo, handlers}) => {
                     url,
                     JSON.stringify({
                         sessionId: sessionInfo.sessionId,
-                        sessionInfo: sessionInfo.dogsTrained
+                        sessionInfo: sessionInfo
                     }),
                     "POST"
                 )
@@ -222,7 +223,7 @@ export const saveLHSTrainingLater = ({sessionInfo}) => {
                 url,
                 JSON.stringify({
                     sessionId: sessionInfo.sessionId,
-                    sessionInfo: sessionInfo.dogsTrained
+                    sessionInfo: sessionInfo
                 }),
                 "POST"
             )
@@ -242,81 +243,80 @@ export const saveLHSTrainingLater = ({sessionInfo}) => {
 };
 
 const PLACEMENTS = {
-    "Prop Off Rubble": "offRubble",
-    "Prop Edge of Rubble": "edgeRubble",
-    "Prop On Rubble": "onRubble",
-    Diffused: "diffused",
-    "In Vehicle": "inVehicle",
-    "In Room": "inRoom",
-    Concealed: "concealed",
-    Visible: "visible",
-    "High/Ceiling": "highCeiling",
-    Props: "props",
-    "In Rubble Hole": "inRubbleHole",
-    Below: "below",
-    "Distance 3-6ft": "distanceLow",
-    "Distance >7ft": "distanceHigh"
+  "Prop Off Rubble": "offRubble",
+  "Prop Edge of Rubble": "edgeRubble",
+  "Prop On Rubble": "onRubble",
+  Diffused: "diffused",
+  "In Vehicle": "inVehicle",
+  "In Room": "inRoom",
+  Concealed: "concealed",
+  Visible: "visible",
+  "High/Ceiling": "highCeiling",
+  Props: "props",
+  "In Rubble Hole": "inRubbleHole",
+  Below: "below",
+  "Distance 3-6ft": "distanceLow",
+  "Distance >7ft": "distanceHigh"
 };
 
 const parseSearches = searchesData => {
-    let searches = [];
-    console.log(searchesData);
-    Object.keys(searchesData).forEach(searchNumber => {
-        let location = searchesData[searchNumber].location;
-        let placements = {};
-        searchesData[searchNumber].placements.forEach(placement => {
-            console.log(`searchesData: ${searchesData}`);
-            placement = PLACEMENTS[placement];
-            placements[placement] = true;
-        });
-        let notes = searchesData[searchNumber].notes;
-        let id = guidGenerator();
-        searches.push({
-            id,
-            searchNumber,
-            location,
-            placements,
-            notes
-        });
+  let searches = [];
+  console.log(searchesData);
+  Object.keys(searchesData).forEach(searchNumber => {
+    let location = searchesData[searchNumber].location;
+    let placements = {};
+    searchesData[searchNumber].placements.forEach(placement => {
+      console.log(`searchesData: ${searchesData}`);
+      placement = PLACEMENTS[placement];
+      placements[placement] = true;
     });
-    console.log(`searches: ${JSON.stringify(searches)}`);
-    return searches;
+    let notes = searchesData[searchNumber].notes;
+    let id = guidGenerator();
+    searches.push({
+      id,
+      searchNumber,
+      location,
+      placements,
+      notes
+    });
+  });
+  console.log(`searches: ${JSON.stringify(searches)}`);
+  return searches;
 };
 
 const parseTrainingData = (trainingData, handlers) => {
-    Object.keys(trainingData).forEach(dogId => {
-        const searchInfo = trainingData[dogId];
-        if (!!searchInfo["handler"]) {
-            const handler = handlers.find(
-                handler => handler.name === searchInfo["handler"]
-            );
-            searchInfo["handlerId"] = handler._id;
+  Object.keys(trainingData).forEach(dogId => {
+    const searchInfo = trainingData[dogId];
+    if (!!searchInfo["handler"]) {
+      const handler = handlers.find(
+        handler => handler.name === searchInfo["handler"]
+      );
+      searchInfo["handlerId"] = handler._id;
+    }
+
+    Object.keys(searchInfo["performance"]).forEach(searchId => {
+      const performanceInfo = searchInfo["performance"][searchId];
+      Object.keys(performanceInfo).forEach(field => {
+        if (field === "fields") {
+          performanceInfo[field].forEach(f => {
+            f = f[0].toLowerCase() + f.replace(" ", "").substr(1);
+            console.log(f);
+            searchInfo["performance"][searchId][f] = true;
+          });
+          delete performanceInfo[field];
+        } else if (field === "duration") {
+          searchInfo["performance"][searchId]["duration"] = `${field.minutes}:${
+            field.seconds
+          }`;
+        } else if (typeof performanceInfo[field] === "object") {
+          if (!!performanceInfo[field]["text"]) {
+            searchInfo["performance"][searchId][field] =
+              performanceInfo[field]["text"];
+          }
         }
-
-        Object.keys(searchInfo["performance"]).forEach(searchId => {
-            const performanceInfo = searchInfo["performance"][searchId];
-            Object.keys(performanceInfo).forEach(field => {
-                if (field === "fields") {
-                    performanceInfo[field].forEach(f => {
-                        f = f[0].toLowerCase() + f.replace(" ", "").substr(1);
-                        console.log(f);
-                        searchInfo["performance"][searchId][f] = true;
-                    });
-                    delete performanceInfo[field];
-                } else if (field === "duration") {
-                    searchInfo["performance"][searchId]["duration"] = `${field.minutes}:${
-                        field.seconds
-                        }`;
-                } else if (typeof performanceInfo[field] === "object") {
-                    if (!!performanceInfo[field]["text"]) {
-                        searchInfo["performance"][searchId][field] =
-                            performanceInfo[field]["text"];
-                    }
-                }
-
-            });
-        });
+      });
     });
+  });
 
-    return trainingData;
+  return trainingData;
 };
