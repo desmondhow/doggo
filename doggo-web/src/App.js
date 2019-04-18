@@ -23,21 +23,23 @@ class App extends Component {
 
   render() {
     const App = () => (
-      <Container>
+      <div>
         <div className="app-header">
           <img src={logo} alt="logo" />
         </div>
-        <div className="app-body">
-          <Switch>
-            <Route path='/login' component={Login} />
-            <Route path='/signup' component={SignUp} />
-            <PrivateRoute path='/dogProfile' component={DogProfile} />
-            <PrivateRoute exact path='/viewUDCSession' component={UDCSession} />
-            <PrivateRoute exact path='/editUDCSession' component={UDCSession} params={{isEditing: true}}/>
-            <PrivateRoute path='/' component={Home} />
-          </Switch>
-        </div>
-      </Container>
+        <Container>
+          <div className="app-body">
+            <Switch>
+              <Route path='/login' component={Login} />
+              <Route path='/signup' component={SignUp} />
+              <PrivateRoute path='/dogProfile' component={DogProfile} />
+              <PrivateRoute exact path='/viewUDCSession' component={UDCSession} />
+              <PrivateRoute exact path='/editUDCSession' component={UDCSession} params={{ isEditing: true }} />
+              <PrivateRoute path='/' component={Home} />
+            </Switch>
+          </div>
+        </Container>
+      </div>
     )
     return (
       <Switch>
@@ -51,9 +53,9 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
     isSignedIn() === true
       ? <Component {...props} />
       : <Redirect to={{
-          pathname: '/login',
-          state: { from: props.location }
-        }} />
+        pathname: '/login',
+        state: { from: props.location }
+      }} />
   )} />
 )
 

@@ -1,16 +1,16 @@
 .form-btn {
-    background-color: #212121;
+    background-color: #03A9F4;
     border-radius: 25px;
-    border-color: #212121;
     font-weight: 300;
+    border-color: #03A9F4;
 }
 
 .form-btn:hover {
     /* background-color: #212121b5;
     border-color: #212121b5; */
     font-weight: 400;
-    background-color: #212121;
-    border-color: #212121;
+    /* background-color: #212121;
+    border-color: #212121; */
 }
 
 .form-input, .form-input:focus {

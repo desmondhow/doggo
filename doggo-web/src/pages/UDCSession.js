@@ -12,7 +12,6 @@ import { updateSession } from '../assets/api/generalAPI';
 class UDCSession extends Component {
     constructor(props) {
         super(props)
-        console.log(this.props)
         this.state = {
             session: this.props.location.state.session,
             dogData: this.props.location.state.dogData,
@@ -34,49 +33,50 @@ class UDCSession extends Component {
         if (!value) {
             // is a dropdown
             value = event.nativeEvent.target.value;
-            if(field === "barks") {
+            if (field === "barks") {
                 value = parseInt(value)
             }
             performance[field] = value;
         } else {
             // is a checkbox
             const checked = event.nativeEvent.target.checked;
-            if(value === "fields") {
+            if (value === "fields") {
                 // true/false change
-                if(checked){
+                if (checked) {
                     performance[field] = true
                 } else {
                     delete performance[field]
                 }
-                 
+
             } else {
                 // array update
-                if(checked) {
+                if (checked) {
                     performance[field].push(value)
                 } else {
                     const i = performance[field].indexOf(value)
                     performance[field].splice(i, 1)
                 }
-                
+
             }
         }
         const sessionCopy = this.state.session;
         sessionCopy.dogsTrained.find(obj => obj.dogId === this.state.dogData.dogId).hides.find(hide => hide.hideId === hideId).performance = performance;
-        this.setState({session: sessionCopy});
+        this.setState({ session: sessionCopy });
     }
 
     onSubmit(event) {
         event.preventDefault();
         updateSession("UDC", this.state.session)
             .then(console.log("finished?"))
-        
+
     }
 
-    getPerformance(hideId) {
-        const dogObj = Object.keys(this.state.session.dogsTrained).find(key => key === this.state.dogData.dogId)
-        const hide = dogObj.hides.find(hide => hide.hideId === hideId)
-        const performance = hide.performance;
-        return performance;
+    getPerformance(hideRoomNumber) {
+        // const dogObj = Object.keys(this.state.session.dogsTrained).find(key => key === this.state.dogData.dogId)
+        // console.log(dogObj)
+        // const hide = dogObj.hides.find(hide => hide.hideId === hideId)
+        // const performance = hide.performance;
+        return this.state.dogData.performance[hideRoomNumber];
     }
 
     formatDropdown(performance, hideId, fieldArr, constant) {
@@ -173,172 +173,243 @@ class UDCSession extends Component {
 
     renderHide(hide) {
         return (
-            // <Col key={hide.id}>
-            <Table>
-                <thead>
-                    <tr>
-                        <th>{hide.hideType} Hide</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <span className="bold">Room Number:</span>{hide.roomNumber}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Concentration:</span>{hide.concentration}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Size:</span>{hide.size}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Location:</span>{hide.location}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Placement Area:</span>{hide.placementArea}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Placement Height:</span>{hide.placementHeight}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Concealed: </span>{hide.isConcealed === 1 ? "Yes" : "No"}
-                        </td>
-                    </tr>
-                </tbody>
-            </Table>
-            // {/* </Col> */}
+            <Col key={hide.id}>
+                <Table>
+                    <thead>
+                        <tr>
+                            <th colSpan="2"><h4>{hide.hideType} Hide</h4></th>
+                        </tr>
+                    </thead>
+                    <tbody style={{ textAlign: "left" }}>
+                        <tr>
+                            <td>
+                                <span className="bold">Room Number:</span>
+                            </td>
+                            <td>
+                                {hide.roomNumber}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Concentration:</span>
+                            </td>
+                            <td>
+                                {hide.concentration}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Size:</span>
+                            </td>
+                            <td>
+                                {hide.size}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Location:</span>
+                            </td>
+                            <td>
+                                {hide.location}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Placement Area:</span>
+                            </td>
+                            <td>
+                                {hide.placementArea}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Placement Height:</span>
+                            </td>
+                            <td>
+                                {hide.placementHeight}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Concealed: </span>
+                            </td>
+                            <td>
+                                {hide.isConcealed === 1 ? "Yes" : "No"}
+                            </td>
+                        </tr>
+                    </tbody>
+                </Table>
+            </Col>
         )
     }
 
     renderPerformance(performance, hideId) {
         let distractions = ""
-        performance.distractions.forEach(d => {
-            distractions += d + ", "
-        })
+        if (performance.distractions) {
+            performance.distractions.forEach(d => {
+                distractions += d + ", "
+            })
+        } else {
+            distractions = "None";
+        }
 
         let failCodes = ""
-        performance.failCodes.forEach(f => {
-            failCodes += f + ", "
-        })
-        return (
-            // <Col key={hideId}>
+        if (performance.failCodes) {
+            performance.failCodes.forEach(f => {
+                failCodes += f + ", "
+            })
+        } else {
+            failCodes = "None";
+        }
 
-            <Table>
-                <thead>
-                    <tr>
-                        <th>Performance</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <span className="bold">Radius Alert: </span>{this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusAlert") : performance.radiusAlert}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Radius Reward: </span>{this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusReward") : performance.radiusReward}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Radius Search: </span>{this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusSearch") : performance.radiusSearch}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Rewarder: </span>{this.state.isEditing ? this.formatDropdown(performance, hideId, ["Trainer", "Handler"], "rewarder") : performance.rewarder}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Number of Barks: </span>{this.state.isEditing ? this.formatRangeDropdown(performance, hideId, 40, "barks", 1) : performance.barks}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Distractions: </span>{this.state.isEditing ? this.formatCheckboxes(performance, hideId, udcPerformance.Distractions, "distractions") : distractions}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <span className="bold">Failure Codes: </span>{this.state.isEditing ? this.formatCheckboxes(performance, hideId, udcPerformance.FailCodes, "failCodes") : failCodes}
-                        </td>
-                    </tr>
-                    {this.state.isEditing ?
+        return (
+            <Col key={hideId}>
+
+                <Table>
+                    <thead>
+                        <tr>
+                            <th colSpan="2"><h4>Performance</h4></th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <tr>
                             <td>
-                                <span className="bold">Select all that apply: </span>{this.formatCheckboxes(performance, hideId, udcPerformance.Fields, "fields", true)}
+                                <span className="bold">Radius Alert: </span>
+                            </td>
+                            <td>{this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusAlert") : performance.radiusAlert}</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Radius Reward: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusReward") : performance.radiusReward}
                             </td>
                         </tr>
-                        :
-                        (<>
+                        <tr>
+                            <td>
+                                <span className="bold">Radius Search: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatDropdown(performance, hideId, udcPerformance.HandlerRadius, "radiusSearch") : performance.radiusSearch}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Rewarder: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatDropdown(performance, hideId, ["Trainer", "Handler"], "rewarder") : performance.rewarder}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Number of Barks: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatRangeDropdown(performance, hideId, 40, "barks", 1) : performance.barks}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Distractions: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatCheckboxes(performance, hideId, udcPerformance.Distractions, "distractions") : distractions}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span className="bold">Failure Codes: </span>
+                            </td>
+                            <td>
+                                {this.state.isEditing ? this.formatCheckboxes(performance, hideId, udcPerformance.FailCodes, "failCodes") : failCodes}
+                            </td>
+                        </tr>
+                        {/* {this.state.isEditing ?
                             <tr>
                                 <td>
-                                    <span className="bold">Fringe: </span>{performance.fringe ? "Yes" : "No"}
+                                    <span className="bold">Select all that apply: </span>{this.formatCheckboxes(performance, hideId, udcPerformance.Fields, "fields", true)}
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <span className="bold">Reset: </span>{performance.reset ? "Yes" : "No"}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className="bold">False Alert: </span>{performance.falseAlert ? "Yes" : "No"}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className="bold">False Indication: </span>{performance.falseIndication ? "Yes" : "No"}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className="bold">Detail Search: </span>{performance.detailSearch ? "Yes" : "No"}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <span className="bold">Successful: </span>{performance.successful ? "Yes" : "No"}
-                                </td>
-                            </tr>
-                        </>)
-                    }
-                </tbody>
-            </Table>
+                            :
+                            (<>
+                                <tr>
+                                    <td>
+                                        <span className="bold">Fringe: </span>
+                                    </td>
+                                    <td>
+                                        {performance.fringe ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span className="bold">Reset: </span>
+                                    </td>
+                                    <td>
+                                        {performance.reset ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span className="bold">False Alert: </span>
+                                    </td>
+                                    <td>
+                                        {performance.falseAlert ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span className="bold">False Indication: </span>
+                                    </td>
+                                    <td>
+                                        {performance.falseIndication ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span className="bold">Detail Search: </span>
+                                    </td>
+                                    <td>
+                                        {performance.detailSearch ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span className="bold">Successful: </span>
+                                    </td>
+                                    <td>
+                                        {performance.successful ? "Yes" : "No"}
+                                    </td>
+                                </tr>
+                            </>) */}
+                        {/* } */}
+                    </tbody>
+                </Table>
 
-            // {/* </Col> */}
+            </Col>
         )
     }
 
     createTables() {
-        const hideTables = []
-        const hideRoomNumbers = []
-        const performanceTables = []
         const tables = []
         this.state.session.hides.forEach(hide => {
             // hideTables.push(this.renderHide(hide))
             // hideRoomNumbers.push(hide.roomNumber)
-            tables.push(this.renderHide(hide))
-            console.log(this.state.dogData)
-            const performance = this.state.dogData.hides[hide.roomNumber].performance
-            // if (this.state.isEditing) {
-            //     tables.push(this.renderPerformanceForm(performance, hide.roomNumber))
-            // } else {
-            tables.push(this.renderPerformance(performance, hide.roomNumber))
+            const hideHtml = this.renderHide(hide);
+            const performanceHtml = this.renderPerformance(this.getPerformance(hide.roomNumber), hide.roomNumber);
+            tables.push(
+                <Row style={{ border: "3px solid #03A9F4", borderRadius: "25px", marginBottom: "100px" }}>
+                    {hideHtml}
+                    {performanceHtml}
+                </Row>
+            )
+            // const performance = this.state.dogData.performance[hide.roomNumber]
+            // console.log(performance)
+            // // if (this.state.isEditing) {
+            // //     tables.push(this.renderPerformanceForm(performance, hide.roomNumber))
+            // // } else {
+            // tables.push(this.renderPerformance(performance, hide.roomNumber))
             // }
 
         })
@@ -363,19 +434,14 @@ class UDCSession extends Component {
         const tables = this.createTables();
         return (
             <div>
-                <h3>UDC Session for {this.state.dogName}</h3>
-                <Button onClick={this.handleEdit.bind(this)}>Edit Session</Button>
+                <h1>UDC Session for {this.state.dogName}</h1>
+                <Button className="form-btn btn-lg" onClick={this.handleEdit.bind(this)}>Edit Session</Button>
                 <GeneralInfo session={this.state.session} />
 
-                <Row>
-                    <Form onSubmit={this.onSubmit.bind(this)}>
-                        {tables}
-                        {this.state.isEditing ? <Button type="submit">Update</Button> : ""}
-                    </Form>
-                </Row>
-                {/* <Row>
-                    {tables.performanceTables}
-                </Row> */}
+                <Form onSubmit={this.onSubmit.bind(this)}>
+                    {tables}
+                    {this.state.isEditing ? <Button type="submit">Update</Button> : ""}
+                </Form>
             </div>
         )
     }

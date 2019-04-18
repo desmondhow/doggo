@@ -96,7 +96,7 @@ class DogProfile extends Component {
         sessionTypes.forEach(type => {
             const colName = sessionTypeToName[type];
             const data = this.state.dogData[type];
-            console.log(data)
+            // console.log(data)
             const dataRows = []
             if (data === "No sessions") {
                 dataRows.push(
@@ -105,7 +105,6 @@ class DogProfile extends Component {
                     </tr>
                 )
             } else {
-                console.log(type)
                 data.forEach(session => {
                     console.log(session)
                     const date = new Date(session.createdAt)

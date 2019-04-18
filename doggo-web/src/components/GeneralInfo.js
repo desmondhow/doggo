@@ -14,12 +14,12 @@ class GeneralInfo extends Component {
     render() {
         return (
             <div className="info-list">
-                <h3>General Info</h3>
-                <div><span className="bold">Date:</span> {formatDate(this.state.session.createdAt)} </div>
-                <div><span className="bold">Temperature:</span> {this.state.session.temperature}</div>
-                <div><span className="bold">Humidity:</span> {this.state.session.humidity}</div>
-                <div><span className="bold">Wind:</span> {this.state.session.wind}</div>
-                <div><span className="bold">Wind Direction:</span> {this.state.session.windDirection}</div>
+                {/* <h3>General Info</h3> */}
+                <div style={{flexGrow: "1"}}><span className="bold">Date:</span> {formatDate(this.state.session.createdAt)} </div>
+                <div style={{flexGrow: "1"}}><span className="bold">Temperature:</span> {this.state.session.temperature}</div>
+                <div style={{flexGrow: "1"}}><span className="bold">Humidity:</span> {this.state.session.humidity}</div>
+                <div style={{flexGrow: "1"}}><span className="bold">Wind:</span> {this.state.session.wind}</div>
+                <div style={{flexGrow: "1"}}><span className="bold">Wind Direction:</span> {this.state.session.windDirection}</div>
             </div>
         )
     }

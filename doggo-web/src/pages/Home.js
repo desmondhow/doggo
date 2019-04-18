@@ -32,7 +32,7 @@ class Home extends Component {
                         if (session.dogsTrained) {
                             Object.keys(session.dogsTrained).forEach(dogId => {
                                 const dogs = this.state.dogs;
-                                console.log(dogs.find(dogObj => dogObj._id === dogId + ""));
+                                // console.log(dogs.find(dogObj => dogObj._id === dogId + ""));
                             })
                         }
                     })
@@ -43,7 +43,7 @@ class Home extends Component {
                             [key]: data
                         }
                     }))
-                    console.log(this.state);
+                    // console.log(this.state);
 
                 })
         })
